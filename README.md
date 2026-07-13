@@ -105,3 +105,10 @@ Without installation, running from the repository root also works because the ex
 - P4: Viewer, database, frontend, BU, TopDown, and DIA integration with production migration tooling.
 
 P0 does not implement real RAW, real mzML, BU, TopDown, DIA, Viewer integration, a database, a frontend, high-performance binary numeric arrays, compression, memory mapping, parallel conversion, or production recovery.
+
+## P1 status
+
+P1-A investigation is complete; real mzML conversion is not implemented.
+
+- [P1 mzML investigation](docs/P1_MZML_INVESTIGATION.md)
+- [P1-B implementation plan](docs/P1_MZML_IMPLEMENTATION_PLAN.md)
