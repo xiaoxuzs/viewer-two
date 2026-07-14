@@ -17,12 +17,13 @@ from .constants import (
     DIRECTORY_LENGTH_STRUCT,
     HEADER_SIZE,
     HEADER_STRUCT,
+    KNOWN_ZP_VERSIONS,
+    SUPPORTED_ZP_READ_VERSIONS,
     SUPPORTED_ENCODINGS,
     ZP_ENDIANNESS_LITTLE,
     ZP_MAGIC,
-    ZP_VERSION,
 )
-from .exceptions import UnsupportedVersionError, ZpReadError
+from .exceptions import UnsupportedVersionError, ZpReadError, ZpVersionNotImplementedError
 from .models import BlockDirectoryEntry, ZpHeader
 from .serialization import parse_json_bytes, parse_utc_datetime
 
@@ -42,10 +43,12 @@ class ZpReader:
         header = ZpHeader(*HEADER_STRUCT.unpack(raw))
         if header.magic != ZP_MAGIC:
             raise ZpReadError(f"Invalid magic: {header.magic!r}")
-        if header.version != ZP_VERSION:
-            raise UnsupportedVersionError(f"Unsupported version: {header.version}")
         if header.endianness != ZP_ENDIANNESS_LITTLE:
             raise ZpReadError(f"Unsupported endianness: {header.endianness}")
+        if header.version not in SUPPORTED_ZP_READ_VERSIONS:
+            if header.version in KNOWN_ZP_VERSIONS:
+                raise ZpVersionNotImplementedError(header.version, "read")
+            raise UnsupportedVersionError(header.version, "read")
         return header
 
     def read_directory(self) -> list[BlockDirectoryEntry]:
@@ -127,4 +130,3 @@ class ZpReader:
             return spectrum, arrays[spectrum.mz_array_id], arrays[spectrum.intensity_array_id]
         except KeyError as exc:
             raise ZpReadError(f"Spectrum {spectrum_id} references a missing array: {exc.args[0]}") from exc
-

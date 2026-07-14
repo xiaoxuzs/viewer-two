@@ -11,7 +11,9 @@ from .constants import (
     DIRECTORY_LENGTH_STRUCT,
     HEADER_SIZE,
     HEADER_STRUCT,
+    KNOWN_ZP_VERSIONS,
     REQUIRED_BLOCK_NAMES,
+    SUPPORTED_ZP_VALIDATE_VERSIONS,
     SUPPORTED_ARRAY_TYPES,
     SUPPORTED_DTYPES,
     SUPPORTED_ENCODINGS,
@@ -55,10 +57,20 @@ class ZpValidator:
                 magic, version, endianness, _flags, _created_at, directory_offset = HEADER_STRUCT.unpack(header_raw)
                 if magic != ZP_MAGIC:
                     add("INVALID_MAGIC", f"Expected {ZP_MAGIC!r}, got {magic!r}")
-                if version != ZP_VERSION:
-                    add("UNSUPPORTED_VERSION", f"Unsupported version: {version}")
                 if endianness != ZP_ENDIANNESS_LITTLE:
                     add("UNSUPPORTED_ENDIANNESS", f"Unsupported endianness: {endianness}")
+                if version not in SUPPORTED_ZP_VALIDATE_VERSIONS:
+                    if magic != ZP_MAGIC or endianness != ZP_ENDIANNESS_LITTLE:
+                        return self._result(path, version, issues, checked_blocks)
+                    if version in KNOWN_ZP_VERSIONS:
+                        add(
+                            "ZP_V2_VALIDATION_NOT_IMPLEMENTED",
+                            f"ZP version {version} validation is not implemented",
+                            "header.version",
+                        )
+                    else:
+                        add("UNSUPPORTED_VERSION", f"Unsupported version: {version}")
+                    return self._result(path, version, issues, checked_blocks)
                 if directory_offset < HEADER_SIZE or directory_offset + DIRECTORY_LENGTH_STRUCT.size > file_size:
                     add("INVALID_DIRECTORY_OFFSET", f"Directory offset is out of bounds: {directory_offset}")
                     return self._result(path, version, issues, checked_blocks)

@@ -111,7 +111,7 @@ This prototype does not implement real RAW, general mzML conversion, BU, TopDown
 
 ## P1 status
 
-P1-A investigation and P1-B1 through P1-B6 are complete. P1-B1 adds deterministic accepted/rejected fixtures, pins Pyteomics to `>=4.7.5,<5`, freezes `mzml_metadata` v1 and `mzml_auxiliary_arrays` v1 schemas, and adds a parser-independent admission policy. P1-B5 completed the strict real MS1/MS2 plus TIC/BPC conversion subset. P1-B6 evaluated the scale limit that was previously tracked as “v1 JSON arrays under evaluation”; it did not implement a new array format.
+P1-A investigation and P1-B1 through P1-B8.1 are complete. P1-B8.2 has not started. P1-B1 adds deterministic accepted/rejected fixtures, pins Pyteomics to `>=4.7.5,<5`, freezes `mzml_metadata` v1 and `mzml_auxiliary_arrays` v1 schemas, and adds a parser-independent admission policy. P1-B5 completed the strict real MS1/MS2 plus TIC/BPC conversion subset. P1-B6 evaluated the v1 JSON scale limit; P1-B7 froze the design for a version-2 arrays region with a 64-byte internal Header, canonical array directory, zero alignment padding, and contiguous little-endian float64 payloads.
 
 P1-B5 supports one local mzML file with one run, indexed or non-indexed, centroid MS1 and MS2, and zero or more TIC/BPC chromatograms. Every MS2 must have exactly one precursor and one selected ion with explicit m/z, nonzero charge, and intensity. Spectrum RT and chromatogram time accept explicit seconds or minutes and are normalized to seconds. Required arrays accept float32/float64 and zlib/no compression; they must be nonempty, finite, and aligned, with non-negative m/z and time values. Core `ArrayBlock` values are normalized to float64. Source dtype, compression, units, RT/time provenance, parent `spectrumRef`, isolation window, activation methods, and collision energy/unit are preserved in `mzml_metadata` v1. Whitelisted auxiliary arrays, currently chromatogram `MS:1000786` `ms level` int64, are preserved in `mzml_auxiliary_arrays` v1.
 
@@ -119,10 +119,13 @@ SRM, MRM, SIC, selected-ion-current, precursor/product chromatograms, unknown ch
 
 P1-B6 repeated the 31,408,514-byte real sample three times. Every output was 78,103,277 bytes (2.486691x input) for 2,379,436 peaks; the median traced Python peak was 471,928,798 bytes and median process RSS peak was 1,646,055,424 bytes. The `arrays` block was 74,610,555 bytes (95.5281% of `.zp`), and current single-Spectrum array access reparses the full block. The bounded v1 prototype gate warns at 32 MiB input, 2M peaks, 80 MiB predicted output, or 1.5 GiB predicted RSS; it rejects above 64 MiB input, 5M peaks, 200 MiB output, or 4 GiB predicted RSS, subject to aggregate free-resource checks.
 
-The sole recommended next stage is P1-B7 design work for a version-2 arrays region with an internal array directory and contiguous little-endian float64 payloads; per-array chunks are the alternative. That physical change requires `ZP_VERSION=2`. P1-B6 has **not** implemented v2, binary arrays, compression, memory mapping, streaming writing, or true disk-level random array reads.
+P1-B8.1 adds Header-first version dispatch to the public Writer, Reader, and Validator facades. The production `ZP_VERSION` and default Writer remain version 1. Explicit v2 write/read requests fail closed with operation-specific errors, and v2 validation returns one explicit not-implemented issue before v1 body parsing. The isolated standard-library Codec under `specs/zp_v2/` remains outside Registry, the conversion pipeline, and `binary_layer/`. P1-B8.1 does not implement a v2 arrays Writer, Reader, or Validator, so the product still cannot generate, open, validate, or otherwise use complete v2 `.zp` files. P1-B8.2 is the next unstarted stage.
 
 - [P1 mzML investigation](docs/P1_MZML_INVESTIGATION.md)
 - [P1-B implementation plan](docs/P1_MZML_IMPLEMENTATION_PLAN.md)
 - [P1-B6 scale and memory assessment](docs/P1_B6_SCALE_MEMORY_ASSESSMENT.md)
 - [P1-B6 array storage decision](docs/P1_B6_ARRAY_STORAGE_DECISION.md)
+- [ZP v2 binary arrays format specification](docs/ZP_V2_BINARY_ARRAY_FORMAT_SPEC.md)
+- [ZP v2 compatibility and migration design](docs/ZP_V2_COMPATIBILITY_AND_MIGRATION.md)
+- [P1-B8 staged implementation plan](docs/P1_B7_IMPLEMENTATION_PLAN.md)
 - [P1-B1 fixture manifest and regeneration](tests/fixtures/mzml/README.md)

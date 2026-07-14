@@ -1,6 +1,6 @@
 # P1-B real mzML implementation plan
 
-Status: **P1-B1 through P1-B6 completed. P1-B7 has not started.**
+Status: **P1-B1 through P1-B7 completed. P1-B8 has not started.**
 
 Date: 2026-07-13 (Asia/Shanghai)
 
@@ -240,7 +240,7 @@ Restore the pre-B5 rule that any nonempty chromatogram list rejects.
 
 ## P1-B6: real mzML scale, memory, and array-storage evaluation
 
-Status: **completed on 2026-07-14. P1-B7 has not started.**
+Status: **completed on 2026-07-14. P1-B7 is also complete.**
 
 Completion record:
 
@@ -283,6 +283,31 @@ Completed: produced an evidence-backed storage/version decision with explicit re
 ### Failure rollback
 
 Retain measurements and make no format change until the version/storage decision is reviewed.
+
+## P1-B7: ZP v2 binary arrays format and compatibility design
+
+Status: **completed on 2026-07-14. P1-B8.1 is also complete; P1-B8.2 has not started.**
+
+Completion record:
+
+- P1-B6 evidence is retained: 31,408,514-byte mzML to 78,103,277-byte v1 `.zp` (2.486691x), arrays 95.5281%, 32.8243 bytes/peak, about 1.59-1.72 GB RSS, about 1.5 seconds per Spectrum arrays, 160.94 seconds random100, and 154.50 seconds repeat100.
+- The sole v2 layout is one `arrays` region with `<8sHBBIQQQQ16s>` 64-byte Header, canonical strict JSON internal directory, zero padding to 8-byte alignment, and contiguous IEEE-754 binary64 little-endian payload ordered by `array_id` UTF-8 bytes.
+- The top-level 24-byte `<4sHBBQQ>` Header remains; a version-2 file declares Header version 2, retains all nine blocks, uses `zp-arrays-v2` for arrays and `utf-8-json` for the other eight. Production `ZP_VERSION` remains 1.
+- Compatibility is Header-first explicit dispatch behind one public facade to frozen v1 and independent v2 implementations. Reader instances may cache directories only, with file identity invalidation; no global or full-payload cache is allowed.
+- The repository's actual v1 directory token is `json`; it remains frozen on the v1 path and is not silently renamed to the new v2 `utf-8-json` token.
+- Both the whole arrays block and every array retain SHA-256: full Validator scans both levels, while target-only Reader access checks the selected array only.
+- Migration is non-in-place from a fully validated read-only v1 source to a distinct atomic v2 target, followed by full v2 validation and exact logical comparison. The source remains unchanged on every failure.
+- Initial safety defaults are 512 MiB arrays block, 64 MiB directory, 100,000 entries, 16M values per array, 4096 UTF-8 bytes per ID, 448 MiB payload, and 1 GiB complete decoded memory, checked before read/allocation and configurable by production policy.
+- The isolated standard-library reference Codec, deterministic nonempty/empty Golden fixtures, independent literal-byte tests, controlled target-only read test, and 32 real-byte corruption cases pass. It is not production runtime code and does not write a complete `.zp`.
+- Specifications are `ZP_V2_BINARY_ARRAY_FORMAT_SPEC.md` and `ZP_V2_COMPATIBILITY_AND_MIGRATION.md`; `P1_B7_IMPLEMENTATION_PLAN.md` splits P1-B8 into eight separately reversible gates.
+
+### P1-B8.1 completion and P1-B8.2 entry conditions
+
+- P1-B7 full suite, deterministic Fixture regeneration, inspection CLI, diff check, and protected production SHA-256 audit pass.
+- Production `binary_layer/` has zero P1-B7 diff and `ZP_VERSION=1`.
+- P1-B8.1 completed with public Header-first Writer/Reader/Validator dispatch, default and explicit v1 behavior preserved, and distinct fail-closed results for known version 2 and unknown versions. The suite contains 327 passing tests.
+- P1-B8.2 begins only at **ZP v2 Arrays Writer**. It may not switch the default Writer, leak version selection into Pipeline/Registry/Runner/Tools, implement v2 Reader/Validator behavior, or delete v1 behavior in the same gate.
+- Any change to the frozen Header, arrays layout, offset base, checksum coverage, dtype/encoding meaning, or safety model requires a new review before code.
 
 ## Planned production file set
 

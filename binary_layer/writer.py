@@ -8,21 +8,34 @@ from pathlib import Path
 from .blocks import BlockCollection
 from .constants import (
     BLOCK_NAMES,
+    DEFAULT_ZP_WRITE_VERSION,
     DIRECTORY_LENGTH_STRUCT,
     HEADER_SIZE,
     HEADER_STRUCT,
+    KNOWN_ZP_VERSIONS,
+    SUPPORTED_ZP_WRITE_VERSIONS,
     ZP_ENDIANNESS_LITTLE,
     ZP_EXTENSION,
     ZP_MAGIC,
     ZP_VERSION,
 )
-from .exceptions import ZpWriteError
+from .exceptions import UnsupportedVersionError, ZpVersionNotImplementedError, ZpWriteError
 from .models import BlockDirectoryEntry
 from .serialization import canonical_json_bytes
 
 
 class ZpWriter:
-    def write(self, target: str | Path, blocks: BlockCollection) -> Path:
+    def write(
+        self,
+        target: str | Path,
+        blocks: BlockCollection,
+        *,
+        format_version: int = DEFAULT_ZP_WRITE_VERSION,
+    ) -> Path:
+        if format_version not in SUPPORTED_ZP_WRITE_VERSIONS:
+            if format_version in KNOWN_ZP_VERSIONS:
+                raise ZpVersionNotImplementedError(format_version, "write")
+            raise UnsupportedVersionError(format_version, "write")
         path = Path(target)
         if path.suffix != ZP_EXTENSION:
             raise ZpWriteError(f"Output extension must be exactly {ZP_EXTENSION}: {path}")

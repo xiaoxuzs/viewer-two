@@ -47,7 +47,20 @@ class ZpValidationError(ZpError):
 
 
 class UnsupportedVersionError(ZpReadError):
-    pass
+    code = "UNSUPPORTED_ZP_VERSION"
+
+    def __init__(self, version: int, operation: str) -> None:
+        self.version = version
+        self.operation = operation
+        super().__init__(f"Unsupported version: {version}")
+
+
+class ZpVersionNotImplementedError(ZpError):
+    def __init__(self, version: int, operation: str) -> None:
+        self.version = version
+        self.operation = operation
+        self.code = f"ZP_V{version}_{operation.upper()}_NOT_IMPLEMENTED"
+        super().__init__(f"ZP version {version} {operation} is not implemented")
 
 
 class ChecksumMismatchError(ZpValidationError):
