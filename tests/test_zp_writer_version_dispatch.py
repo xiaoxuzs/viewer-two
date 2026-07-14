@@ -4,7 +4,7 @@ import pytest
 
 from binary_layer import ZpValidator, ZpWriter
 from binary_layer.constants import BLOCK_NAMES, ZP_VERSION_V1, ZP_VERSION_V2
-from binary_layer.exceptions import UnsupportedVersionError, ZpVersionNotImplementedError
+from binary_layer.exceptions import UnsupportedVersionError, ZpV2ArrayWriteError
 from conftest import load_raw_zp
 
 
@@ -29,10 +29,7 @@ def test_default_and_explicit_v1_writes_are_byte_identical(
 
 @pytest.mark.parametrize(
     ("version", "exception_type", "code"),
-    [
-        (ZP_VERSION_V2, ZpVersionNotImplementedError, "ZP_V2_WRITE_NOT_IMPLEMENTED"),
-        (999, UnsupportedVersionError, "UNSUPPORTED_ZP_VERSION"),
-    ],
+    [(999, UnsupportedVersionError, "UNSUPPORTED_ZP_VERSION")],
 )
 def test_unavailable_write_versions_fail_before_creating_files(
     pipeline_factory, tmp_path: Path, version: int, exception_type: type[Exception], code: str
@@ -51,13 +48,14 @@ def test_unavailable_write_versions_fail_before_creating_files(
     assert not target.parent.exists()
 
 
-def test_v2_write_does_not_overwrite_existing_target(pipeline_factory, tmp_path: Path) -> None:
+def test_invalid_v2_write_does_not_overwrite_existing_target(pipeline_factory, tmp_path: Path) -> None:
     context = pipeline_factory(".mzML")
     target = tmp_path / "existing.zp"
     original = b"existing bytes"
     target.write_bytes(original)
+    context.blocks.arrays[1].array_id = context.blocks.arrays[0].array_id
 
-    with pytest.raises(ZpVersionNotImplementedError):
+    with pytest.raises(ZpV2ArrayWriteError):
         ZpWriter().write(target, context.blocks, format_version=ZP_VERSION_V2)
 
     assert target.read_bytes() == original

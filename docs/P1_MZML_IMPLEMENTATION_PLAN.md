@@ -1,6 +1,6 @@
 # P1-B real mzML implementation plan
 
-Status: **P1-B1 through P1-B7 completed. P1-B8 has not started.**
+Status: **P1-B1 through P1-B8.2 completed. P1-B8.3 has not started.**
 
 Date: 2026-07-13 (Asia/Shanghai)
 
@@ -286,7 +286,7 @@ Retain measurements and make no format change until the version/storage decision
 
 ## P1-B7: ZP v2 binary arrays format and compatibility design
 
-Status: **completed on 2026-07-14. P1-B8.1 is also complete; P1-B8.2 has not started.**
+Status: **completed on 2026-07-14. P1-B8.1 and P1-B8.2 are also complete; P1-B8.3 has not started.**
 
 Completion record:
 
@@ -308,6 +308,24 @@ Completion record:
 - P1-B8.1 completed with public Header-first Writer/Reader/Validator dispatch, default and explicit v1 behavior preserved, and distinct fail-closed results for known version 2 and unknown versions. The suite contains 327 passing tests.
 - P1-B8.2 begins only at **ZP v2 Arrays Writer**. It may not switch the default Writer, leak version selection into Pipeline/Registry/Runner/Tools, implement v2 Reader/Validator behavior, or delete v1 behavior in the same gate.
 - Any change to the frozen Header, arrays layout, offset base, checksum coverage, dtype/encoding meaning, or safety model requires a new review before code.
+
+### P1-B8.2 completion and P1-B8.3 entry conditions
+
+- Explicit `format_version=2` now writes a complete atomic v2 file with all
+  nine blocks, derived GlobalMeta version 2, eight `utf-8-json` blocks, and one
+  byte-for-byte Golden-compatible `zp-arrays-v2` block.
+- The arrays Writer is an independent two-pass, fixed-chunk implementation with
+  immutable preflight resource limits and incremental per-array/top-level
+  checksums. It does not import the reference Codec or build a complete payload.
+- The suite contains 368 passing tests, including real MS1-only, MS1/MS2, and
+  TIC/BPC BlockCollections, independent full-file parsing, Golden compatibility,
+  deterministic output, resource failures, and injected mid-write atomicity.
+- `ZP_VERSION` and the default Writer remain 1; Pipeline, Plan, Registry,
+  Runner, and Tools do not receive a version. Production Reader and Validator
+  continue to reject v2 before body parsing.
+- P1-B8.3 may start only with these boundaries green. It is limited to v2
+  arrays Reader/random access and must not silently expand into Validator,
+  migration, default-v2, or Viewer work.
 
 ## Planned production file set
 

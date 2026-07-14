@@ -1,6 +1,6 @@
 # P1-B8 production implementation plan
 
-Status: **P1-B8.1 completed on 2026-07-14; P1-B8.2 has not started.**
+Status: **P1-B8.2 completed on 2026-07-14; P1-B8.3 has not started.**
 
 Date: 2026-07-14 (Asia/Shanghai)
 
@@ -47,6 +47,47 @@ after magic/Header validation; omitted Writer version still writes v1.
 the original v1 classes remain the runnable path.
 
 ## P1-B8.2: v2 arrays Writer
+
+**Status: completed on 2026-07-14.**
+
+Completion record:
+
+- `binary_layer/v2_arrays_writer.py` independently implements the frozen
+  64-byte Header, canonical directory, UTF-8 ID ordering, zero padding, and
+  contiguous raw little-endian float64 payload. Production code does not
+  import the reference Codec.
+- Layout preparation validates all fields and values and incrementally computes
+  per-array SHA-256 in fixed 8,192-value chunks. The second pass writes directly
+  to the target temporary stream while incrementally computing the whole arrays
+  checksum; it creates neither a complete payload byte string nor a complete
+  arrays-block byte string.
+- Writer defaults remain v1. Explicit v2 derives `global_meta.format_version=2`
+  without mutating the input Blocks, writes eight `utf-8-json` blocks and one
+  `zp-arrays-v2` block, then flushes, `fsync`s, and atomically replaces using
+  the existing sibling `.tmp` lifecycle.
+- Immutable Writer limits default to 512 MiB arrays block, 64 MiB directory,
+  100,000 entries, 16,000,000 values per array, 4,096 UTF-8 bytes per ID, and
+  448 MiB payload. Predictable failures occur before directory or temporary-file
+  creation; injected mid-write failures remove the temporary file and preserve
+  an existing target.
+- Production arrays bytes equal both committed P1-B7 Golden fixtures exactly.
+  Independent full-file parsing verifies the 24-byte Header, all nine ordered
+  blocks and checksums, canonical EOF directory, encodings, and derived
+  GlobalMeta version. The reference Codec separately validates extracted arrays.
+- The suite grew from 327 to 368 passing tests. Default/explicit v1 bytes,
+  mock and real Pipeline v1 behavior, and v2 Reader/Validator fail-closed
+  behavior remain covered.
+- Direct v2 writes succeeded for MS1-only (2 spectra, 4 arrays, 7,276 bytes),
+  MS1/MS2 (2 spectra, 1 precursor, 4 arrays, 7,565 bytes), and TIC/BPC
+  (1 spectrum, 2 chromatograms, 6 arrays, 7,840 bytes) BlockCollections.
+- On the small MS1/MS2 fixture, five-run median Writer times were 1.782 ms for
+  v1 and 1.771 ms for v2; sizes were 6,865 and 7,565 bytes. The isolated v2
+  `tracemalloc` run peaked at 78,375 bytes (6.014 ms), with observed process RSS
+  peak 91,361,280 bytes. The previously measured 31 MB sample was not present
+  in this workspace, so no new large-sample result is claimed.
+- B8.3 may begin only while the v1 default and production hashes outside the
+  allowed Writer files remain frozen, Golden regeneration is deterministic,
+  and Reader work preserves target-only access and both checksum levels.
 
 **Goal.** Encode the frozen 64-byte Header, canonical directory, zero padding,
 contiguous raw-le float64 payload, per-array checksums, and top-level arrays

@@ -38,6 +38,33 @@ class ZpWriteError(ZpError):
     pass
 
 
+class ZpV2ArrayWriteError(ZpWriteError):
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        location: str,
+        *,
+        actual: object | None = None,
+        limit: int | None = None,
+    ) -> None:
+        self.code = code
+        self.message = message
+        self.location = location
+        self.actual = actual
+        self.limit = limit
+        details = f"{code} at {location}: {message}"
+        if actual is not None:
+            details += f"; actual={actual}"
+        if limit is not None:
+            details += f"; limit={limit}"
+        super().__init__(details)
+
+
+class ZpV2ResourceLimitError(ZpV2ArrayWriteError):
+    pass
+
+
 class ZpReadError(ZpError):
     pass
 

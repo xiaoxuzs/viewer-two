@@ -9,13 +9,14 @@ from binary_layer.validator import ZpValidator
 from binary_layer.writer import ZpWriter
 
 
-def test_v2_writer_dispatch_precedes_validation_serialization_and_io(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_v2_writer_dispatch_does_not_enter_v1_serialization(
+    pipeline_factory, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    blocks = pipeline_factory(".mzML").blocks
     monkeypatch.setattr(ZpWriter, "_serialize_blocks", lambda *_args: pytest.fail("v1 serialization called"))
-    monkeypatch.setattr(Path, "open", lambda *_args, **_kwargs: pytest.fail("file opened"))
-    monkeypatch.setattr("binary_layer.writer.os.replace", lambda *_args: pytest.fail("os.replace called"))
-
-    with pytest.raises(ZpVersionNotImplementedError):
-        ZpWriter().write(tmp_path / "v2.zp", object(), format_version=2)
+    target = tmp_path / "v2.zp"
+    assert ZpWriter().write(target, blocks, format_version=2) == target
+    assert target.exists()
 
 
 def test_v2_reader_and_validator_do_not_enter_v1_body(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
