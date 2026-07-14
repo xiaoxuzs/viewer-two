@@ -1,0 +1,3660 @@
+{
+  "acceptance_status": "P1-B6 acceptance passed",
+  "array_encodings": {
+    "array_lengths": [
+      4,
+      3624,
+      2329,
+      2048,
+      2048
+    ],
+    "benchmark_version": "p1-b6-v1",
+    "measurements": [
+      {
+        "affected_value_count": 0,
+        "checksum_seconds": 8.219998562708497e-05,
+        "decode_seconds": 0.001863999990746379,
+        "encode_seconds": 0.008544000040274113,
+        "encoded_size": 143895,
+        "encoding": "json_float64",
+        "full_scan_seconds": 0.0019281000131741166,
+        "max_absolute_error": 0.0,
+        "max_relative_error": 0.0,
+        "numeric_roundtrip": true,
+        "single_array_access_seconds": 0.0017544000293128192,
+        "size_ratio_vs_json": 1.0
+      },
+      {
+        "affected_value_count": 0,
+        "checksum_seconds": 6.940000457689166e-05,
+        "decode_seconds": 0.0002848999574780464,
+        "encode_seconds": 0.00014100002590566874,
+        "encoded_size": 80424,
+        "encoding": "binary_float64",
+        "full_scan_seconds": 0.00029779999749735,
+        "max_absolute_error": 0.0,
+        "max_relative_error": 0.0,
+        "numeric_roundtrip": true,
+        "single_array_access_seconds": 6.200000643730164e-05,
+        "size_ratio_vs_json": 0.5589075367455436
+      },
+      {
+        "affected_value_count": 2048,
+        "checksum_seconds": 2.7200032491236925e-05,
+        "decode_seconds": 0.00014600000577047467,
+        "encode_seconds": 0.00012470001820474863,
+        "encoded_size": 40212,
+        "encoding": "binary_float32",
+        "full_scan_seconds": 0.00014620000729337335,
+        "max_absolute_error": 0.00012189100016257726,
+        "max_relative_error": 5.8316783778426606e-08,
+        "numeric_roundtrip": false,
+        "single_array_access_seconds": 3.439997090026736e-05,
+        "size_ratio_vs_json": 0.2794537683727718
+      },
+      {
+        "affected_value_count": 0,
+        "checksum_seconds": 4.2599975131452084e-05,
+        "decode_seconds": 0.0007915999740362167,
+        "encode_seconds": 0.0053595000063069165,
+        "encoded_size": 45795,
+        "encoding": "zlib_float64",
+        "full_scan_seconds": 0.00046499999007210135,
+        "max_absolute_error": 0.0,
+        "max_relative_error": 0.0,
+        "numeric_roundtrip": true,
+        "single_array_access_seconds": 0.00011809996794909239,
+        "size_ratio_vs_json": 0.3182528927342854
+      },
+      {
+        "affected_value_count": 2048,
+        "checksum_seconds": 2.6799971237778664e-05,
+        "decode_seconds": 0.00034609995782375336,
+        "encode_seconds": 0.0014816000475548208,
+        "encoded_size": 35556,
+        "encoding": "zlib_float32",
+        "full_scan_seconds": 0.00035069999285042286,
+        "max_absolute_error": 0.00012189100016257726,
+        "max_relative_error": 5.8316783778426606e-08,
+        "numeric_roundtrip": false,
+        "single_array_access_seconds": 8.329999400302768e-05,
+        "size_ratio_vs_json": 0.24709684144688834
+      }
+    ],
+    "notes": [
+      "payload sizes exclude a future array directory and compare identical numeric values",
+      "zlib measurements use per-array compression",
+      "float32 is a precision candidate only and does not change the v1 float64 contract"
+    ],
+    "source_zp": "E:\\viewer-two\\benchmarks\\generated\\20191118_rvg262_LT_110516-13_1000-1100_Techrep01.repeat2.zp",
+    "total_values": 10053
+  },
+  "baseline": {
+    "production_files_unchanged": true,
+    "production_sha256_after": {
+      "binary_layer/blocks.py": "985f0a88e934a1c0e0dc6d7c93c80534fa1342e8cd7211a833f34a51adfe40c9",
+      "binary_layer/constants.py": "6d0edb96dfd8c984d7e705eba9f65b3dda76bfdeb9e541aaaf8582292a428e51",
+      "binary_layer/inspector.py": "7de6c0fb175240020f9af23a30b76e414a72046774cddd6d5acb5c7fd989dea1",
+      "binary_layer/models.py": "7102853820619c89f99dc99e843b1686681d8b0d8847803e45e0308c633afec8",
+      "binary_layer/mzml_adapter.py": "1ff9bff016627fe5f2d2f93029449630fd0ad8c091a322ac708ba4b8005e82ac",
+      "binary_layer/mzml_admission.py": "776fe5d97d046718985bd8f52e0f58610a4c820ee0a3fef2ba24a97b2b20d88a",
+      "binary_layer/mzml_schema.py": "ae156599d5c31f7a06fec64fe79505602ac59db3a5dc5074f0c67cf33a0d22fa",
+      "binary_layer/plan.py": "e01fc73c9e69f0b9f9df6f0c3d80b376d6e6df6ac2bcc072de8db13eaf662b73",
+      "binary_layer/reader.py": "c6535fc81796e8e7237006d48d6910479e30c0f00aab152aafbbcd6b18b5c70a",
+      "binary_layer/registry.py": "4f4b91e7adc6b2a5ba267692f22cd232f9ce55f6efb854d39eea7f2acb811eb8",
+      "binary_layer/runner.py": "8e4f1175f0ddc4cc62f45d6aaaf1578b31c4713658741a3b7c56116624890b99",
+      "binary_layer/serialization.py": "fadda12fdf96e0fb0a059120cb1ffad3b4e04ee1b6d8f43dc1275829e48535c1",
+      "binary_layer/tools/base.py": "1f7f65ad42848c2f655880e3edfd35afba8ca801101d1a7ae0adb96f935805a6",
+      "binary_layer/tools/common.py": "d6cac268e9129d5cffe688d32546213bd5bdfbe4a40d8e6737dc85d4bc945d2f",
+      "binary_layer/tools/mzml_mock.py": "fdf7855d21936648c2f4d8e4fc1424b56c1a37b64b4f53dce3d4fbd3400e6a12",
+      "binary_layer/tools/raw_mock.py": "bab479295ef42a2c6eaa25d9228d7a3ad256c929cbf72f8b81f224190fe9e521",
+      "binary_layer/tools/real_mzml.py": "f805755afc0234e3f35b1472c68c793ba481f55db5c06a3719d3b4ab4d9f84eb",
+      "binary_layer/validator.py": "84f2a5b0aa5d471b15d449889ea10a289e4162eab4f0f31ca7faeab71f6e8103",
+      "binary_layer/writer.py": "8cf4635db19eda9b1bcc0ecfb85b1232bf8961277e47e7ff4fffa84b6390ed48"
+    },
+    "production_sha256_before": {
+      "binary_layer/blocks.py": "985f0a88e934a1c0e0dc6d7c93c80534fa1342e8cd7211a833f34a51adfe40c9",
+      "binary_layer/constants.py": "6d0edb96dfd8c984d7e705eba9f65b3dda76bfdeb9e541aaaf8582292a428e51",
+      "binary_layer/inspector.py": "7de6c0fb175240020f9af23a30b76e414a72046774cddd6d5acb5c7fd989dea1",
+      "binary_layer/models.py": "7102853820619c89f99dc99e843b1686681d8b0d8847803e45e0308c633afec8",
+      "binary_layer/mzml_adapter.py": "1ff9bff016627fe5f2d2f93029449630fd0ad8c091a322ac708ba4b8005e82ac",
+      "binary_layer/mzml_admission.py": "776fe5d97d046718985bd8f52e0f58610a4c820ee0a3fef2ba24a97b2b20d88a",
+      "binary_layer/mzml_schema.py": "ae156599d5c31f7a06fec64fe79505602ac59db3a5dc5074f0c67cf33a0d22fa",
+      "binary_layer/plan.py": "e01fc73c9e69f0b9f9df6f0c3d80b376d6e6df6ac2bcc072de8db13eaf662b73",
+      "binary_layer/reader.py": "c6535fc81796e8e7237006d48d6910479e30c0f00aab152aafbbcd6b18b5c70a",
+      "binary_layer/registry.py": "4f4b91e7adc6b2a5ba267692f22cd232f9ce55f6efb854d39eea7f2acb811eb8",
+      "binary_layer/runner.py": "8e4f1175f0ddc4cc62f45d6aaaf1578b31c4713658741a3b7c56116624890b99",
+      "binary_layer/serialization.py": "fadda12fdf96e0fb0a059120cb1ffad3b4e04ee1b6d8f43dc1275829e48535c1",
+      "binary_layer/tools/base.py": "1f7f65ad42848c2f655880e3edfd35afba8ca801101d1a7ae0adb96f935805a6",
+      "binary_layer/tools/common.py": "d6cac268e9129d5cffe688d32546213bd5bdfbe4a40d8e6737dc85d4bc945d2f",
+      "binary_layer/tools/mzml_mock.py": "fdf7855d21936648c2f4d8e4fc1424b56c1a37b64b4f53dce3d4fbd3400e6a12",
+      "binary_layer/tools/raw_mock.py": "bab479295ef42a2c6eaa25d9228d7a3ad256c929cbf72f8b81f224190fe9e521",
+      "binary_layer/tools/real_mzml.py": "f805755afc0234e3f35b1472c68c793ba481f55db5c06a3719d3b4ab4d9f84eb",
+      "binary_layer/validator.py": "84f2a5b0aa5d471b15d449889ea10a289e4162eab4f0f31ca7faeab71f6e8103",
+      "binary_layer/writer.py": "8cf4635db19eda9b1bcc0ecfb85b1232bf8961277e47e7ff4fffa84b6390ed48"
+    },
+    "tests_after_at_summary_time": 262,
+    "tests_before": 251
+  },
+  "benchmark_version": "p1-b6-v1",
+  "decision": {
+    "alternative": "ZP v2 per-array chunks with a block-internal subdirectory",
+    "compatibility": "one version-dispatching Reader supporting frozen v1 and explicit v2; offline migration is optional, not a prerequisite",
+    "next_stage": "P1-B7: ZP v2 binary array format design and compatibility plan",
+    "preferred": "ZP v2 single arrays region with an internal array directory and contiguous little-endian float64 payloads",
+    "zp_version": "2 required: physical encoding and read/checksum semantics are incompatible with frozen v1 JSON arrays"
+  },
+  "environment": {
+    "capture_tracemalloc_snapshots": true,
+    "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "cpu_count_logical": 8,
+    "disk_free_bytes": 83276484608,
+    "disk_total_bytes": 209715195904,
+    "disk_type": null,
+    "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+    "instrumented_pipeline_wall_seconds": 160.06105389998993,
+    "physical_memory_bytes": 16885276672,
+    "psutil_version": null,
+    "rss_backend": "Windows GetProcessMemoryInfo",
+    "snapshot_instrumentation_seconds": 97.34875479992479
+  },
+  "extrapolations": [
+    {
+      "estimated_peak_rss_bytes": 3400605084.7164936,
+      "estimated_single_spectrum_read_seconds": 2.5804508083378286,
+      "estimated_validator_seconds": 36.69790981996943,
+      "estimated_writer_seconds": 57.89984021443709,
+      "estimated_zp_size": 138239646.0862803,
+      "evidence_kind": "linear extrapolation, not measured",
+      "peak_count": 5000000
+    },
+    {
+      "estimated_peak_rss_bytes": 6703183650.847752,
+      "estimated_single_spectrum_read_seconds": 5.192650539281731,
+      "estimated_validator_seconds": 72.89490955066422,
+      "estimated_writer_seconds": 115.30281445935833,
+      "estimated_zp_size": 278341059.99609447,
+      "evidence_kind": "linear extrapolation, not measured",
+      "peak_count": 10000000
+    },
+    {
+      "estimated_peak_rss_bytes": 33123812179.89782,
+      "estimated_single_spectrum_read_seconds": 26.090248386832954,
+      "estimated_validator_seconds": 362.4709073962225,
+      "estimated_writer_seconds": 574.5266084187283,
+      "estimated_zp_size": 1399152371.2746081,
+      "evidence_kind": "linear extrapolation, not measured",
+      "peak_count": 50000000
+    },
+    {
+      "estimated_peak_rss_bytes": 66149597841.2104,
+      "estimated_single_spectrum_read_seconds": 52.21224569627198,
+      "estimated_validator_seconds": 724.4409047031703,
+      "estimated_writer_seconds": 1148.5563508679406,
+      "estimated_zp_size": 2800166510.3727503,
+      "evidence_kind": "linear extrapolation, not measured",
+      "peak_count": 100000000
+    }
+  ],
+  "model_limits": [
+    "four fit points cover 32,768 to 2,379,436 peaks and mix synthetic with one real acquisition",
+    "peak count, Spectrum count, array count, decimal shape, compression and metadata are confounded",
+    "linear extrapolation does not prove behavior at 5M-100M peaks, OOM boundaries, filesystem limits or concurrency",
+    "single-spectrum read fit has only two points and R² is not evidence of generality"
+  ],
+  "models": {
+    "rss_peak_by_array_count": {
+      "intercept": -51960221.686747074,
+      "measured_x_max": 4098,
+      "measured_x_min": 258,
+      "r_squared": 0.9893222010057866,
+      "sample_count": 4,
+      "slope": 395738.1526104418
+    },
+    "rss_peak_by_peak_count": {
+      "intercept": 98026518.585235,
+      "measured_x_max": 2379436,
+      "measured_x_min": 32768,
+      "r_squared": 0.9993341743198995,
+      "sample_count": 4,
+      "slope": 660.5157132262517
+    },
+    "single_spectrum_read_by_zp_size": {
+      "intercept": 0.002963856315957303,
+      "measured_x_max": 78103277,
+      "measured_x_min": 796433,
+      "r_squared": 1.0,
+      "sample_count": 2,
+      "slope": 1.8645063301255635e-08
+    },
+    "validator_seconds_by_peak_count": {
+      "intercept": 0.5009100892746492,
+      "measured_x_max": 2379436,
+      "measured_x_min": 32768,
+      "r_squared": 0.9702777337648301,
+      "sample_count": 4,
+      "slope": 7.239399946138957e-06
+    },
+    "writer_seconds_by_array_count": {
+      "intercept": -2.415179100701792,
+      "measured_x_max": 4098,
+      "measured_x_min": 258,
+      "r_squared": 0.9797094984863027,
+      "sample_count": 4,
+      "slope": 0.007007155970759377
+    },
+    "writer_seconds_by_peak_count": {
+      "intercept": 0.4968659695158433,
+      "measured_x_max": 2379436,
+      "measured_x_min": 32768,
+      "r_squared": 0.9535973876127275,
+      "sample_count": 4,
+      "slope": 1.1480594848984249e-05
+    },
+    "zp_size_by_peak_count": {
+      "intercept": -1861767.8235339224,
+      "measured_x_max": 2379436,
+      "measured_x_min": 32768,
+      "r_squared": 0.8950980121719443,
+      "sample_count": 4,
+      "slope": 28.02028278196284
+    }
+  },
+  "reader_real": {
+    "benchmark_version": "p1-b6-v1",
+    "cold_process_per_operation": true,
+    "fixed_random_seed": 1729,
+    "measurements": [
+      {
+        "failure": null,
+        "notes": "fixed 24-byte header only",
+        "operation": "read_header",
+        "rss_end_bytes": 89534464,
+        "rss_peak_bytes": 89530368,
+        "rss_start_bytes": 89473024,
+        "seconds": 0.00016060000052675605,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89546752
+      },
+      {
+        "failure": null,
+        "notes": "header plus trailing directory JSON",
+        "operation": "read_directory",
+        "rss_end_bytes": 89292800,
+        "rss_peak_bytes": 89292800,
+        "rss_start_bytes": 89219072,
+        "seconds": 0.000304599991068244,
+        "value_count": 9,
+        "windows_peak_working_set_bytes": 89313280
+      },
+      {
+        "failure": null,
+        "notes": "directory plus global_meta JSON",
+        "operation": "read_global_meta",
+        "rss_end_bytes": 89755648,
+        "rss_peak_bytes": 89755648,
+        "rss_start_bytes": 89640960,
+        "seconds": 0.0005313999718055129,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89776128
+      },
+      {
+        "failure": null,
+        "notes": "directory plus complete core_spectra JSON",
+        "operation": "read_spectra",
+        "rss_end_bytes": 91111424,
+        "rss_peak_bytes": 91111424,
+        "rss_start_bytes": 89153536,
+        "seconds": 0.008595099963713437,
+        "value_count": 2048,
+        "windows_peak_working_set_bytes": 92090368
+      },
+      {
+        "failure": null,
+        "notes": "directory plus complete arrays JSON",
+        "operation": "read_arrays",
+        "rss_end_bytes": 93761536,
+        "rss_peak_bytes": 93761536,
+        "rss_start_bytes": 89178112,
+        "seconds": 2.0625044000335038,
+        "value_count": 4098,
+        "windows_peak_working_set_bytes": 434446336
+      },
+      {
+        "failure": null,
+        "notes": "complete core_spectra JSON then linear spectrum_id search",
+        "operation": "read_spectrum_first",
+        "rss_end_bytes": 92610560,
+        "rss_peak_bytes": 92610560,
+        "rss_start_bytes": 89157632,
+        "seconds": 0.016812299960292876,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 92631040
+      },
+      {
+        "failure": null,
+        "notes": "complete core_spectra JSON then linear spectrum_id search",
+        "operation": "read_spectrum_middle",
+        "rss_end_bytes": 92127232,
+        "rss_peak_bytes": 92127232,
+        "rss_start_bytes": 89231360,
+        "seconds": 0.016449699993245304,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 93163520
+      },
+      {
+        "failure": null,
+        "notes": "complete core_spectra JSON then linear spectrum_id search",
+        "operation": "read_spectrum_last",
+        "rss_end_bytes": 92221440,
+        "rss_peak_bytes": 92155904,
+        "rss_start_bytes": 89395200,
+        "seconds": 0.018855299975257367,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 93241344
+      },
+      {
+        "failure": null,
+        "notes": "full spectra parse, full arrays parse, and a new array_id map",
+        "operation": "read_spectrum_arrays_first",
+        "rss_end_bytes": 93839360,
+        "rss_peak_bytes": 285597696,
+        "rss_start_bytes": 89358336,
+        "seconds": 1.5191864999942482,
+        "value_count": 212,
+        "windows_peak_working_set_bytes": 434593792
+      },
+      {
+        "failure": null,
+        "notes": "full spectra parse, full arrays parse, and a new array_id map",
+        "operation": "read_spectrum_arrays_middle",
+        "rss_end_bytes": 95662080,
+        "rss_peak_bytes": 285487104,
+        "rss_start_bytes": 89292800,
+        "seconds": 1.4592044000164606,
+        "value_count": 4658,
+        "windows_peak_working_set_bytes": 434548736
+      },
+      {
+        "failure": null,
+        "notes": "full spectra parse, full arrays parse, and a new array_id map",
+        "operation": "read_spectrum_arrays_last",
+        "rss_end_bytes": 94633984,
+        "rss_peak_bytes": 285372416,
+        "rss_start_bytes": 89337856,
+        "seconds": 1.4798328999895602,
+        "value_count": 74,
+        "windows_peak_working_set_bytes": 434421760
+      },
+      {
+        "failure": null,
+        "notes": "directory plus complete core_chromatograms JSON",
+        "operation": "read_chromatograms",
+        "rss_end_bytes": 89174016,
+        "rss_peak_bytes": 89174016,
+        "rss_start_bytes": 89104384,
+        "seconds": 0.00034610001603141427,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89194496
+      },
+      {
+        "failure": null,
+        "notes": "complete chromatogram block, complete arrays block, and a new array_id map",
+        "operation": "read_chromatogram_arrays",
+        "rss_end_bytes": 92512256,
+        "rss_peak_bytes": 434176000,
+        "rss_start_bytes": 89055232,
+        "seconds": 1.4249777999939397,
+        "value_count": 4096,
+        "windows_peak_working_set_bytes": 434176000
+      },
+      {
+        "failure": null,
+        "notes": "each call reparses complete spectra and arrays blocks",
+        "operation": "sequential_10_spectrum_arrays",
+        "rss_end_bytes": 115138560,
+        "rss_peak_bytes": 285696000,
+        "rss_start_bytes": 89214976,
+        "seconds": 14.976295200001914,
+        "value_count": 10,
+        "windows_peak_working_set_bytes": 434798592
+      },
+      {
+        "failure": null,
+        "notes": "fixed seed 1729; each call reparses complete spectra and arrays blocks",
+        "operation": "random_100_spectrum_arrays",
+        "rss_end_bytes": 209301504,
+        "rss_peak_bytes": 435650560,
+        "rss_start_bytes": 89280512,
+        "seconds": 160.93976870004553,
+        "value_count": 100,
+        "windows_peak_working_set_bytes": 435658752
+      },
+      {
+        "failure": null,
+        "notes": "no Reader cache; 100 complete spectra and arrays block parses",
+        "operation": "repeat_100_same_spectrum_arrays",
+        "rss_end_bytes": 214740992,
+        "rss_peak_bytes": 435630080,
+        "rss_start_bytes": 89231360,
+        "seconds": 154.50074489996769,
+        "value_count": 100,
+        "windows_peak_working_set_bytes": 435695616
+      }
+    ],
+    "reader_semantics": {
+      "cache": "none",
+      "disk_random_access": false,
+      "read_spectrum": "reads and parses complete core_spectra block, then linear search",
+      "read_spectrum_arrays": "calls read_spectrum, then reads/parses complete arrays block and rebuilds array_id dict",
+      "repeat_100": "performs 100 complete spectra-block and arrays-block parses"
+    },
+    "zp_path": "E:\\viewer-two\\benchmarks\\generated\\20191118_rvg262_LT_110516-13_1000-1100_Techrep01.repeat2.zp",
+    "zp_size": 78103277
+  },
+  "reader_s1": {
+    "benchmark_version": "p1-b6-v1",
+    "cold_process_per_operation": true,
+    "fixed_random_seed": 1729,
+    "measurements": [
+      {
+        "failure": null,
+        "notes": "fixed 24-byte header only",
+        "operation": "read_header",
+        "rss_end_bytes": 89436160,
+        "rss_peak_bytes": 89436160,
+        "rss_start_bytes": 89350144,
+        "seconds": 0.00024799996754154563,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89452544
+      },
+      {
+        "failure": null,
+        "notes": "header plus trailing directory JSON",
+        "operation": "read_directory",
+        "rss_end_bytes": 89493504,
+        "rss_peak_bytes": 89493504,
+        "rss_start_bytes": 89423872,
+        "seconds": 0.0003334000357426703,
+        "value_count": 9,
+        "windows_peak_working_set_bytes": 89513984
+      },
+      {
+        "failure": null,
+        "notes": "directory plus global_meta JSON",
+        "operation": "read_global_meta",
+        "rss_end_bytes": 89374720,
+        "rss_peak_bytes": 89374720,
+        "rss_start_bytes": 89305088,
+        "seconds": 0.00039440003456547856,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89395200
+      },
+      {
+        "failure": null,
+        "notes": "directory plus complete core_spectra JSON",
+        "operation": "read_spectra",
+        "rss_end_bytes": 89280512,
+        "rss_peak_bytes": 89280512,
+        "rss_start_bytes": 89165824,
+        "seconds": 0.0007856999873183668,
+        "value_count": 128,
+        "windows_peak_working_set_bytes": 89300992
+      },
+      {
+        "failure": null,
+        "notes": "directory plus complete arrays JSON",
+        "operation": "read_arrays",
+        "rss_end_bytes": 91631616,
+        "rss_peak_bytes": 91631616,
+        "rss_start_bytes": 89481216,
+        "seconds": 0.017265799979213625,
+        "value_count": 258,
+        "windows_peak_working_set_bytes": 93450240
+      },
+      {
+        "failure": null,
+        "notes": "complete core_spectra JSON then linear spectrum_id search",
+        "operation": "read_spectrum_first",
+        "rss_end_bytes": 89300992,
+        "rss_peak_bytes": 89300992,
+        "rss_start_bytes": 89161728,
+        "seconds": 0.001229099987540394,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89321472
+      },
+      {
+        "failure": null,
+        "notes": "complete core_spectra JSON then linear spectrum_id search",
+        "operation": "read_spectrum_middle",
+        "rss_end_bytes": 89657344,
+        "rss_peak_bytes": 89657344,
+        "rss_start_bytes": 89518080,
+        "seconds": 0.001263700018171221,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89657344
+      },
+      {
+        "failure": null,
+        "notes": "complete core_spectra JSON then linear spectrum_id search",
+        "operation": "read_spectrum_last",
+        "rss_end_bytes": 89370624,
+        "rss_peak_bytes": 89370624,
+        "rss_start_bytes": 89161728,
+        "seconds": 0.0012450000504031777,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89391104
+      },
+      {
+        "failure": null,
+        "notes": "full spectra parse, full arrays parse, and a new array_id map",
+        "operation": "read_spectrum_arrays_first",
+        "rss_end_bytes": 93327360,
+        "rss_peak_bytes": 93327360,
+        "rss_start_bytes": 89223168,
+        "seconds": 0.015701199998147786,
+        "value_count": 512,
+        "windows_peak_working_set_bytes": 93347840
+      },
+      {
+        "failure": null,
+        "notes": "full spectra parse, full arrays parse, and a new array_id map",
+        "operation": "read_spectrum_arrays_middle",
+        "rss_end_bytes": 91770880,
+        "rss_peak_bytes": 91770880,
+        "rss_start_bytes": 89190400,
+        "seconds": 0.01781340001616627,
+        "value_count": 512,
+        "windows_peak_working_set_bytes": 93097984
+      },
+      {
+        "failure": null,
+        "notes": "full spectra parse, full arrays parse, and a new array_id map",
+        "operation": "read_spectrum_arrays_last",
+        "rss_end_bytes": 91983872,
+        "rss_peak_bytes": 91983872,
+        "rss_start_bytes": 89337856,
+        "seconds": 0.016685299982782453,
+        "value_count": 512,
+        "windows_peak_working_set_bytes": 93306880
+      },
+      {
+        "failure": null,
+        "notes": "directory plus complete core_chromatograms JSON",
+        "operation": "read_chromatograms",
+        "rss_end_bytes": 89288704,
+        "rss_peak_bytes": 89288704,
+        "rss_start_bytes": 89219072,
+        "seconds": 0.00040060002356767654,
+        "value_count": 1,
+        "windows_peak_working_set_bytes": 89309184
+      },
+      {
+        "failure": null,
+        "notes": "complete chromatogram block, complete arrays block, and a new array_id map",
+        "operation": "read_chromatogram_arrays",
+        "rss_end_bytes": 92147712,
+        "rss_peak_bytes": 92147712,
+        "rss_start_bytes": 89427968,
+        "seconds": 0.014466599968727678,
+        "value_count": 256,
+        "windows_peak_working_set_bytes": 93470720
+      },
+      {
+        "failure": null,
+        "notes": "each call reparses complete spectra and arrays blocks",
+        "operation": "sequential_10_spectrum_arrays",
+        "rss_end_bytes": 92381184,
+        "rss_peak_bytes": 92381184,
+        "rss_start_bytes": 89067520,
+        "seconds": 0.16859570000087842,
+        "value_count": 10,
+        "windows_peak_working_set_bytes": 93646848
+      },
+      {
+        "failure": null,
+        "notes": "fixed seed 1729; each call reparses complete spectra and arrays blocks",
+        "operation": "random_100_spectrum_arrays",
+        "rss_end_bytes": 94310400,
+        "rss_peak_bytes": 94310400,
+        "rss_start_bytes": 89260032,
+        "seconds": 1.6383371999836527,
+        "value_count": 100,
+        "windows_peak_working_set_bytes": 94330880
+      },
+      {
+        "failure": null,
+        "notes": "no Reader cache; 100 complete spectra and arrays block parses",
+        "operation": "repeat_100_same_spectrum_arrays",
+        "rss_end_bytes": 92676096,
+        "rss_peak_bytes": 93945856,
+        "rss_start_bytes": 89292800,
+        "seconds": 2.0468640999752097,
+        "value_count": 100,
+        "windows_peak_working_set_bytes": 93945856
+      }
+    ],
+    "reader_semantics": {
+      "cache": "none",
+      "disk_random_access": false,
+      "read_spectrum": "reads and parses complete core_spectra block, then linear search",
+      "read_spectrum_arrays": "calls read_spectrum, then reads/parses complete arrays block and rebuilds array_id dict",
+      "repeat_100": "performs 100 complete spectra-block and arrays-block parses"
+    },
+    "zp_path": "E:\\viewer-two\\benchmarks\\generated\\S1.S1_reader.zp",
+    "zp_size": 796433
+  },
+  "real_array_numeric_decimal_bytes_by_type": {
+    "intensity": 31261858,
+    "mz": 42953696,
+    "time": 30266
+  },
+  "real_array_stats": {
+    "array_count": 4098,
+    "array_id_key_bytes": 45078,
+    "array_id_value_bytes": 96313,
+    "array_type_key_bytes": 53274,
+    "average_bytes_per_array": 18206.5775988287,
+    "average_bytes_per_numeric_value": 15.664718931556962,
+    "dtype_key_bytes": 32784,
+    "intensity_values": 2381484,
+    "json_bytes": 74610555,
+    "largest_array_length": 3624,
+    "median_array_length": 717.0,
+    "mz_values": 2379436,
+    "numeric_decimal_bytes": 74245820,
+    "record_structure_and_metadata_bytes": 360636,
+    "smallest_array_length": 4,
+    "time_values": 2048,
+    "total_numeric_values": 4762968,
+    "values_key_bytes": 36882
+  },
+  "real_block_stats": [
+    {
+      "block_name": "global_meta",
+      "checksum_seconds": 1.71000137925148e-05,
+      "fraction_of_file": 6.23533376198799e-06,
+      "json_decode_seconds": 1.3899989426136017e-05,
+      "length": 487,
+      "offset": 24,
+      "record_count": 1
+    },
+    {
+      "block_name": "string_pool",
+      "checksum_seconds": 7.509998977184296e-05,
+      "fraction_of_file": 0.0012466954491550976,
+      "json_decode_seconds": 0.00024159997701644897,
+      "length": 97371,
+      "offset": 511,
+      "record_count": 1
+    },
+    {
+      "block_name": "core_runs",
+      "checksum_seconds": 3.00002284348011e-06,
+      "fraction_of_file": 4.4172282297450845e-06,
+      "json_decode_seconds": 2.4600012693554163e-05,
+      "length": 345,
+      "offset": 97882,
+      "record_count": 1
+    },
+    {
+      "block_name": "core_spectra",
+      "checksum_seconds": 0.0005068000173196197,
+      "fraction_of_file": 0.00861226347775395,
+      "json_decode_seconds": 0.00440029997844249,
+      "length": 672646,
+      "offset": 98227,
+      "record_count": 2048
+    },
+    {
+      "block_name": "core_precursors",
+      "checksum_seconds": 0.0001702999579720199,
+      "fraction_of_file": 0.0019895964160377036,
+      "json_decode_seconds": 0.0018158000311814249,
+      "length": 155394,
+      "offset": 770873,
+      "record_count": 1051
+    },
+    {
+      "block_name": "core_chromatograms",
+      "checksum_seconds": 7.499998901039362e-06,
+      "fraction_of_file": 3.1880864614681915e-06,
+      "json_decode_seconds": 7.160002132877707e-05,
+      "length": 249,
+      "offset": 926267,
+      "record_count": 1
+    },
+    {
+      "block_name": "arrays",
+      "checksum_seconds": 0.059281199995893985,
+      "fraction_of_file": 0.9552807240085458,
+      "json_decode_seconds": 1.4696011999621987,
+      "length": 74610555,
+      "offset": 926516,
+      "record_count": 4098
+    },
+    {
+      "block_name": "indexes",
+      "checksum_seconds": 0.00025459995958954096,
+      "fraction_of_file": 0.0041341159091186405,
+      "json_decode_seconds": 0.051310000009834766,
+      "length": 322888,
+      "offset": 75537071,
+      "record_count": 1
+    },
+    {
+      "block_name": "extensions",
+      "checksum_seconds": 0.0016327999765053391,
+      "fraction_of_file": 0.02870440378577201,
+      "json_decode_seconds": 0.018055799999274313,
+      "length": 2241908,
+      "offset": 75859959,
+      "record_count": 2
+    }
+  ],
+  "real_runs": [
+    {
+      "admission_seconds": 0.03364690003218129,
+      "array_count": 4098,
+      "array_stats": {
+        "array_count": 4098,
+        "array_id_key_bytes": 45078,
+        "array_id_value_bytes": 96313,
+        "array_type_key_bytes": 53274,
+        "average_bytes_per_array": 18206.5775988287,
+        "average_bytes_per_numeric_value": 15.664718931556962,
+        "dtype_key_bytes": 32784,
+        "intensity_values": 2381484,
+        "json_bytes": 74610555,
+        "largest_array_length": 3624,
+        "median_array_length": 717.0,
+        "mz_values": 2379436,
+        "numeric_decimal_bytes": 74245820,
+        "record_structure_and_metadata_bytes": 360636,
+        "smallest_array_length": 4,
+        "time_values": 2048,
+        "total_numeric_values": 4762968,
+        "values_key_bytes": 36882
+      },
+      "arrays_block_size": 74610555,
+      "arrays_fraction_of_zp": 0.9552807240085458,
+      "benchmark_version": "p1-b6-v1",
+      "block_build_seconds": 0.38006570003926754,
+      "block_stats": [
+        {
+          "block_name": "global_meta",
+          "checksum_seconds": 1.71000137925148e-05,
+          "fraction_of_file": 6.23533376198799e-06,
+          "json_decode_seconds": 1.3899989426136017e-05,
+          "length": 487,
+          "offset": 24,
+          "record_count": 1
+        },
+        {
+          "block_name": "string_pool",
+          "checksum_seconds": 7.509998977184296e-05,
+          "fraction_of_file": 0.0012466954491550976,
+          "json_decode_seconds": 0.00024159997701644897,
+          "length": 97371,
+          "offset": 511,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_runs",
+          "checksum_seconds": 3.00002284348011e-06,
+          "fraction_of_file": 4.4172282297450845e-06,
+          "json_decode_seconds": 2.4600012693554163e-05,
+          "length": 345,
+          "offset": 97882,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_spectra",
+          "checksum_seconds": 0.0005068000173196197,
+          "fraction_of_file": 0.00861226347775395,
+          "json_decode_seconds": 0.00440029997844249,
+          "length": 672646,
+          "offset": 98227,
+          "record_count": 2048
+        },
+        {
+          "block_name": "core_precursors",
+          "checksum_seconds": 0.0001702999579720199,
+          "fraction_of_file": 0.0019895964160377036,
+          "json_decode_seconds": 0.0018158000311814249,
+          "length": 155394,
+          "offset": 770873,
+          "record_count": 1051
+        },
+        {
+          "block_name": "core_chromatograms",
+          "checksum_seconds": 7.499998901039362e-06,
+          "fraction_of_file": 3.1880864614681915e-06,
+          "json_decode_seconds": 7.160002132877707e-05,
+          "length": 249,
+          "offset": 926267,
+          "record_count": 1
+        },
+        {
+          "block_name": "arrays",
+          "checksum_seconds": 0.059281199995893985,
+          "fraction_of_file": 0.9552807240085458,
+          "json_decode_seconds": 1.4696011999621987,
+          "length": 74610555,
+          "offset": 926516,
+          "record_count": 4098
+        },
+        {
+          "block_name": "indexes",
+          "checksum_seconds": 0.00025459995958954096,
+          "fraction_of_file": 0.0041341159091186405,
+          "json_decode_seconds": 0.051310000009834766,
+          "length": 322888,
+          "offset": 75537071,
+          "record_count": 1
+        },
+        {
+          "block_name": "extensions",
+          "checksum_seconds": 0.0016327999765053391,
+          "fraction_of_file": 0.02870440378577201,
+          "json_decode_seconds": 0.018055799999274313,
+          "length": 2241908,
+          "offset": 75859959,
+          "record_count": 2
+        }
+      ],
+      "bytes_per_peak": 32.824281468381585,
+      "candidate_block_seconds": 0.38006570003926754,
+      "chromatogram_count": 1,
+      "cpu_count": 8,
+      "environment": {
+        "capture_tracemalloc_snapshots": true,
+        "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+        "cpu_count_logical": 8,
+        "disk_free_bytes": 83276484608,
+        "disk_total_bytes": 209715195904,
+        "disk_type": null,
+        "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+        "instrumented_pipeline_wall_seconds": 160.06105389998993,
+        "physical_memory_bytes": 16885276672,
+        "psutil_version": null,
+        "rss_backend": "Windows GetProcessMemoryInfo",
+        "snapshot_instrumentation_seconds": 97.34875479992479
+      },
+      "failure_code": null,
+      "failure_message": null,
+      "file_validate_seconds": 0.005709799996111542,
+      "hash_seconds": 0.03482100000837818,
+      "index_seconds": 0.010726200009230524,
+      "indexed": true,
+      "input_kind": "real",
+      "input_path": "E:\\viewer-TD\\test\\xzx_PXD045330\\20191118_rvg262_LT_110516-13_1000-1100_Techrep01.mzML",
+      "input_size": 31408514,
+      "json_serialize_seconds": 18.8719473000383,
+      "metric_unavailable_reasons": {},
+      "ms1_count": 997,
+      "ms2_count": 1051,
+      "parse_seconds": 14.484971099998802,
+      "peak_count": 2379436,
+      "physical_memory": 16885276672,
+      "pipeline_seconds": 62.71229910006514,
+      "platform": "Windows-11-10.0.26200-SP0",
+      "precursor_count": 1051,
+      "pyteomics_version": "4.7.5",
+      "python_version": "3.12.7",
+      "reader_seconds": 17.383519599970896,
+      "rss_end_bytes": 1035198464,
+      "rss_peak_bytes": 1720324096,
+      "rss_start_bytes": 90464256,
+      "run_label": "cold",
+      "size_ratio": 2.4866912519325175,
+      "spectrum_count": 2048,
+      "string_pool_seconds": 0.001094500010367483,
+      "temporary_file_peak_bytes": 78103277,
+      "timestamp": "2026-07-14T03:04:31.276212Z",
+      "tracemalloc_current_bytes": 167733242,
+      "tracemalloc_peak_bytes": 473501014,
+      "tracemalloc_snapshots": [
+        {
+          "current_bytes": 0,
+          "name": "start",
+          "peak_bytes": 0,
+          "top_allocations": []
+        },
+        {
+          "current_bytes": 158924680,
+          "name": "after_parse",
+          "peak_bytes": 161882086,
+          "top_allocations": [
+            {
+              "count": 4767066,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 392,
+              "size_bytes": 152578896
+            },
+            {
+              "count": 5033,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 21,
+              "size_bytes": 885948
+            },
+            {
+              "count": 2854,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 45,
+              "size_bytes": 626997
+            },
+            {
+              "count": 4096,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 823,
+              "size_bytes": 609816
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 349,
+              "size_bytes": 589824
+            },
+            {
+              "count": 22690,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 891,
+              "size_bytes": 544560
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 148,
+              "size_bytes": 507904
+            },
+            {
+              "count": 3101,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 419,
+              "size_bytes": 264897
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 379,
+              "size_bytes": 212535
+            },
+            {
+              "count": 4099,
+              "file": "E:\\python\\Lib\\site-packages\\numpy\\_core\\_dtype.py",
+              "line": 360,
+              "size_bytes": 196750
+            },
+            {
+              "count": 2049,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 902,
+              "size_bytes": 175065
+            },
+            {
+              "count": 3099,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 359,
+              "size_bytes": 151959
+            },
+            {
+              "count": 1051,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 575,
+              "size_bytes": 151344
+            },
+            {
+              "count": 2052,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+              "line": 672,
+              "size_bytes": 150304
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 824,
+              "size_bytes": 114688
+            },
+            {
+              "count": 1994,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 656,
+              "size_bytes": 111664
+            },
+            {
+              "count": 2102,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 561,
+              "size_bytes": 109880
+            },
+            {
+              "count": 1051,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 552,
+              "size_bytes": 85131
+            },
+            {
+              "count": 2049,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 423,
+              "size_bytes": 65576
+            },
+            {
+              "count": 2049,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 848,
+              "size_bytes": 65568
+            }
+          ]
+        },
+        {
+          "current_bytes": 201287148,
+          "name": "after_candidate_blocks",
+          "peak_bytes": 201306562,
+          "top_allocations": [
+            {
+              "count": 4767066,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 392,
+              "size_bytes": 152578896
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 136,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 135,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 6159,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 77,
+              "size_bytes": 1891504
+            },
+            {
+              "count": 7490,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 21,
+              "size_bytes": 1312700
+            },
+            {
+              "count": 4272,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 45,
+              "size_bytes": 944627
+            },
+            {
+              "count": 4096,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 823,
+              "size_bytes": 609816
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 349,
+              "size_bytes": 589824
+            },
+            {
+              "count": 22690,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 891,
+              "size_bytes": 544560
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 148,
+              "size_bytes": 507904
+            },
+            {
+              "count": 3100,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 419,
+              "size_bytes": 264833
+            },
+            {
+              "count": 2049,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 121,
+              "size_bytes": 213104
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 379,
+              "size_bytes": 212535
+            },
+            {
+              "count": 4099,
+              "file": "E:\\python\\Lib\\site-packages\\numpy\\_core\\_dtype.py",
+              "line": 360,
+              "size_bytes": 196750
+            },
+            {
+              "count": 3123,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 81,
+              "size_bytes": 185728
+            },
+            {
+              "count": 2049,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 902,
+              "size_bytes": 175065
+            },
+            {
+              "count": 3099,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 359,
+              "size_bytes": 151959
+            },
+            {
+              "count": 1051,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 575,
+              "size_bytes": 151344
+            },
+            {
+              "count": 2052,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+              "line": 672,
+              "size_bytes": 150304
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 82,
+              "size_bytes": 135168
+            }
+          ]
+        },
+        {
+          "current_bytes": 241554417,
+          "name": "after_writer_serialization",
+          "peak_bytes": 313615736,
+          "top_allocations": [
+            {
+              "count": 4761405,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 392,
+              "size_bytes": 114322240
+            },
+            {
+              "count": 9,
+              "file": "E:\\viewer-two\\binary_layer\\serialization.py",
+              "line": 40,
+              "size_bytes": 78102140
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 136,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 135,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 11483,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 21,
+              "size_bytes": 2016424
+            },
+            {
+              "count": 6159,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 77,
+              "size_bytes": 1891504
+            },
+            {
+              "count": 6562,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 45,
+              "size_bytes": 1429862
+            },
+            {
+              "count": 22690,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 891,
+              "size_bytes": 544560
+            },
+            {
+              "count": 4097,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 87,
+              "size_bytes": 395008
+            },
+            {
+              "count": 4096,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 83,
+              "size_bytes": 394888
+            },
+            {
+              "count": 4018,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 79,
+              "size_bytes": 385584
+            },
+            {
+              "count": 3039,
+              "file": "E:\\python\\Lib\\dataclasses.py",
+              "line": 1293,
+              "size_bytes": 306128
+            },
+            {
+              "count": 3100,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 419,
+              "size_bytes": 264833
+            },
+            {
+              "count": 2049,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 121,
+              "size_bytes": 213104
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 379,
+              "size_bytes": 212535
+            },
+            {
+              "count": 3123,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 81,
+              "size_bytes": 185728
+            },
+            {
+              "count": 2049,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 902,
+              "size_bytes": 175065
+            },
+            {
+              "count": 3099,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 359,
+              "size_bytes": 151959
+            },
+            {
+              "count": 2052,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+              "line": 672,
+              "size_bytes": 150304
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 82,
+              "size_bytes": 135168
+            }
+          ]
+        },
+        {
+          "current_bytes": 164554220,
+          "name": "after_write",
+          "peak_bytes": 313615736,
+          "top_allocations": [
+            {
+              "count": 4761403,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 392,
+              "size_bytes": 114322192
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 136,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 135,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 14619,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 21,
+              "size_bytes": 2562120
+            },
+            {
+              "count": 6159,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 77,
+              "size_bytes": 1891504
+            },
+            {
+              "count": 8345,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 45,
+              "size_bytes": 1809206
+            },
+            {
+              "count": 22690,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 891,
+              "size_bytes": 544560
+            },
+            {
+              "count": 4097,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 87,
+              "size_bytes": 395008
+            },
+            {
+              "count": 4096,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 83,
+              "size_bytes": 394888
+            },
+            {
+              "count": 4018,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 79,
+              "size_bytes": 385584
+            },
+            {
+              "count": 3037,
+              "file": "E:\\python\\Lib\\dataclasses.py",
+              "line": 1293,
+              "size_bytes": 306000
+            },
+            {
+              "count": 3100,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 419,
+              "size_bytes": 264833
+            },
+            {
+              "count": 2049,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 121,
+              "size_bytes": 213104
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 379,
+              "size_bytes": 212535
+            },
+            {
+              "count": 3123,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 81,
+              "size_bytes": 185728
+            },
+            {
+              "count": 2049,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 902,
+              "size_bytes": 175065
+            },
+            {
+              "count": 3099,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 359,
+              "size_bytes": 151959
+            },
+            {
+              "count": 2052,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+              "line": 672,
+              "size_bytes": 150304
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 82,
+              "size_bytes": 135168
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 81,
+              "size_bytes": 120832
+            }
+          ]
+        },
+        {
+          "current_bytes": 165657767,
+          "name": "after_validator",
+          "peak_bytes": 473501014,
+          "top_allocations": [
+            {
+              "count": 4761315,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 392,
+              "size_bytes": 114320080
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 136,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 135,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 18034,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 21,
+              "size_bytes": 3176868
+            },
+            {
+              "count": 10285,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 45,
+              "size_bytes": 2260905
+            },
+            {
+              "count": 6159,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 77,
+              "size_bytes": 1891504
+            },
+            {
+              "count": 22690,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 891,
+              "size_bytes": 544560
+            },
+            {
+              "count": 4097,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 87,
+              "size_bytes": 395008
+            },
+            {
+              "count": 4096,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 83,
+              "size_bytes": 394888
+            },
+            {
+              "count": 4018,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 79,
+              "size_bytes": 385584
+            },
+            {
+              "count": 3037,
+              "file": "E:\\python\\Lib\\dataclasses.py",
+              "line": 1293,
+              "size_bytes": 306000
+            },
+            {
+              "count": 3100,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 419,
+              "size_bytes": 264833
+            },
+            {
+              "count": 2049,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 121,
+              "size_bytes": 213104
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 379,
+              "size_bytes": 212535
+            },
+            {
+              "count": 3123,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 81,
+              "size_bytes": 185728
+            },
+            {
+              "count": 2049,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 902,
+              "size_bytes": 175065
+            },
+            {
+              "count": 3099,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 359,
+              "size_bytes": 151959
+            },
+            {
+              "count": 2052,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+              "line": 672,
+              "size_bytes": 150304
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 82,
+              "size_bytes": 135168
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 81,
+              "size_bytes": 120832
+            }
+          ]
+        },
+        {
+          "current_bytes": 166752591,
+          "name": "after_reader",
+          "peak_bytes": 473501014,
+          "top_allocations": [
+            {
+              "count": 4760920,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 392,
+              "size_bytes": 114262080
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 136,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 6144,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 135,
+              "size_bytes": 19289328
+            },
+            {
+              "count": 20657,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 21,
+              "size_bytes": 3635024
+            },
+            {
+              "count": 11739,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 45,
+              "size_bytes": 2575662
+            },
+            {
+              "count": 6159,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 77,
+              "size_bytes": 1891504
+            },
+            {
+              "count": 15362,
+              "file": "E:\\python\\Lib\\json\\decoder.py",
+              "line": 353,
+              "size_bytes": 919211
+            },
+            {
+              "count": 22690,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 891,
+              "size_bytes": 544560
+            },
+            {
+              "count": 4097,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 87,
+              "size_bytes": 395008
+            },
+            {
+              "count": 4096,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 83,
+              "size_bytes": 394888
+            },
+            {
+              "count": 4018,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+              "line": 79,
+              "size_bytes": 385584
+            },
+            {
+              "count": 3100,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 419,
+              "size_bytes": 264833
+            },
+            {
+              "count": 2051,
+              "file": "E:\\viewer-two\\binary_layer\\reader.py",
+              "line": 100,
+              "size_bytes": 231336
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 121,
+              "size_bytes": 212992
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+              "line": 379,
+              "size_bytes": 212535
+            },
+            {
+              "count": 3123,
+              "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+              "line": 81,
+              "size_bytes": 185728
+            },
+            {
+              "count": 3099,
+              "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+              "line": 359,
+              "size_bytes": 151959
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 82,
+              "size_bytes": 135168
+            },
+            {
+              "count": 1795,
+              "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+              "line": 22,
+              "size_bytes": 129256
+            },
+            {
+              "count": 2048,
+              "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+              "line": 81,
+              "size_bytes": 120832
+            }
+          ]
+        }
+      ],
+      "valid": true,
+      "validator_checksum_seconds": 0.06194839993258938,
+      "validator_json_seconds": 8.189295699994545,
+      "validator_relationship_seconds": 0.3146487000049092,
+      "validator_seconds": 10.930432299966924,
+      "windows_peak_working_set_bytes": 1997860864,
+      "writer_disk_seconds": 0.15226709994021803,
+      "writer_seconds": 19.02421439997852,
+      "zp_size": 78103277
+    },
+    {
+      "admission_seconds": 0.042574600025545806,
+      "array_count": 4098,
+      "array_stats": {
+        "array_count": 4098,
+        "array_id_key_bytes": 45078,
+        "array_id_value_bytes": 96313,
+        "array_type_key_bytes": 53274,
+        "average_bytes_per_array": 18206.5775988287,
+        "average_bytes_per_numeric_value": 15.664718931556962,
+        "dtype_key_bytes": 32784,
+        "intensity_values": 2381484,
+        "json_bytes": 74610555,
+        "largest_array_length": 3624,
+        "median_array_length": 717.0,
+        "mz_values": 2379436,
+        "numeric_decimal_bytes": 74245820,
+        "record_structure_and_metadata_bytes": 360636,
+        "smallest_array_length": 4,
+        "time_values": 2048,
+        "total_numeric_values": 4762968,
+        "values_key_bytes": 36882
+      },
+      "arrays_block_size": 74610555,
+      "arrays_fraction_of_zp": 0.9552807240085458,
+      "benchmark_version": "p1-b6-v1",
+      "block_build_seconds": 0.43895009998232126,
+      "block_stats": [
+        {
+          "block_name": "global_meta",
+          "checksum_seconds": 3.0099996365606785e-05,
+          "fraction_of_file": 6.23533376198799e-06,
+          "json_decode_seconds": 1.5199999324977398e-05,
+          "length": 487,
+          "offset": 24,
+          "record_count": 1
+        },
+        {
+          "block_name": "string_pool",
+          "checksum_seconds": 9.570003021508455e-05,
+          "fraction_of_file": 0.0012466954491550976,
+          "json_decode_seconds": 0.00029609998455271125,
+          "length": 97371,
+          "offset": 511,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_runs",
+          "checksum_seconds": 3.0999653972685337e-06,
+          "fraction_of_file": 4.4172282297450845e-06,
+          "json_decode_seconds": 2.7500034775584936e-05,
+          "length": 345,
+          "offset": 97882,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_spectra",
+          "checksum_seconds": 0.0010360999731346965,
+          "fraction_of_file": 0.00861226347775395,
+          "json_decode_seconds": 0.006382499996107072,
+          "length": 672646,
+          "offset": 98227,
+          "record_count": 2048
+        },
+        {
+          "block_name": "core_precursors",
+          "checksum_seconds": 0.00016529997810721397,
+          "fraction_of_file": 0.0019895964160377036,
+          "json_decode_seconds": 0.0021079000434838235,
+          "length": 155394,
+          "offset": 770873,
+          "record_count": 1051
+        },
+        {
+          "block_name": "core_chromatograms",
+          "checksum_seconds": 6.500049494206905e-06,
+          "fraction_of_file": 3.1880864614681915e-06,
+          "json_decode_seconds": 8.510000770911574e-05,
+          "length": 249,
+          "offset": 926267,
+          "record_count": 1
+        },
+        {
+          "block_name": "arrays",
+          "checksum_seconds": 0.07803530001547188,
+          "fraction_of_file": 0.9552807240085458,
+          "json_decode_seconds": 2.278126700024586,
+          "length": 74610555,
+          "offset": 926516,
+          "record_count": 4098
+        },
+        {
+          "block_name": "indexes",
+          "checksum_seconds": 0.0002891999902203679,
+          "fraction_of_file": 0.0041341159091186405,
+          "json_decode_seconds": 0.0556625000317581,
+          "length": 322888,
+          "offset": 75537071,
+          "record_count": 1
+        },
+        {
+          "block_name": "extensions",
+          "checksum_seconds": 0.0018951999954879284,
+          "fraction_of_file": 0.02870440378577201,
+          "json_decode_seconds": 0.02091259998269379,
+          "length": 2241908,
+          "offset": 75859959,
+          "record_count": 2
+        }
+      ],
+      "bytes_per_peak": 32.824281468381585,
+      "candidate_block_seconds": 0.43895009998232126,
+      "chromatogram_count": 1,
+      "cpu_count": 8,
+      "environment": {
+        "capture_tracemalloc_snapshots": false,
+        "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+        "cpu_count_logical": 8,
+        "disk_free_bytes": 83276419072,
+        "disk_total_bytes": 209715195904,
+        "disk_type": null,
+        "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+        "instrumented_pipeline_wall_seconds": 82.56714450003346,
+        "physical_memory_bytes": 16885276672,
+        "psutil_version": null,
+        "rss_backend": "Windows GetProcessMemoryInfo",
+        "snapshot_instrumentation_seconds": 0.0
+      },
+      "failure_code": null,
+      "failure_message": null,
+      "file_validate_seconds": 0.00030780001543462276,
+      "hash_seconds": 0.06749029998900369,
+      "index_seconds": 0.01237119996221736,
+      "indexed": true,
+      "input_kind": "real",
+      "input_path": "E:\\viewer-TD\\test\\xzx_PXD045330\\20191118_rvg262_LT_110516-13_1000-1100_Techrep01.mzML",
+      "input_size": 31408514,
+      "json_serialize_seconds": 24.1553812000202,
+      "metric_unavailable_reasons": {},
+      "ms1_count": 997,
+      "ms2_count": 1051,
+      "parse_seconds": 24.46079560002545,
+      "peak_count": 2379436,
+      "physical_memory": 16885276672,
+      "pipeline_seconds": 82.56714450003346,
+      "platform": "Windows-11-10.0.26200-SP0",
+      "precursor_count": 1051,
+      "pyteomics_version": "4.7.5",
+      "python_version": "3.12.7",
+      "reader_seconds": 16.706970300001558,
+      "rss_end_bytes": 1017413632,
+      "rss_peak_bytes": 1646055424,
+      "rss_start_bytes": 90140672,
+      "run_label": "repeat1",
+      "size_ratio": 2.4866912519325175,
+      "spectrum_count": 2048,
+      "string_pool_seconds": 0.001108099997509271,
+      "temporary_file_peak_bytes": 78103277,
+      "timestamp": "2026-07-14T03:06:23.299569Z",
+      "tracemalloc_current_bytes": 165627839,
+      "tracemalloc_peak_bytes": 471928798,
+      "tracemalloc_snapshots": [],
+      "valid": true,
+      "validator_checksum_seconds": 0.08155649999389425,
+      "validator_json_seconds": 7.288400100020226,
+      "validator_relationship_seconds": 0.3395758999977261,
+      "validator_seconds": 15.977040000027046,
+      "windows_peak_working_set_bytes": 1720905728,
+      "writer_disk_seconds": 0.15211189998080954,
+      "writer_seconds": 24.30749310000101,
+      "zp_size": 78103277
+    },
+    {
+      "admission_seconds": 0.04483659996185452,
+      "array_count": 4098,
+      "array_stats": {
+        "array_count": 4098,
+        "array_id_key_bytes": 45078,
+        "array_id_value_bytes": 96313,
+        "array_type_key_bytes": 53274,
+        "average_bytes_per_array": 18206.5775988287,
+        "average_bytes_per_numeric_value": 15.664718931556962,
+        "dtype_key_bytes": 32784,
+        "intensity_values": 2381484,
+        "json_bytes": 74610555,
+        "largest_array_length": 3624,
+        "median_array_length": 717.0,
+        "mz_values": 2379436,
+        "numeric_decimal_bytes": 74245820,
+        "record_structure_and_metadata_bytes": 360636,
+        "smallest_array_length": 4,
+        "time_values": 2048,
+        "total_numeric_values": 4762968,
+        "values_key_bytes": 36882
+      },
+      "arrays_block_size": 74610555,
+      "arrays_fraction_of_zp": 0.9552807240085458,
+      "benchmark_version": "p1-b6-v1",
+      "block_build_seconds": 0.5114473999710754,
+      "block_stats": [
+        {
+          "block_name": "global_meta",
+          "checksum_seconds": 2.1499989088624716e-05,
+          "fraction_of_file": 6.23533376198799e-06,
+          "json_decode_seconds": 1.8199963960796595e-05,
+          "length": 487,
+          "offset": 24,
+          "record_count": 1
+        },
+        {
+          "block_name": "string_pool",
+          "checksum_seconds": 9.619997581467032e-05,
+          "fraction_of_file": 0.0012466954491550976,
+          "json_decode_seconds": 0.00032430002465844154,
+          "length": 97371,
+          "offset": 511,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_runs",
+          "checksum_seconds": 8.200004231184721e-06,
+          "fraction_of_file": 4.4172282297450845e-06,
+          "json_decode_seconds": 4.18000272475183e-05,
+          "length": 345,
+          "offset": 97882,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_spectra",
+          "checksum_seconds": 0.00047560001257807016,
+          "fraction_of_file": 0.00861226347775395,
+          "json_decode_seconds": 0.0037768000038340688,
+          "length": 672646,
+          "offset": 98227,
+          "record_count": 2048
+        },
+        {
+          "block_name": "core_precursors",
+          "checksum_seconds": 0.00011550000635907054,
+          "fraction_of_file": 0.0019895964160377036,
+          "json_decode_seconds": 0.0015469000209122896,
+          "length": 155394,
+          "offset": 770873,
+          "record_count": 1051
+        },
+        {
+          "block_name": "core_chromatograms",
+          "checksum_seconds": 3.999972250312567e-06,
+          "fraction_of_file": 3.1880864614681915e-06,
+          "json_decode_seconds": 5.6800025049597025e-05,
+          "length": 249,
+          "offset": 926267,
+          "record_count": 1
+        },
+        {
+          "block_name": "arrays",
+          "checksum_seconds": 0.06321049999678507,
+          "fraction_of_file": 0.9552807240085458,
+          "json_decode_seconds": 1.4206735999905504,
+          "length": 74610555,
+          "offset": 926516,
+          "record_count": 4098
+        },
+        {
+          "block_name": "indexes",
+          "checksum_seconds": 0.00024129997473210096,
+          "fraction_of_file": 0.0041341159091186405,
+          "json_decode_seconds": 0.0533601000206545,
+          "length": 322888,
+          "offset": 75537071,
+          "record_count": 1
+        },
+        {
+          "block_name": "extensions",
+          "checksum_seconds": 0.0016381999594159424,
+          "fraction_of_file": 0.02870440378577201,
+          "json_decode_seconds": 0.022583100013434887,
+          "length": 2241908,
+          "offset": 75859959,
+          "record_count": 2
+        }
+      ],
+      "bytes_per_peak": 32.824281468381585,
+      "candidate_block_seconds": 0.5114473999710754,
+      "chromatogram_count": 1,
+      "cpu_count": 8,
+      "environment": {
+        "capture_tracemalloc_snapshots": false,
+        "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+        "cpu_count_logical": 8,
+        "disk_free_bytes": 83274219520,
+        "disk_total_bytes": 209715195904,
+        "disk_type": null,
+        "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+        "instrumented_pipeline_wall_seconds": 82.55393960000947,
+        "physical_memory_bytes": 16885276672,
+        "psutil_version": null,
+        "rss_backend": "Windows GetProcessMemoryInfo",
+        "snapshot_instrumentation_seconds": 0.0
+      },
+      "failure_code": null,
+      "failure_message": null,
+      "file_validate_seconds": 0.00030610000248998404,
+      "hash_seconds": 0.06677730003139004,
+      "index_seconds": 0.0190001999726519,
+      "indexed": true,
+      "input_kind": "real",
+      "input_path": "E:\\viewer-TD\\test\\xzx_PXD045330\\20191118_rvg262_LT_110516-13_1000-1100_Techrep01.mzML",
+      "input_size": 31408514,
+      "json_serialize_seconds": 25.18657020002138,
+      "metric_unavailable_reasons": {},
+      "ms1_count": 997,
+      "ms2_count": 1051,
+      "parse_seconds": 21.744309999980032,
+      "peak_count": 2379436,
+      "physical_memory": 16885276672,
+      "pipeline_seconds": 82.55393960000947,
+      "platform": "Windows-11-10.0.26200-SP0",
+      "precursor_count": 1051,
+      "pyteomics_version": "4.7.5",
+      "python_version": "3.12.7",
+      "reader_seconds": 16.579185299982782,
+      "rss_end_bytes": 1016225792,
+      "rss_peak_bytes": 1586601984,
+      "rss_start_bytes": 90124288,
+      "run_label": "repeat2",
+      "size_ratio": 2.4866912519325175,
+      "spectrum_count": 2048,
+      "string_pool_seconds": 0.0013466000091284513,
+      "temporary_file_peak_bytes": 78103277,
+      "timestamp": "2026-07-14T03:08:12.026379Z",
+      "tracemalloc_current_bytes": 165397156,
+      "tracemalloc_peak_bytes": 471695290,
+      "tracemalloc_snapshots": [],
+      "valid": true,
+      "validator_checksum_seconds": 0.06581099989125505,
+      "validator_json_seconds": 7.764524600061122,
+      "validator_relationship_seconds": 0.5136720000300556,
+      "validator_seconds": 17.70525090000592,
+      "windows_peak_working_set_bytes": 1720279040,
+      "writer_disk_seconds": 0.15618729998823255,
+      "writer_seconds": 25.34275750000961,
+      "zp_size": 78103277
+    }
+  ],
+  "real_statistics": {
+    "parse_seconds": {
+      "maximum": 24.46079560002545,
+      "median": 21.744309999980032,
+      "minimum": 14.484971099998802,
+      "standard_deviation": 4.211022173816481
+    },
+    "pipeline_seconds": {
+      "maximum": 82.56714450003346,
+      "median": 82.55393960000947,
+      "minimum": 62.71229910006514,
+      "standard_deviation": 9.356553009374169
+    },
+    "reader_seconds": {
+      "maximum": 17.383519599970896,
+      "median": 16.706970300001558,
+      "minimum": 16.579185299982782,
+      "standard_deviation": 0.35292454775240684
+    },
+    "rss_peak_bytes": {
+      "maximum": 1720324096.0,
+      "median": 1646055424.0,
+      "minimum": 1586601984.0,
+      "standard_deviation": 54703392.5478705
+    },
+    "tracemalloc_peak_bytes": {
+      "maximum": 473501014.0,
+      "median": 471928798.0,
+      "minimum": 471695290.0,
+      "standard_deviation": 801874.7686166463
+    },
+    "validator_seconds": {
+      "maximum": 17.70525090000592,
+      "median": 15.977040000027046,
+      "minimum": 10.930432299966924,
+      "standard_deviation": 2.874275353246957
+    },
+    "writer_seconds": {
+      "maximum": 25.34275750000961,
+      "median": 24.30749310000101,
+      "minimum": 19.02421439997852,
+      "standard_deviation": 2.7670440125597944
+    },
+    "zp_size": {
+      "maximum": 78103277.0,
+      "median": 78103277.0,
+      "minimum": 78103277.0,
+      "standard_deviation": 0.0
+    }
+  },
+  "s4": {
+    "reason": "optional point skipped after S3 and real sample approached 2.1-2.38M peaks; resource safety took priority",
+    "status": "not run"
+  },
+  "synthetic_scales": [
+    {
+      "admission_seconds": 0.0033116000122390687,
+      "array_count": 258,
+      "array_stats": {
+        "array_count": 258,
+        "array_id_key_bytes": 2838,
+        "array_id_value_bytes": 6073,
+        "array_type_key_bytes": 3354,
+        "average_bytes_per_array": 2343.8720930232557,
+        "average_bytes_per_numeric_value": 9.191375851167315,
+        "dtype_key_bytes": 2064,
+        "intensity_values": 32896,
+        "json_bytes": 604719,
+        "largest_array_length": 256,
+        "median_array_length": 256.0,
+        "mz_values": 32768,
+        "numeric_decimal_bytes": 581744,
+        "record_structure_and_metadata_bytes": 22716,
+        "smallest_array_length": 128,
+        "time_values": 128,
+        "total_numeric_values": 65792,
+        "values_key_bytes": 2322
+      },
+      "arrays_block_size": 604719,
+      "arrays_fraction_of_zp": 0.7592842084644911,
+      "benchmark_version": "p1-b6-v1",
+      "block_build_seconds": 0.021116599964443594,
+      "block_stats": [
+        {
+          "block_name": "global_meta",
+          "checksum_seconds": 1.880002673715353e-05,
+          "fraction_of_file": 0.0005512076973204275,
+          "json_decode_seconds": 1.390004763379693e-05,
+          "length": 439,
+          "offset": 24,
+          "record_count": 1
+        },
+        {
+          "block_name": "string_pool",
+          "checksum_seconds": 9.300012607127428e-06,
+          "fraction_of_file": 0.007519778813785968,
+          "json_decode_seconds": 3.279995871707797e-05,
+          "length": 5989,
+          "offset": 463,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_runs",
+          "checksum_seconds": 2.400018274784088e-06,
+          "fraction_of_file": 0.00021721852308982678,
+          "json_decode_seconds": 1.0299962013959885e-05,
+          "length": 173,
+          "offset": 6452,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_spectra",
+          "checksum_seconds": 3.559998003765941e-05,
+          "fraction_of_file": 0.04237519038010731,
+          "json_decode_seconds": 0.0002905000001192093,
+          "length": 33749,
+          "offset": 6625,
+          "record_count": 128
+        },
+        {
+          "block_name": "core_precursors",
+          "checksum_seconds": 1.0200019460171461e-05,
+          "fraction_of_file": 0.01012640109086389,
+          "json_decode_seconds": 9.950000094249845e-05,
+          "length": 8065,
+          "offset": 40374,
+          "record_count": 64
+        },
+        {
+          "block_name": "core_chromatograms",
+          "checksum_seconds": 2.00001522898674e-06,
+          "fraction_of_file": 0.0002498640814732689,
+          "json_decode_seconds": 9.400013368576765e-06,
+          "length": 199,
+          "offset": 48439,
+          "record_count": 1
+        },
+        {
+          "block_name": "arrays",
+          "checksum_seconds": 0.000590000010561198,
+          "fraction_of_file": 0.7592842084644911,
+          "json_decode_seconds": 0.03291359997820109,
+          "length": 604719,
+          "offset": 48638,
+          "record_count": 258
+        },
+        {
+          "block_name": "indexes",
+          "checksum_seconds": 4.7799956519156694e-05,
+          "fraction_of_file": 0.023069109391499348,
+          "json_decode_seconds": 0.0021816000225953758,
+          "length": 18373,
+          "offset": 653357,
+          "record_count": 1
+        },
+        {
+          "block_name": "extensions",
+          "checksum_seconds": 0.00018589996034279466,
+          "fraction_of_file": 0.1548278386254713,
+          "json_decode_seconds": 0.001896300003863871,
+          "length": 123310,
+          "offset": 671730,
+          "record_count": 1
+        }
+      ],
+      "bytes_per_peak": 24.305206298828125,
+      "candidate_block_seconds": 0.021116599964443594,
+      "chromatogram_count": 1,
+      "cpu_count": 8,
+      "environment": {
+        "capture_tracemalloc_snapshots": false,
+        "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+        "cpu_count_logical": 8,
+        "disk_free_bytes": 83250671616,
+        "disk_total_bytes": 209715195904,
+        "disk_type": null,
+        "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+        "instrumented_pipeline_wall_seconds": 1.8534214000101201,
+        "physical_memory_bytes": 16885276672,
+        "psutil_version": null,
+        "rss_backend": "Windows GetProcessMemoryInfo",
+        "snapshot_instrumentation_seconds": 0.0
+      },
+      "failure_code": null,
+      "failure_message": null,
+      "file_validate_seconds": 0.017283399996813387,
+      "hash_seconds": 0.0010368999792262912,
+      "index_seconds": 0.0007068000268191099,
+      "indexed": true,
+      "input_kind": "synthetic",
+      "input_path": "E:\\viewer-two\\benchmarks\\generated\\S1.mzML",
+      "input_size": 473498,
+      "json_serialize_seconds": 0.5191787999938242,
+      "metric_unavailable_reasons": {},
+      "ms1_count": 64,
+      "ms2_count": 64,
+      "parse_seconds": 0.5791332999942824,
+      "peak_count": 32768,
+      "physical_memory": 16885276672,
+      "pipeline_seconds": 1.8534214000101201,
+      "platform": "Windows-11-10.0.26200-SP0",
+      "precursor_count": 64,
+      "pyteomics_version": "4.7.5",
+      "python_version": "3.12.7",
+      "reader_seconds": 0.33053699997253716,
+      "rss_end_bytes": 116326400,
+      "rss_peak_bytes": 116568064,
+      "rss_start_bytes": 90259456,
+      "run_label": "S1",
+      "size_ratio": 1.6820197762186957,
+      "spectrum_count": 128,
+      "string_pool_seconds": 0.00035390001721680164,
+      "temporary_file_peak_bytes": 796433,
+      "timestamp": "2026-07-14T03:15:56.195119Z",
+      "tracemalloc_current_bytes": 2906487,
+      "tracemalloc_peak_bytes": 6355683,
+      "tracemalloc_snapshots": [],
+      "valid": true,
+      "validator_checksum_seconds": 0.000901999999769032,
+      "validator_json_seconds": 0.15577279991703108,
+      "validator_relationship_seconds": 0.001995900005567819,
+      "validator_seconds": 0.34520869998959824,
+      "windows_peak_working_set_bytes": 117022720,
+      "writer_disk_seconds": 0.00733100000070408,
+      "writer_seconds": 0.5265097999945283,
+      "zp_size": 796433
+    },
+    {
+      "admission_seconds": 0.009501799999270588,
+      "array_count": 1026,
+      "array_stats": {
+        "array_count": 1026,
+        "array_id_key_bytes": 11286,
+        "array_id_value_bytes": 24121,
+        "array_type_key_bytes": 13338,
+        "average_bytes_per_array": 4691.373294346979,
+        "average_bytes_per_numeric_value": 9.162838465521443,
+        "dtype_key_bytes": 8208,
+        "intensity_values": 262656,
+        "json_bytes": 4813349,
+        "largest_array_length": 512,
+        "median_array_length": 512.0,
+        "mz_values": 262144,
+        "numeric_decimal_bytes": 4722022,
+        "record_structure_and_metadata_bytes": 90300,
+        "smallest_array_length": 512,
+        "time_values": 512,
+        "total_numeric_values": 525312,
+        "values_key_bytes": 9234
+      },
+      "arrays_block_size": 4813349,
+      "arrays_fraction_of_zp": 0.86402012897074,
+      "benchmark_version": "p1-b6-v1",
+      "block_build_seconds": 0.10118459997465834,
+      "block_stats": [
+        {
+          "block_name": "global_meta",
+          "checksum_seconds": 1.7700018361210823e-05,
+          "fraction_of_file": 7.898219238769629e-05,
+          "json_decode_seconds": 1.3400043826550245e-05,
+          "length": 440,
+          "offset": 24,
+          "record_count": 1
+        },
+        {
+          "block_name": "string_pool",
+          "checksum_seconds": 2.300000051036477e-05,
+          "fraction_of_file": 0.004314761269143309,
+          "json_decode_seconds": 7.559999357908964e-05,
+          "length": 24037,
+          "offset": 464,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_runs",
+          "checksum_seconds": 2.100015990436077e-06,
+          "fraction_of_file": 3.12338669896799e-05,
+          "json_decode_seconds": 1.190003240481019e-05,
+          "length": 174,
+          "offset": 24501,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_spectra",
+          "checksum_seconds": 0.00011180003639310598,
+          "fraction_of_file": 0.024415011211881218,
+          "json_decode_seconds": 0.0009505999623797834,
+          "length": 136013,
+          "offset": 24675,
+          "record_count": 512
+        },
+        {
+          "block_name": "core_precursors",
+          "checksum_seconds": 3.0800001695752144e-05,
+          "fraction_of_file": 0.005790292226931635,
+          "json_decode_seconds": 0.0004202999989502132,
+          "length": 32257,
+          "offset": 160688,
+          "record_count": 256
+        },
+        {
+          "block_name": "core_chromatograms",
+          "checksum_seconds": 2.9999646358191967e-06,
+          "fraction_of_file": 3.572149155716264e-05,
+          "json_decode_seconds": 1.950003206729889e-05,
+          "length": 199,
+          "offset": 192945,
+          "record_count": 1
+        },
+        {
+          "block_name": "arrays",
+          "checksum_seconds": 0.00473819999024272,
+          "fraction_of_file": 0.86402012897074,
+          "json_decode_seconds": 0.1514712999924086,
+          "length": 4813349,
+          "offset": 193144,
+          "record_count": 1026
+        },
+        {
+          "block_name": "indexes",
+          "checksum_seconds": 9.850005153566599e-05,
+          "fraction_of_file": 0.01334888803843417,
+          "json_decode_seconds": 0.009587200009264052,
+          "length": 74365,
+          "offset": 5006493,
+          "record_count": 1
+        },
+        {
+          "block_name": "extensions",
+          "checksum_seconds": 0.000506600015796721,
+          "fraction_of_file": 0.08770864761664054,
+          "json_decode_seconds": 0.0048544000019319355,
+          "length": 488614,
+          "offset": 5080858,
+          "record_count": 1
+        }
+      ],
+      "bytes_per_peak": 21.251205444335938,
+      "candidate_block_seconds": 0.10118459997465834,
+      "chromatogram_count": 1,
+      "cpu_count": 8,
+      "environment": {
+        "capture_tracemalloc_snapshots": false,
+        "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+        "cpu_count_logical": 8,
+        "disk_free_bytes": 83246919680,
+        "disk_total_bytes": 209715195904,
+        "disk_type": null,
+        "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+        "instrumented_pipeline_wall_seconds": 11.544410200032871,
+        "physical_memory_bytes": 16885276672,
+        "psutil_version": null,
+        "rss_backend": "Windows GetProcessMemoryInfo",
+        "snapshot_instrumentation_seconds": 0.0
+      },
+      "failure_code": null,
+      "failure_message": null,
+      "file_validate_seconds": 0.07091740000760183,
+      "hash_seconds": 0.006860000023152679,
+      "index_seconds": 0.007952200016006827,
+      "indexed": true,
+      "input_kind": "synthetic",
+      "input_path": "E:\\viewer-two\\benchmarks\\generated\\S2.mzML",
+      "input_size": 2538029,
+      "json_serialize_seconds": 3.342495399992913,
+      "metric_unavailable_reasons": {},
+      "ms1_count": 256,
+      "ms2_count": 256,
+      "parse_seconds": 3.25460759998532,
+      "peak_count": 262144,
+      "physical_memory": 16885276672,
+      "pipeline_seconds": 11.544410200032871,
+      "platform": "Windows-11-10.0.26200-SP0",
+      "precursor_count": 256,
+      "pyteomics_version": "4.7.5",
+      "python_version": "3.12.7",
+      "reader_seconds": 2.0261159000219777,
+      "rss_end_bytes": 221925376,
+      "rss_peak_bytes": 271032320,
+      "rss_start_bytes": 90230784,
+      "run_label": "S2",
+      "size_ratio": 2.194961523292287,
+      "spectrum_count": 512,
+      "string_pool_seconds": 0.0007007999811321497,
+      "temporary_file_peak_bytes": 5570876,
+      "timestamp": "2026-07-14T03:16:21.089126Z",
+      "tracemalloc_current_bytes": 19642509,
+      "tracemalloc_peak_bytes": 46664073,
+      "tracemalloc_snapshots": [],
+      "valid": true,
+      "validator_checksum_seconds": 0.005531700095161796,
+      "validator_json_seconds": 1.1800138999824412,
+      "validator_relationship_seconds": 0.03410849999636412,
+      "validator_seconds": 2.5715735000558197,
+      "windows_peak_working_set_bytes": 285036544,
+      "writer_disk_seconds": 0.01436420000391081,
+      "writer_seconds": 3.356859599996824,
+      "zp_size": 5570876
+    },
+    {
+      "admission_seconds": 0.04079870000714436,
+      "array_count": 4098,
+      "array_stats": {
+        "array_count": 4098,
+        "array_id_key_bytes": 45078,
+        "array_id_value_bytes": 96313,
+        "array_type_key_bytes": 53274,
+        "average_bytes_per_array": 9456.340897999024,
+        "average_bytes_per_numeric_value": 9.230203172637195,
+        "dtype_key_bytes": 32784,
+        "intensity_values": 2099200,
+        "json_bytes": 38752085,
+        "largest_array_length": 2048,
+        "median_array_length": 1024.0,
+        "mz_values": 2097152,
+        "numeric_decimal_bytes": 38387350,
+        "record_structure_and_metadata_bytes": 360636,
+        "smallest_array_length": 1024,
+        "time_values": 2048,
+        "total_numeric_values": 4198400,
+        "values_key_bytes": 36882
+      },
+      "arrays_block_size": 38752085,
+      "arrays_fraction_of_zp": 0.9275022580772244,
+      "benchmark_version": "p1-b6-v1",
+      "block_build_seconds": 0.54410729999654,
+      "block_stats": [
+        {
+          "block_name": "global_meta",
+          "checksum_seconds": 1.9300030544400215e-05,
+          "fraction_of_file": 1.0555006158044296e-05,
+          "json_decode_seconds": 2.0300038158893585e-05,
+          "length": 441,
+          "offset": 24,
+          "record_count": 1
+        },
+        {
+          "block_name": "string_pool",
+          "checksum_seconds": 9.879999561235309e-05,
+          "fraction_of_file": 0.002328276392386016,
+          "json_decode_seconds": 0.0004149000160396099,
+          "length": 97278,
+          "offset": 465,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_runs",
+          "checksum_seconds": 4.299974534660578e-06,
+          "fraction_of_file": 4.212428761487066e-06,
+          "json_decode_seconds": 3.3100019209086895e-05,
+          "length": 176,
+          "offset": 97743,
+          "record_count": 1
+        },
+        {
+          "block_name": "core_spectra",
+          "checksum_seconds": 0.0005330000421963632,
+          "fraction_of_file": 0.013104076046593484,
+          "json_decode_seconds": 0.006400599959306419,
+          "length": 547503,
+          "offset": 97919,
+          "record_count": 2048
+        },
+        {
+          "block_name": "core_precursors",
+          "checksum_seconds": 0.000130399945192039,
+          "fraction_of_file": 0.003088117164493572,
+          "json_decode_seconds": 0.002624700020533055,
+          "length": 129025,
+          "offset": 645422,
+          "record_count": 1024
+        },
+        {
+          "block_name": "core_chromatograms",
+          "checksum_seconds": 2.4600012693554163e-05,
+          "fraction_of_file": 4.76291661099958e-06,
+          "json_decode_seconds": 0.000514300016220659,
+          "length": 199,
+          "offset": 774447,
+          "record_count": 1
+        },
+        {
+          "block_name": "arrays",
+          "checksum_seconds": 0.032727800018619746,
+          "fraction_of_file": 0.9275022580772244,
+          "json_decode_seconds": 0.8624887999612838,
+          "length": 38752085,
+          "offset": 774646,
+          "record_count": 4098
+        },
+        {
+          "block_name": "indexes",
+          "checksum_seconds": 0.00023599999258294702,
+          "fraction_of_file": 0.007198609936803517,
+          "json_decode_seconds": 0.072732399974484,
+          "length": 300766,
+          "offset": 39526731,
+          "record_count": 1
+        },
+        {
+          "block_name": "extensions",
+          "checksum_seconds": 0.0014859000220894814,
+          "fraction_of_file": 0.04672481031026405,
+          "json_decode_seconds": 0.01485180004965514,
+          "length": 1952215,
+          "offset": 39827497,
+          "record_count": 1
+        }
+      ],
+      "bytes_per_peak": 19.922791481018066,
+      "candidate_block_seconds": 0.54410729999654,
+      "chromatogram_count": 1,
+      "cpu_count": 8,
+      "environment": {
+        "capture_tracemalloc_snapshots": false,
+        "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+        "cpu_count_logical": 8,
+        "disk_free_bytes": 83210637312,
+        "disk_total_bytes": 209715195904,
+        "disk_type": null,
+        "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+        "instrumented_pipeline_wall_seconds": 79.68702670000494,
+        "physical_memory_bytes": 16885276672,
+        "psutil_version": null,
+        "rss_backend": "Windows GetProcessMemoryInfo",
+        "snapshot_instrumentation_seconds": 0.0
+      },
+      "failure_code": null,
+      "failure_message": null,
+      "file_validate_seconds": 0.33259399997768924,
+      "hash_seconds": 0.021688500011805445,
+      "index_seconds": 0.014564000011887401,
+      "indexed": true,
+      "input_kind": "synthetic",
+      "input_path": "E:\\viewer-two\\benchmarks\\generated\\S3.mzML",
+      "input_size": 15349027,
+      "json_serialize_seconds": 28.4975909999921,
+      "metric_unavailable_reasons": {},
+      "ms1_count": 1024,
+      "ms2_count": 1024,
+      "parse_seconds": 17.591024500026833,
+      "peak_count": 2097152,
+      "physical_memory": 16885276672,
+      "pipeline_seconds": 79.68702670000494,
+      "platform": "Windows-11-10.0.26200-SP0",
+      "precursor_count": 1024,
+      "pyteomics_version": "4.7.5",
+      "python_version": "3.12.7",
+      "reader_seconds": 14.293964099953882,
+      "rss_end_bytes": 958697472,
+      "rss_peak_bytes": 1510100992,
+      "rss_start_bytes": 90423296,
+      "run_label": "S3",
+      "size_ratio": 2.722069744225481,
+      "spectrum_count": 2048,
+      "string_pool_seconds": 0.0011274000280536711,
+      "temporary_file_peak_bytes": 41781122,
+      "timestamp": "2026-07-14T03:18:05.406292Z",
+      "tracemalloc_current_bytes": 145596133,
+      "tracemalloc_peak_bytes": 361877187,
+      "tracemalloc_snapshots": [],
+      "valid": true,
+      "validator_checksum_seconds": 0.035260100034065545,
+      "validator_json_seconds": 7.488399599911645,
+      "validator_relationship_seconds": 0.3340260999975726,
+      "validator_seconds": 17.652615000028163,
+      "windows_peak_working_set_bytes": 1623810048,
+      "writer_disk_seconds": 0.07866870000725612,
+      "writer_seconds": 28.576259699999355,
+      "zp_size": 41781122
+    }
+  ],
+  "synthetic_variant": {
+    "admission_seconds": 0.0016243999707512558,
+    "array_count": 258,
+    "array_stats": {
+      "array_count": 258,
+      "array_id_key_bytes": 2838,
+      "array_id_value_bytes": 6073,
+      "array_type_key_bytes": 3354,
+      "average_bytes_per_array": 3281.748062015504,
+      "average_bytes_per_numeric_value": 12.869209022373541,
+      "dtype_key_bytes": 2064,
+      "intensity_values": 32896,
+      "json_bytes": 846691,
+      "largest_array_length": 256,
+      "median_array_length": 256.0,
+      "mz_values": 32768,
+      "numeric_decimal_bytes": 823716,
+      "record_structure_and_metadata_bytes": 22716,
+      "smallest_array_length": 128,
+      "time_values": 128,
+      "total_numeric_values": 65792,
+      "values_key_bytes": 2322
+    },
+    "arrays_block_size": 846691,
+    "arrays_fraction_of_zp": 0.8153191497557002,
+    "benchmark_version": "p1-b6-v1",
+    "block_build_seconds": 0.020031699968967587,
+    "block_stats": [
+      {
+        "block_name": "global_meta",
+        "checksum_seconds": 1.279998105019331e-05,
+        "fraction_of_file": 0.00044584478438638086,
+        "json_decode_seconds": 2.0299979951232672e-05,
+        "length": 463,
+        "offset": 24,
+        "record_count": 1
+      },
+      {
+        "block_name": "string_pool",
+        "checksum_seconds": 9.800016414374113e-06,
+        "fraction_of_file": 0.005790204510832199,
+        "json_decode_seconds": 2.9699993319809437e-05,
+        "length": 6013,
+        "offset": 487,
+        "record_count": 1
+      },
+      {
+        "block_name": "core_runs",
+        "checksum_seconds": 2.3999600671231747e-06,
+        "fraction_of_file": 0.00018970069659636507,
+        "json_decode_seconds": 9.700015652924776e-06,
+        "length": 197,
+        "offset": 6500,
+        "record_count": 1
+      },
+      {
+        "block_name": "core_spectra",
+        "checksum_seconds": 3.5299977753311396e-05,
+        "fraction_of_file": 0.03249852187528286,
+        "json_decode_seconds": 0.00028719997499138117,
+        "length": 33749,
+        "offset": 6697,
+        "record_count": 128
+      },
+      {
+        "block_name": "core_precursors",
+        "checksum_seconds": 1.0500021744519472e-05,
+        "fraction_of_file": 0.007766173188069463,
+        "json_decode_seconds": 0.00010080001084133983,
+        "length": 8065,
+        "offset": 40446,
+        "record_count": 64
+      },
+      {
+        "block_name": "core_chromatograms",
+        "checksum_seconds": 1.800013706088066e-06,
+        "fraction_of_file": 0.00019162659199328246,
+        "json_decode_seconds": 9.100011084228754e-06,
+        "length": 199,
+        "offset": 48511,
+        "record_count": 1
+      },
+      {
+        "block_name": "arrays",
+        "checksum_seconds": 0.0011409999569877982,
+        "fraction_of_file": 0.8153191497557002,
+        "json_decode_seconds": 0.04093670001020655,
+        "length": 846691,
+        "offset": 48710,
+        "record_count": 258
+      },
+      {
+        "block_name": "indexes",
+        "checksum_seconds": 4.160002572461963e-05,
+        "fraction_of_file": 0.017692238063781805,
+        "json_decode_seconds": 0.0038343999767675996,
+        "length": 18373,
+        "offset": 895401,
+        "record_count": 1
+      },
+      {
+        "block_name": "extensions",
+        "checksum_seconds": 0.00018199998885393143,
+        "fraction_of_file": 0.11874204364464148,
+        "json_decode_seconds": 0.0015637999749742448,
+        "length": 123311,
+        "offset": 913774,
+        "record_count": 1
+      }
+    ],
+    "bytes_per_peak": 31.69183349609375,
+    "candidate_block_seconds": 0.020031699968967587,
+    "chromatogram_count": 1,
+    "cpu_count": 8,
+    "environment": {
+      "capture_tracemalloc_snapshots": false,
+      "cpu": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+      "cpu_count_logical": 8,
+      "disk_free_bytes": 83251462144,
+      "disk_total_bytes": 209715195904,
+      "disk_type": null,
+      "disk_type_reason": "Windows volume API does not expose reliable SSD/HDD media type without elevated WMI access",
+      "instrumented_pipeline_wall_seconds": 1.871080200013239,
+      "physical_memory_bytes": 16885276672,
+      "psutil_version": null,
+      "rss_backend": "Windows GetProcessMemoryInfo",
+      "snapshot_instrumentation_seconds": 0.0
+    },
+    "failure_code": null,
+    "failure_message": null,
+    "file_validate_seconds": 0.02375579997897148,
+    "hash_seconds": 0.001857800001744181,
+    "index_seconds": 0.0006819000118412077,
+    "indexed": false,
+    "input_kind": "synthetic",
+    "input_path": "E:\\viewer-two\\benchmarks\\generated\\S1_float32_none_nonindexed.mzML",
+    "input_size": 607871,
+    "json_serialize_seconds": 0.4983685999759473,
+    "metric_unavailable_reasons": {},
+    "ms1_count": 64,
+    "ms2_count": 64,
+    "parse_seconds": 0.5710316000040621,
+    "peak_count": 32768,
+    "physical_memory": 16885276672,
+    "pipeline_seconds": 1.871080200013239,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "precursor_count": 64,
+    "pyteomics_version": "4.7.5",
+    "python_version": "3.12.7",
+    "reader_seconds": 0.36166730005061254,
+    "rss_end_bytes": 115314688,
+    "rss_peak_bytes": 115314688,
+    "rss_start_bytes": 90398720,
+    "run_label": "S1_variant",
+    "size_ratio": 1.7083854962648326,
+    "spectrum_count": 128,
+    "string_pool_seconds": 0.0003369000041857362,
+    "temporary_file_peak_bytes": 1038478,
+    "timestamp": "2026-07-14T03:15:56.235719Z",
+    "tracemalloc_current_bytes": 2928417,
+    "tracemalloc_peak_bytes": 6848095,
+    "tracemalloc_snapshots": [],
+    "valid": true,
+    "validator_checksum_seconds": 0.0014371999423019588,
+    "validator_json_seconds": 0.1570928000146523,
+    "validator_relationship_seconds": 0.002280999964568764,
+    "validator_seconds": 0.35278030001791194,
+    "windows_peak_working_set_bytes": 117006336,
+    "writer_disk_seconds": 0.009509800060186535,
+    "writer_seconds": 0.5078784000361338,
+    "zp_size": 1038478
+  },
+  "tracemalloc_snapshots": [
+    {
+      "current_bytes": 0,
+      "name": "start",
+      "peak_bytes": 0,
+      "top_allocations": []
+    },
+    {
+      "current_bytes": 158924680,
+      "name": "after_parse",
+      "peak_bytes": 161882086,
+      "top_allocations": [
+        {
+          "count": 4767066,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 392,
+          "size_bytes": 152578896
+        },
+        {
+          "count": 5033,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 21,
+          "size_bytes": 885948
+        },
+        {
+          "count": 2854,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 45,
+          "size_bytes": 626997
+        },
+        {
+          "count": 4096,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 823,
+          "size_bytes": 609816
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 349,
+          "size_bytes": 589824
+        },
+        {
+          "count": 22690,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 891,
+          "size_bytes": 544560
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 148,
+          "size_bytes": 507904
+        },
+        {
+          "count": 3101,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 419,
+          "size_bytes": 264897
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 379,
+          "size_bytes": 212535
+        },
+        {
+          "count": 4099,
+          "file": "E:\\python\\Lib\\site-packages\\numpy\\_core\\_dtype.py",
+          "line": 360,
+          "size_bytes": 196750
+        },
+        {
+          "count": 2049,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 902,
+          "size_bytes": 175065
+        },
+        {
+          "count": 3099,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 359,
+          "size_bytes": 151959
+        },
+        {
+          "count": 1051,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 575,
+          "size_bytes": 151344
+        },
+        {
+          "count": 2052,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+          "line": 672,
+          "size_bytes": 150304
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 824,
+          "size_bytes": 114688
+        },
+        {
+          "count": 1994,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 656,
+          "size_bytes": 111664
+        },
+        {
+          "count": 2102,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 561,
+          "size_bytes": 109880
+        },
+        {
+          "count": 1051,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 552,
+          "size_bytes": 85131
+        },
+        {
+          "count": 2049,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 423,
+          "size_bytes": 65576
+        },
+        {
+          "count": 2049,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 848,
+          "size_bytes": 65568
+        }
+      ]
+    },
+    {
+      "current_bytes": 201287148,
+      "name": "after_candidate_blocks",
+      "peak_bytes": 201306562,
+      "top_allocations": [
+        {
+          "count": 4767066,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 392,
+          "size_bytes": 152578896
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 136,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 135,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 6159,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 77,
+          "size_bytes": 1891504
+        },
+        {
+          "count": 7490,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 21,
+          "size_bytes": 1312700
+        },
+        {
+          "count": 4272,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 45,
+          "size_bytes": 944627
+        },
+        {
+          "count": 4096,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 823,
+          "size_bytes": 609816
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 349,
+          "size_bytes": 589824
+        },
+        {
+          "count": 22690,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 891,
+          "size_bytes": 544560
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 148,
+          "size_bytes": 507904
+        },
+        {
+          "count": 3100,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 419,
+          "size_bytes": 264833
+        },
+        {
+          "count": 2049,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 121,
+          "size_bytes": 213104
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 379,
+          "size_bytes": 212535
+        },
+        {
+          "count": 4099,
+          "file": "E:\\python\\Lib\\site-packages\\numpy\\_core\\_dtype.py",
+          "line": 360,
+          "size_bytes": 196750
+        },
+        {
+          "count": 3123,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 81,
+          "size_bytes": 185728
+        },
+        {
+          "count": 2049,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 902,
+          "size_bytes": 175065
+        },
+        {
+          "count": 3099,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 359,
+          "size_bytes": 151959
+        },
+        {
+          "count": 1051,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 575,
+          "size_bytes": 151344
+        },
+        {
+          "count": 2052,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+          "line": 672,
+          "size_bytes": 150304
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 82,
+          "size_bytes": 135168
+        }
+      ]
+    },
+    {
+      "current_bytes": 241554417,
+      "name": "after_writer_serialization",
+      "peak_bytes": 313615736,
+      "top_allocations": [
+        {
+          "count": 4761405,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 392,
+          "size_bytes": 114322240
+        },
+        {
+          "count": 9,
+          "file": "E:\\viewer-two\\binary_layer\\serialization.py",
+          "line": 40,
+          "size_bytes": 78102140
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 136,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 135,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 11483,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 21,
+          "size_bytes": 2016424
+        },
+        {
+          "count": 6159,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 77,
+          "size_bytes": 1891504
+        },
+        {
+          "count": 6562,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 45,
+          "size_bytes": 1429862
+        },
+        {
+          "count": 22690,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 891,
+          "size_bytes": 544560
+        },
+        {
+          "count": 4097,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 87,
+          "size_bytes": 395008
+        },
+        {
+          "count": 4096,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 83,
+          "size_bytes": 394888
+        },
+        {
+          "count": 4018,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 79,
+          "size_bytes": 385584
+        },
+        {
+          "count": 3039,
+          "file": "E:\\python\\Lib\\dataclasses.py",
+          "line": 1293,
+          "size_bytes": 306128
+        },
+        {
+          "count": 3100,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 419,
+          "size_bytes": 264833
+        },
+        {
+          "count": 2049,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 121,
+          "size_bytes": 213104
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 379,
+          "size_bytes": 212535
+        },
+        {
+          "count": 3123,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 81,
+          "size_bytes": 185728
+        },
+        {
+          "count": 2049,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 902,
+          "size_bytes": 175065
+        },
+        {
+          "count": 3099,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 359,
+          "size_bytes": 151959
+        },
+        {
+          "count": 2052,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+          "line": 672,
+          "size_bytes": 150304
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 82,
+          "size_bytes": 135168
+        }
+      ]
+    },
+    {
+      "current_bytes": 164554220,
+      "name": "after_write",
+      "peak_bytes": 313615736,
+      "top_allocations": [
+        {
+          "count": 4761403,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 392,
+          "size_bytes": 114322192
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 136,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 135,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 14619,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 21,
+          "size_bytes": 2562120
+        },
+        {
+          "count": 6159,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 77,
+          "size_bytes": 1891504
+        },
+        {
+          "count": 8345,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 45,
+          "size_bytes": 1809206
+        },
+        {
+          "count": 22690,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 891,
+          "size_bytes": 544560
+        },
+        {
+          "count": 4097,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 87,
+          "size_bytes": 395008
+        },
+        {
+          "count": 4096,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 83,
+          "size_bytes": 394888
+        },
+        {
+          "count": 4018,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 79,
+          "size_bytes": 385584
+        },
+        {
+          "count": 3037,
+          "file": "E:\\python\\Lib\\dataclasses.py",
+          "line": 1293,
+          "size_bytes": 306000
+        },
+        {
+          "count": 3100,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 419,
+          "size_bytes": 264833
+        },
+        {
+          "count": 2049,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 121,
+          "size_bytes": 213104
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 379,
+          "size_bytes": 212535
+        },
+        {
+          "count": 3123,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 81,
+          "size_bytes": 185728
+        },
+        {
+          "count": 2049,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 902,
+          "size_bytes": 175065
+        },
+        {
+          "count": 3099,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 359,
+          "size_bytes": 151959
+        },
+        {
+          "count": 2052,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+          "line": 672,
+          "size_bytes": 150304
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 82,
+          "size_bytes": 135168
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 81,
+          "size_bytes": 120832
+        }
+      ]
+    },
+    {
+      "current_bytes": 165657767,
+      "name": "after_validator",
+      "peak_bytes": 473501014,
+      "top_allocations": [
+        {
+          "count": 4761315,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 392,
+          "size_bytes": 114320080
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 136,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 135,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 18034,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 21,
+          "size_bytes": 3176868
+        },
+        {
+          "count": 10285,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 45,
+          "size_bytes": 2260905
+        },
+        {
+          "count": 6159,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 77,
+          "size_bytes": 1891504
+        },
+        {
+          "count": 22690,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 891,
+          "size_bytes": 544560
+        },
+        {
+          "count": 4097,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 87,
+          "size_bytes": 395008
+        },
+        {
+          "count": 4096,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 83,
+          "size_bytes": 394888
+        },
+        {
+          "count": 4018,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 79,
+          "size_bytes": 385584
+        },
+        {
+          "count": 3037,
+          "file": "E:\\python\\Lib\\dataclasses.py",
+          "line": 1293,
+          "size_bytes": 306000
+        },
+        {
+          "count": 3100,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 419,
+          "size_bytes": 264833
+        },
+        {
+          "count": 2049,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 121,
+          "size_bytes": 213104
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 379,
+          "size_bytes": 212535
+        },
+        {
+          "count": 3123,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 81,
+          "size_bytes": 185728
+        },
+        {
+          "count": 2049,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 902,
+          "size_bytes": 175065
+        },
+        {
+          "count": 3099,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 359,
+          "size_bytes": 151959
+        },
+        {
+          "count": 2052,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\auxiliary\\file_helpers.py",
+          "line": 672,
+          "size_bytes": 150304
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 82,
+          "size_bytes": 135168
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 81,
+          "size_bytes": 120832
+        }
+      ]
+    },
+    {
+      "current_bytes": 166752591,
+      "name": "after_reader",
+      "peak_bytes": 473501014,
+      "top_allocations": [
+        {
+          "count": 4760920,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 392,
+          "size_bytes": 114262080
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 136,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 6144,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 135,
+          "size_bytes": 19289328
+        },
+        {
+          "count": 20657,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 21,
+          "size_bytes": 3635024
+        },
+        {
+          "count": 11739,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 45,
+          "size_bytes": 2575662
+        },
+        {
+          "count": 6159,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 77,
+          "size_bytes": 1891504
+        },
+        {
+          "count": 15362,
+          "file": "E:\\python\\Lib\\json\\decoder.py",
+          "line": 353,
+          "size_bytes": 919211
+        },
+        {
+          "count": 22690,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 891,
+          "size_bytes": 544560
+        },
+        {
+          "count": 4097,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 87,
+          "size_bytes": 395008
+        },
+        {
+          "count": 4096,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 83,
+          "size_bytes": 394888
+        },
+        {
+          "count": 4018,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\common.py",
+          "line": 79,
+          "size_bytes": 385584
+        },
+        {
+          "count": 3100,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 419,
+          "size_bytes": 264833
+        },
+        {
+          "count": 2051,
+          "file": "E:\\viewer-two\\binary_layer\\reader.py",
+          "line": 100,
+          "size_bytes": 231336
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 121,
+          "size_bytes": 212992
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_adapter.py",
+          "line": 379,
+          "size_bytes": 212535
+        },
+        {
+          "count": 3123,
+          "file": "E:\\viewer-two\\binary_layer\\mzml_schema.py",
+          "line": 81,
+          "size_bytes": 185728
+        },
+        {
+          "count": 3099,
+          "file": "E:\\python\\Lib\\site-packages\\pyteomics\\xml.py",
+          "line": 359,
+          "size_bytes": 151959
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 82,
+          "size_bytes": 135168
+        },
+        {
+          "count": 1795,
+          "file": "E:\\viewer-two\\benchmarks\\monitor.py",
+          "line": 22,
+          "size_bytes": 129256
+        },
+        {
+          "count": 2048,
+          "file": "E:\\viewer-two\\binary_layer\\tools\\real_mzml.py",
+          "line": 81,
+          "size_bytes": 120832
+        }
+      ]
+    }
+  ],
+  "v1_thresholds": {
+    "basis": "measured 2.10-2.38M peak cases used 1.51-1.72 GiB RSS; hard limits add roughly 2x headroom but remain prototype gates",
+    "concurrency": "apply limits to aggregate concurrent imports; two allowed jobs must fit within 50% of physical RAM",
+    "recommended_max_input_bytes": 67108864,
+    "recommended_max_output_bytes": 209715200,
+    "recommended_max_peak_count": 5000000,
+    "recommended_max_rss_bytes": 4294967296,
+    "reject": "reject if any hard maximum is exceeded or free resources cannot reserve the predicted RSS plus one output-sized temporary file",
+    "warning": "warn if any of input >=32 MiB, peaks >=2M, predicted output >=80 MiB or predicted RSS >=1.5 GiB"
+  },
+  "validator_breakdown": {
+    "benchmark_version": "p1-b6-v1",
+    "block_stats": [
+      {
+        "block_name": "global_meta",
+        "checksum_seconds": 2.0899984519928694e-05,
+        "fraction_of_file": 6.23533376198799e-06,
+        "json_decode_seconds": 1.8300022929906845e-05,
+        "length": 487,
+        "offset": 24,
+        "record_count": 1
+      },
+      {
+        "block_name": "string_pool",
+        "checksum_seconds": 0.00010420003673061728,
+        "fraction_of_file": 0.0012466954491550976,
+        "json_decode_seconds": 0.0005061999545432627,
+        "length": 97371,
+        "offset": 511,
+        "record_count": 1
+      },
+      {
+        "block_name": "core_runs",
+        "checksum_seconds": 9.200011845678091e-06,
+        "fraction_of_file": 4.4172282297450845e-06,
+        "json_decode_seconds": 4.8799964133650064e-05,
+        "length": 345,
+        "offset": 97882,
+        "record_count": 1
+      },
+      {
+        "block_name": "core_spectra",
+        "checksum_seconds": 0.0006552999839186668,
+        "fraction_of_file": 0.00861226347775395,
+        "json_decode_seconds": 0.007276699994690716,
+        "length": 672646,
+        "offset": 98227,
+        "record_count": 2048
+      },
+      {
+        "block_name": "core_precursors",
+        "checksum_seconds": 0.0001770000089891255,
+        "fraction_of_file": 0.0019895964160377036,
+        "json_decode_seconds": 0.002646800014190376,
+        "length": 155394,
+        "offset": 770873,
+        "record_count": 1051
+      },
+      {
+        "block_name": "core_chromatograms",
+        "checksum_seconds": 1.1400028597563505e-05,
+        "fraction_of_file": 3.1880864614681915e-06,
+        "json_decode_seconds": 6.75999908708036e-05,
+        "length": 249,
+        "offset": 926267,
+        "record_count": 1
+      },
+      {
+        "block_name": "arrays",
+        "checksum_seconds": 0.05901490000542253,
+        "fraction_of_file": 0.9552807240085458,
+        "json_decode_seconds": 1.6515684999758378,
+        "length": 74610555,
+        "offset": 926516,
+        "record_count": 4098
+      },
+      {
+        "block_name": "indexes",
+        "checksum_seconds": 0.000444200006313622,
+        "fraction_of_file": 0.0041341159091186405,
+        "json_decode_seconds": 0.05929239996476099,
+        "length": 322888,
+        "offset": 75537071,
+        "record_count": 1
+      },
+      {
+        "block_name": "extensions",
+        "checksum_seconds": 0.0018783000414259732,
+        "fraction_of_file": 0.02870440378577201,
+        "json_decode_seconds": 0.019489700032863766,
+        "length": 2241908,
+        "offset": 75859959,
+        "record_count": 2
+      }
+    ],
+    "checksum_replay_seconds": 0.06231540010776371,
+    "notes": "checksum replay times the same SHA-256 operation per block outside the production Validator for isolated attribution; the full production Validator ran first",
+    "valid": true,
+    "validator_json_parse_seconds": 1.6441937001072802,
+    "validator_relationship_seconds": 0.32285870000487193,
+    "validator_schema_seconds": 1.1835681999800727,
+    "validator_wall_seconds": 3.318021300015971,
+    "zp_path": "E:\\viewer-two\\benchmarks\\generated\\20191118_rvg262_LT_110516-13_1000-1100_Techrep01.repeat2.zp"
+  }
+}

@@ -12,6 +12,7 @@ dependencies = ["pyteomics>=4.7.5,<5"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+benchmark = ["psutil>=5.9"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

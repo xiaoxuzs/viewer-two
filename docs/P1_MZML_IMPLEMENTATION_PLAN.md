@@ -1,6 +1,6 @@
 # P1-B real mzML implementation plan
 
-Status: **P1-B1 through P1-B5 completed; P1-B6 remains pending.**
+Status: **P1-B1 through P1-B6 completed. P1-B7 has not started.**
 
 Date: 2026-07-13 (Asia/Shanghai)
 
@@ -240,6 +240,21 @@ Restore the pre-B5 rule that any nonempty chromatogram list rejects.
 
 ## P1-B6: real mzML scale, memory, and array-storage evaluation
 
+Status: **completed on 2026-07-14. P1-B7 has not started.**
+
+Completion record:
+
+- Added benchmark-only deterministic mzML generation, isolated conversion/RSS/tracemalloc monitoring, cold-process Reader measurement, Validator attribution, five array-encoding microbenchmarks, typed result models, aggregation, and focused tests. No production conversion code changed.
+- Baseline was 251 passing tests; the completed benchmark/test suite contains 262 passing tests. All 19 protected production SHA-256 values are unchanged.
+- The 31,408,514-byte real sample completed three runs. Each valid output was 78,103,277 bytes for 2,379,436 peaks. Median parse/Writer/Validator/pipeline times were 21.744/24.307/15.977/82.554 seconds under tracemalloc; median traced peak was 471,928,798 bytes and median RSS peak was 1,646,055,424 bytes.
+- Deterministic S1/S2/S3 covered 32,768, 262,144 and 2,097,152 peaks. A float32/uncompressed/non-indexed S1 variant also passed. S4 was optional and skipped under the resource-safety rule.
+- Real `arrays` occupied 74,610,555 bytes, 95.5281% of `.zp`, or 15.6647 bytes per numeric value. Whole output averaged 32.8243 bytes per peak.
+- Real cold Reader measurement showed 1.46-1.52 seconds for one Spectrum plus arrays, 14.98 seconds for ten sequential Spectra, 160.94 seconds for fixed-seed random100, and 154.50 seconds for repeat100. The Reader has no cache and reparses complete spectra/arrays blocks per call.
+- The encoding comparison measured JSON float64, raw float64/float32 and per-array zlib float64/float32, including size/time/checksum/access and actual float32 error. Raw and zlib float64 were exact; float32 changed 2,048 representative values and is not the default.
+- v1 warning gates are 32 MiB input, 2M peaks, 80 MiB predicted output, or 1.5 GiB predicted RSS; hard gates are 64 MiB, 5M peaks, 200 MiB, and 4 GiB, with aggregate concurrent-resource checks.
+- Unique decision: P1-B7 should design a ZP v2 single arrays region with an internal array directory and contiguous little-endian float64 payloads. Per-array chunks are the alternative. The physical encoding requires `ZP_VERSION=2`; none of it is implemented in B6.
+- Evidence: `P1_B6_SCALE_MEMORY_ASSESSMENT.md`, `P1_B6_ARRAY_STORAGE_DECISION.md`, and `benchmarks/results/p1_b6_summary.json`.
+
 ### Goal
 
 Evaluate the observed JSON output expansion, whole-candidate memory residency, Pyteomics/NumPy allocation, and the v1 whole-list array storage/read limitation before proposing any format change.
@@ -263,7 +278,7 @@ Evaluate the observed JSON output expansion, whole-candidate memory residency, P
 
 ### Acceptance
 
-Produce an evidence-backed storage/version decision with explicit resource ceilings. No runtime format mutation belongs to the evaluation gate itself.
+Completed: produced an evidence-backed storage/version decision with explicit resource ceilings. No runtime format mutation belongs to the evaluation gate itself.
 
 ### Failure rollback
 

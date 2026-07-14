@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.pytest-tmp/
 .venv/
 dist/
 build/
@@ -8,4 +9,5 @@ build/
 output/
 *.zp
 *.zp.tmp
-
+benchmarks/generated/
+benchmarks/results/*.tmp.json
