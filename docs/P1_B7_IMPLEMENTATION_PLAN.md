@@ -1,6 +1,6 @@
 # P1-B8 production implementation plan
 
-Status: **P1-B8.3 completed on 2026-07-14; P1-B8.4 has not started.**
+Status: **P1-B8.4 completed on 2026-07-14; P1-B8.5 has not started.**
 
 Date: 2026-07-14 (Asia/Shanghai)
 
@@ -178,7 +178,7 @@ for offline validation; v1 Reader remains unchanged.
 
 ## P1-B8.4: v2 Validator
 
-Status: **not started.**
+Status: **completed on 2026-07-14.**
 
 **Goal.** Implement complete top-level, arrays Header/directory/padding,
 per-array, numeric, and cross-block relationship validation.
@@ -198,6 +198,54 @@ regressions.
 **Acceptance.** Complete validation verifies top-level arrays SHA-256, every
 per-array checksum/value, and all references; error codes are deterministic;
 no invalid Fixture is accepted to make a test pass.
+
+**Completion record.**
+
+- `ZpValidator` remains the public facade. Its v1 implementation and issue
+  order are unchanged; Header version 2 dispatches to the independent
+  `binary_layer/v2_validator.py` implementation. The v2 path imports neither
+  production Reader/Writer code nor the reference Codec.
+- Validation order is Header, strict canonical top directory, eight complete
+  JSON blocks and their checksums/schemas, binary arrays Header/directory and
+  padding, one sequential payload scan, then cross-block references,
+  statistics, indexes, and mzML extension schemas. Unsafe structural errors
+  stop before attacker-provided offsets are followed.
+- One payload chunk simultaneously updates whole-arrays SHA-256, current-array
+  SHA-256, and little-endian float64 semantic checks. Only `array_id`, type,
+  count, byte length, and checksum state survive the scan; payload bytes and
+  decoded values are not retained. Instrumented tests prove payload bytes read
+  equal payload length, scan count is one, and each read is at most the
+  configured chunk.
+- Frozen safe defaults are 512 MiB arrays, 64 MiB top/internal directories,
+  100,000 entries, 16M values per array, 4096 UTF-8 bytes per ID, 448 MiB
+  payload, 64 MiB validation working memory, and a 256 KiB chunk. Invalid
+  configurations fail explicitly and resource issues report location,
+  actual, and limit before large reads or allocations.
+- Spectrum, Precursor, Chromatogram, Run, GlobalMeta, StringPool, Index, and
+  known mzML Extension relationships are checked against directory metadata;
+  finite negative intensity remains valid while NaN/Infinity and negative
+  m/z/time are rejected.
+- The suite grew from 443 to 543 passing tests. New gates cover more than 79
+  distinct corruption/resource/reference categories, deterministic issue
+  priority, three checksum-isolation layers, file replacement, single-stream
+  use, and unchanged v1/Writer/Reader/Pipeline behavior.
+- Small TIC/BPC validation measured 7,840 bytes, six arrays, 12 values,
+  0.00773 s, 68,062 traced bytes, and one payload scan. The deterministic
+  128x512 medium gate measured 1,157,691 bytes, 256 arrays, 131,072 values,
+  5.596 s, 1,430,167 traced bytes, and one payload scan. These are
+  one-environment baselines, not production claims.
+- The restored 31,408,514-byte source produced a temporary 42,559,978-byte v2
+  file with a 39,067,064-byte arrays block, 4,098 arrays, and 4,762,968 values.
+  Full validation returned `valid=True`, zero issues, and nine checked blocks;
+  all 38,103,744 payload bytes were read exactly once, the largest read was
+  28,992 bytes under a 256 KiB chunk, and Reader summary round-trip passed.
+  The monitored validation took 246.510 s, traced peak was 47,894,000 bytes,
+  sampled RSS peak was 384,163,840 bytes, and the large output was removed.
+
+**B8.5 entry condition.** Keep the default Writer/Pipelines and `ZP_VERSION`
+at version 1, retain complete v1/v2 validation, regenerate Golden arrays
+deterministically, and keep all protected production hashes outside the B8.4
+allowlist unchanged. B8.5 has not started.
 
 **Failure rollback.** Remove v2 Validator dispatch/module while keeping v2
 Reader/Writer explicitly experimental; do not weaken v1.

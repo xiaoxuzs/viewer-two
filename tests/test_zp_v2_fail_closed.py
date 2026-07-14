@@ -29,7 +29,7 @@ def test_v2_reader_and_validator_do_not_enter_v1_body(tmp_path: Path, monkeypatc
         ZpReader(path).read_directory()
     result = ZpValidator().validate(path)
     assert result.valid is False
-    assert [issue.code for issue in result.issues] == ["ZP_V2_VALIDATION_NOT_IMPLEMENTED"]
+    assert [issue.code for issue in result.issues] == ["TOP_DIRECTORY_TOO_LARGE"]
 
 
 def test_production_package_does_not_import_reference_codec() -> None:

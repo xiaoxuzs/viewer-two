@@ -7,26 +7,25 @@ import pytest
 
 from binary_layer.constants import HEADER_SIZE, HEADER_STRUCT, ZP_ENDIANNESS_LITTLE, ZP_MAGIC
 from binary_layer.validator import ZpValidator
+from zp_v2_reader_support import build_complete_v2
 
 
 def _header(version: int, *, magic: bytes = ZP_MAGIC, endianness: int = ZP_ENDIANNESS_LITTLE) -> bytes:
     return HEADER_STRUCT.pack(magic, version, endianness, 0, 0, HEADER_SIZE)
 
 
-def test_v2_validator_returns_one_stable_not_implemented_issue(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_v2_validator_dispatches_without_calling_v1_semantics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     path = tmp_path / "v2.zp"
-    path.write_bytes(_header(2) + b"not v1 JSON" * 100)
+    build_complete_v2(path)
     monkeypatch.setattr(ZpValidator, "_validate_schema", lambda *_args: pytest.fail("v1 schema validator called"))
     monkeypatch.setattr(ZpValidator, "_validate_references", lambda *_args: pytest.fail("v1 references validator called"))
 
     result = ZpValidator().validate(path)
 
-    assert result.valid is False
+    assert result.valid is True
     assert result.version == 2
-    assert result.checked_blocks == 0
-    assert [(issue.code, issue.severity, issue.block_name) for issue in result.issues] == [
-        ("ZP_V2_VALIDATION_NOT_IMPLEMENTED", "error", "header.version")
-    ]
+    assert result.checked_blocks == 9
+    assert result.issues == []
 
 
 def test_unknown_validator_version_retains_unknown_version_issue(tmp_path: Path) -> None:
@@ -58,9 +57,9 @@ def test_validator_header_errors_take_priority_over_v2_dispatch(tmp_path: Path, 
     assert "ZP_V2_VALIDATION_NOT_IMPLEMENTED" not in {issue.code for issue in result.issues}
 
 
-def test_v2_validator_reads_exactly_one_header_and_closes_the_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_v2_validator_uses_one_open_stream_and_closes_it(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     path = tmp_path / "large-v2.zp"
-    path.write_bytes(_header(2) + b"x" * 1_000_000)
+    build_complete_v2(path)
     calls: list[int] = []
 
     class TrackingStream(io.BytesIO):
@@ -77,6 +76,7 @@ def test_v2_validator_reads_exactly_one_header_and_closes_the_file(tmp_path: Pat
     monkeypatch.setattr(Path, "open", tracked_open)
     result = ZpValidator().validate(path)
 
-    assert result.issues[0].code == "ZP_V2_VALIDATION_NOT_IMPLEMENTED"
-    assert calls == [HEADER_SIZE]
+    assert result.valid is True
+    assert calls[0] == HEADER_SIZE
+    assert len(calls) > 1
     assert stream.closed is True

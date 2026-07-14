@@ -24,11 +24,14 @@ from .constants import (
 )
 from .models import BlockDirectoryEntry, ValidationIssue, ValidationResult
 from .serialization import parse_json_bytes
+from .v2_validator import DEFAULT_V2_VALIDATION_LIMITS, ZpV2ValidationLimits, ZpV2Validator
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class ZpValidator:
+    v2_limits: ZpV2ValidationLimits = DEFAULT_V2_VALIDATION_LIMITS
+
     def validate(self, file_path: str | Path) -> ValidationResult:
         path = Path(file_path)
         issues: list[ValidationIssue] = []
@@ -59,6 +62,19 @@ class ZpValidator:
                     add("INVALID_MAGIC", f"Expected {ZP_MAGIC!r}, got {magic!r}")
                 if endianness != ZP_ENDIANNESS_LITTLE:
                     add("UNSUPPORTED_ENDIANNESS", f"Unsupported endianness: {endianness}")
+                if version == 2:
+                    if magic != ZP_MAGIC or endianness != ZP_ENDIANNESS_LITTLE:
+                        return self._result(path, version, issues, checked_blocks)
+                    validator = ZpV2Validator(self.v2_limits)
+                    result = validator.validate_stream(
+                        path,
+                        stream,
+                        file_size=file_size,
+                        header=(magic, version, endianness, _flags, _created_at, directory_offset),
+                        initial_issues=issues,
+                    )
+                    self._last_v2_metrics = validator.last_metrics
+                    return result
                 if version not in SUPPORTED_ZP_VALIDATE_VERSIONS:
                     if magic != ZP_MAGIC or endianness != ZP_ENDIANNESS_LITTLE:
                         return self._result(path, version, issues, checked_blocks)

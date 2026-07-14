@@ -41,6 +41,7 @@ def build_complete_v2(path: Path, *, intensity_shift: float = 0.0):
     blocks.global_meta.chromatogram_count = 1
     blocks.global_meta.array_count = len(blocks.arrays)
     blocks.runs[0].chromatogram_count = 1
+    blocks.string_pool.strings.extend(["tic", "manual chromatogram"])
     ZpWriter().write(path, blocks, format_version=2)
     return blocks
 

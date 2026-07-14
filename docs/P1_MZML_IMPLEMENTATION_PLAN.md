@@ -1,6 +1,6 @@
 # P1-B real mzML implementation plan
 
-Status: **P1-B1 through P1-B8.3 completed. P1-B8.4 has not started.**
+Status: **P1-B1 through P1-B8.4 completed. P1-B8.5 has not started.**
 
 Date: 2026-07-13 (Asia/Shanghai)
 
@@ -286,7 +286,7 @@ Retain measurements and make no format change until the version/storage decision
 
 ## P1-B7: ZP v2 binary arrays format and compatibility design
 
-Status: **completed on 2026-07-14. P1-B8.1 and P1-B8.2 are also complete; P1-B8.3 has not started.**
+Status: **completed on 2026-07-14. P1-B8.1 through P1-B8.4 are also complete; P1-B8.5 has not started.**
 
 Completion record:
 
@@ -356,8 +356,30 @@ Completion record:
 - Pipeline, Plan, Registry, Runner, Tools, Writer, v2 Writer wire bytes, and
   Validator were not changed. The default remains v1 and Validator still
   reports `ZP_V2_VALIDATION_NOT_IMPLEMENTED`.
-- P1-B8.4 has not started. Its only next scope is the complete v2 Validator;
-  Reader success must not be presented as full-file validation.
+- P1-B8.4 subsequently completed the independent full-file v2 Validator;
+  Reader target access and Validator full-file coverage remain distinct.
+
+### P1-B8.4 completion and P1-B8.5 entry conditions
+
+- Production `ZpValidator` now supports complete v1/v2 validation. The v2
+  implementation independently validates strict top-level and arrays wire
+  structures, all nine top-level checksums, both arrays checksum levels,
+  every float64 value, controlled JSON/extension schemas, references, indexes,
+  and counts without using Reader/Writer or the reference Codec.
+- Arrays payload validation is one bounded sequential scan: payload bytes read
+  equal payload length, scan count is one, and no full payload or decoded-value
+  collection is retained. File identity is compared before and after the same
+  open handle is used.
+- The completed suite contains 543 passing tests, including more than 79
+  corruption/resource/reference categories and unchanged v1 Validator,
+  explicit v2 Writer, v2 target-read, Golden, and Pipeline behavior.
+- The 31,408,514-byte real sample produced a temporary 42,559,978-byte v2 file
+  with 4,098 arrays and 4,762,968 values. Full validation passed with zero
+  issues and nine checked blocks; 38,103,744 payload bytes were read once,
+  Reader summary round-trip passed, and the temporary output was removed.
+- `ZP_VERSION=1`, the default Writer and both Pipelines still output v1, and no
+  migration/default-release switch exists. P1-B8.5 may begin only as the
+  v1/v2 compatibility and complete-file Golden total gate; it has not started.
 
 ## Planned production file set
 

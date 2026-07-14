@@ -19,5 +19,5 @@ def test_version_constants_distinguish_known_from_implemented_versions() -> None
     assert KNOWN_ZP_VERSIONS == frozenset({1, 2})
     assert SUPPORTED_ZP_READ_VERSIONS == frozenset({1, 2})
     assert SUPPORTED_ZP_WRITE_VERSIONS == frozenset({1, 2})
-    assert SUPPORTED_ZP_VALIDATE_VERSIONS == frozenset({1})
+    assert SUPPORTED_ZP_VALIDATE_VERSIONS == frozenset({1, 2})
     assert all(item is not None for item in (ZpReader, ZpWriter, ZpValidator))

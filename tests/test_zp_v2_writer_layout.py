@@ -58,7 +58,7 @@ def test_complete_v2_layout_checksums_global_meta_and_input_immutability(
     assert blocks == before
 
 
-def test_production_reader_succeeds_while_validator_remains_fail_closed_for_written_v2(
+def test_production_reader_and_validator_succeed_for_written_v2(
     pipeline_factory, tmp_path: Path
 ) -> None:
     target = tmp_path / "boundary.zp"
@@ -66,8 +66,9 @@ def test_production_reader_succeeds_while_validator_remains_fail_closed_for_writ
     assert ZpReader(target).read_header().version == 2
     assert ZpReader(target).read_arrays()
     result = ZpValidator().validate(target)
-    assert result.valid is False
-    assert [issue.code for issue in result.issues] == ["ZP_V2_VALIDATION_NOT_IMPLEMENTED"]
+    assert result.valid is True
+    assert result.issues == []
+    assert result.checked_blocks == 9
 
 
 @pytest.mark.parametrize("mutation", ["missing_array", "bad_precursor", "missing_pool", "bad_index"])
