@@ -1,6 +1,6 @@
 # P1-B8 production implementation plan
 
-Status: **P1-B8.4 completed on 2026-07-14; P1-B8.5 has not started.**
+Status: **P1-B8.5R completed on 2026-07-14; P1-B8.5 requires a full rerun; P1-B8.6 has not started.**
 
 Date: 2026-07-14 (Asia/Shanghai)
 
@@ -250,7 +250,39 @@ allowlist unchanged. B8.5 has not started.
 **Failure rollback.** Remove v2 Validator dispatch/module while keeping v2
 Reader/Writer explicitly experimental; do not weaken v1.
 
+## P1-B8.5R: Validator Extension owner semantic correction
+
+**Status: completed on 2026-07-14. P1-B8.5 remains incomplete.**
+
+Completion record:
+
+- The first B8.5 audit found one concrete semantic drift: a
+  `mzml_auxiliary_arrays` record pointing to a missing Chromatogram was valid
+  under the v1 Validator but produced `INVALID_REFERENCE` under v2.
+- The v1 Validator now parses that already-decoded Extension payload through
+  the frozen `MzmlAuxiliaryArraysV1` schema and validates owner references
+  against one Spectrum-ID set and one Chromatogram-ID set. It reports schema
+  errors before reference errors and preserves Extension/array input order.
+- The frozen `OwnerKind` enum contains Spectrum and Chromatogram, while the
+  only currently admitted auxiliary array (`MS:1000786` `ms level`) permits
+  Chromatogram owners only. No new owner kind or auxiliary-array capability
+  was added.
+- The added work is `O(core IDs + Extension entries)`, with no Reader call,
+  file reopen, JSON reparse, checksum pass, or arrays-payload scan. A 10,000
+  owner test proves exactly one set-membership lookup per auxiliary record.
+- Both committed 3,086/3,502-byte failure Fixtures now return
+  `INVALID_REFERENCE` with nine checked blocks. Their SHA-256 values remain
+  `289553f0...a82f5` and `2629f288...a27de`, and deterministic regeneration
+  remains green.
+- The suite contains 563 passing tests. Only `binary_layer/validator.py`
+  changed in production; v2 Validator, Writer, Reader, Schema, wire format,
+  default v1 output, Pipeline, Registry, Runner, and Tools remain unchanged.
+- P1-B8.5 must now be rerun in full. P1-B8.6 has not started and may not start
+  from this correction gate alone.
+
 ## P1-B8.5: v1/v2 compatibility and full Golden fixtures
+
+**Status: previous audit did not pass; full rerun required after B8.5R.**
 
 **Goal.** Freeze complete-file v1 and v2 Goldens and prove one public facade
 reads/validates both without semantic drift.

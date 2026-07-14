@@ -22,7 +22,14 @@ from .constants import (
     ZP_MAGIC,
     ZP_VERSION,
 )
+from .exceptions import MzmlSchemaError
 from .models import BlockDirectoryEntry, ValidationIssue, ValidationResult
+from .mzml_schema import (
+    MZML_AUXILIARY_ARRAYS_EXTENSION_TYPE,
+    MZML_EXTENSION_SCHEMA_VERSION,
+    MzmlAuxiliaryArraysV1,
+    OwnerKind,
+)
 from .serialization import parse_json_bytes
 from .v2_validator import DEFAULT_V2_VALIDATION_LIMITS, ZpV2ValidationLimits, ZpV2Validator
 
@@ -317,6 +324,11 @@ class ZpValidator:
         spectrum_ids = cls._unique_ids(spectra, "spectrum_id", "core_spectra", add)
         precursor_ids = cls._unique_ids(precursors, "precursor_id", "core_precursors", add)
         array_ids = cls._unique_ids(arrays, "array_id", "arrays", add)
+        chromatogram_ids = {
+            item["chromatogram_id"]
+            for item in chromatograms
+            if isinstance(item.get("chromatogram_id"), str)
+        }
         array_map = {item.get("array_id"): item for item in arrays if isinstance(item.get("array_id"), str)}
 
         for spectrum in spectra:
@@ -382,6 +394,57 @@ class ZpValidator:
                         add("INVALID_INDEX_POSITION", f"Invalid spectrum position: {position}", "indexes")
                     elif spectra[position].get("spectrum_id") != spectrum_id:
                         add("INDEX_POSITION_MISMATCH", f"Position {position} does not match {spectrum_id}", "indexes")
+
+        cls._validate_extension_references(
+            blocks.get("extensions"),
+            spectrum_ids=spectrum_ids,
+            chromatogram_ids=chromatogram_ids,
+            add=add,
+        )
+
+    @staticmethod
+    def _validate_extension_references(
+        value: object,
+        *,
+        spectrum_ids: set[str],
+        chromatogram_ids: set[str],
+        add: Any,
+    ) -> None:
+        if not isinstance(value, list):
+            return
+        ids_by_owner_kind = {
+            OwnerKind.SPECTRUM: spectrum_ids,
+            OwnerKind.CHROMATOGRAM: chromatogram_ids,
+        }
+        for extension_position, record in enumerate(value):
+            if not isinstance(record, dict) or record.get("extension_type") != MZML_AUXILIARY_ARRAYS_EXTENSION_TYPE:
+                continue
+            extension_location = f"extensions[{extension_position}]"
+            if record.get("extension_version") != str(MZML_EXTENSION_SCHEMA_VERSION):
+                add(
+                    "INVALID_EXTENSION_SCHEMA",
+                    f"Unsupported mzML extension version: {record.get('extension_version')!r}",
+                    extension_location,
+                )
+                continue
+            try:
+                auxiliary = MzmlAuxiliaryArraysV1.from_payload(record.get("payload"))
+            except MzmlSchemaError as exc:
+                add("INVALID_EXTENSION_SCHEMA", str(exc), extension_location)
+                continue
+            for array_position, item in enumerate(auxiliary.arrays):
+                if item.owner_id in ids_by_owner_kind[item.owner_kind]:
+                    continue
+                owner_location = f"{extension_location}.payload.arrays[{array_position}].owner_id"
+                add(
+                    "INVALID_REFERENCE",
+                    (
+                        "mzml_auxiliary_arrays "
+                        f"owner_kind={item.owner_kind.value} owner_id={item.owner_id!r} "
+                        "references a missing owner"
+                    ),
+                    owner_location,
+                )
 
     @staticmethod
     def _records(blocks: dict[str, Any], name: str) -> list[dict[str, Any]]:

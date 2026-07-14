@@ -1,0 +1,28 @@
+{
+  "fixtures": [
+    {
+      "file": "extension_owner_mismatch_v1.zp",
+      "file_size": 3086,
+      "format_version": 1,
+      "sha256": "289553f0eb75b3734b50b85f00e1015614e2f545d180fbc7e5e65f7e22fa82f5",
+      "validator_checked_blocks": 9,
+      "validator_issue_codes": [
+        "INVALID_REFERENCE"
+      ],
+      "validator_valid": false
+    },
+    {
+      "file": "extension_owner_mismatch_v2.zp",
+      "file_size": 3502,
+      "format_version": 2,
+      "sha256": "2629f288d40f00ff42285270d98a8da6f1bb17fb2f1c680675813606b4da27de",
+      "validator_checked_blocks": 9,
+      "validator_issue_codes": [
+        "INVALID_REFERENCE"
+      ],
+      "validator_valid": false
+    }
+  ],
+  "logical_corruption": "mzml_auxiliary_arrays owner_id references a missing chromatogram",
+  "purpose": "P1-B8.5 minimal cross-version Extension owner semantic-drift evidence"
+}

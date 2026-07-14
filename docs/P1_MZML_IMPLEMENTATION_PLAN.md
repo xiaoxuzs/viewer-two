@@ -1,6 +1,6 @@
 # P1-B real mzML implementation plan
 
-Status: **P1-B1 through P1-B8.4 completed. P1-B8.5 has not started.**
+Status: **P1-B1 through P1-B8.4 and P1-B8.5R completed. P1-B8.5 requires a full rerun; P1-B8.6 has not started.**
 
 Date: 2026-07-13 (Asia/Shanghai)
 
@@ -380,6 +380,21 @@ Completion record:
 - `ZP_VERSION=1`, the default Writer and both Pipelines still output v1, and no
   migration/default-release switch exists. P1-B8.5 may begin only as the
   v1/v2 compatibility and complete-file Golden total gate; it has not started.
+
+### P1-B8.5R completion and B8.5 rerun condition
+
+- The initial B8.5 audit found that v1 accepted a dangling
+  `mzml_auxiliary_arrays` owner while v2 returned `INVALID_REFERENCE`.
+- B8.5R added only the missing v1 Schema-first owner-reference check in
+  `binary_layer/validator.py`. Core IDs are built once and Extension entries
+  use set membership, so the added work is linear in IDs plus Extension
+  records and adds no file I/O, JSON parse, checksum pass, or arrays scan.
+- Both preserved failure Fixtures now return `INVALID_REFERENCE` with nine
+  checked blocks and unchanged bytes. Legal Chromatogram owners, malformed
+  Schema cases, wrong entity types, multiple errors, and v1/v2 parity are
+  covered by the 563-test suite.
+- P1-B8.5R is complete, but P1-B8.5 is not complete until its entire Golden
+  and compatibility gate is rerun. P1-B8.6 has not started.
 
 ## Planned production file set
 
