@@ -1,6 +1,6 @@
 # P1-B real mzML implementation plan
 
-Status: **P1-B1 through P1-B8.2 completed. P1-B8.3 has not started.**
+Status: **P1-B1 through P1-B8.3 completed. P1-B8.4 has not started.**
 
 Date: 2026-07-13 (Asia/Shanghai)
 
@@ -326,6 +326,38 @@ Completion record:
 - P1-B8.3 may start only with these boundaries green. It is limited to v2
   arrays Reader/random access and must not silently expand into Validator,
   migration, default-v2, or Viewer work.
+
+### P1-B8.3 completion and P1-B8.4 entry conditions
+
+- Production `ZpReader` now supports v2 Header/directory/JSON blocks and
+  target-only Array, Spectrum-array, and Chromatogram-array access through an
+  independent arrays reader. V1 results and errors remain on the v1 path.
+- Strict canonical top/internal directories reject duplicate keys, invalid
+  fields/order/encoding/ranges/EOF, malformed arrays Header/padding/offsets,
+  and all frozen numeric/checksum violations. Seven injectable read limits are
+  enforced before allocation; full decoding has a conservative 1 GiB default
+  budget.
+- Reader instances cache only the two directories with a six-field file
+  identity fingerprint. Atomic same-path replacement invalidates the cache;
+  mid-read change fails explicitly. No payload, decoded-value, global, or
+  cross-instance cache was added.
+- Cached v2 Spectrum access reads exactly the two target payload lengths and
+  checks only their per-array hashes. Full `read_arrays` additionally verifies
+  the top arrays-block checksum and all per-array hashes.
+- The deterministic medium baseline used 128 Spectra x 512 peaks: v1/v2 sizes
+  1,372,870/1,157,954 bytes, single Spectrum 43.37/1.32 ms, random100
+  3.675/0.150 s, and v2 target payload 8,192 bytes with zero unrelated payload
+  bytes. Results describe this run only.
+- The restored 31,408,514-byte real sample produced a 42,559,842-byte v2 file
+  with a 39,067,064-byte arrays block and 4,098 entries. Explicit v2 writing
+  took 10.434 s; single Spectrum, random100, repeat100, Chromatogram, and full
+  arrays reads took 0.0166/1.357/1.231/0.00321/2.905 s. The selected Spectrum
+  read exactly 37,264 target payload bytes and zero unrelated payload bytes.
+- Pipeline, Plan, Registry, Runner, Tools, Writer, v2 Writer wire bytes, and
+  Validator were not changed. The default remains v1 and Validator still
+  reports `ZP_V2_VALIDATION_NOT_IMPLEMENTED`.
+- P1-B8.4 has not started. Its only next scope is the complete v2 Validator;
+  Reader success must not be presented as full-file validation.
 
 ## Planned production file set
 

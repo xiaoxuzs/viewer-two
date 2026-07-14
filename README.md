@@ -75,7 +75,7 @@ Version-1 field conventions are:
 
 The validator rejects trailing bytes after the directory, overlapping block ranges, duplicate block names, unsupported versions/endianness/encodings, malformed checksum text, and invalid directory offsets or lengths.
 
-## Explicit version-2 Writer
+## Explicit version-2 Writer and Reader
 
 P1-B8.2 adds production writing for the frozen ZP v2 arrays layout. An explicit
 `ZpWriter().write(target, blocks, format_version=2)` writes the same nine
@@ -87,12 +87,17 @@ chunks using a two-pass checksum/layout strategy, and protected by both
 per-array and whole-block SHA-256. The production Writer is independent of the
 reference Codec under `specs/zp_v2/`.
 
-The default Writer and both existing Pipelines still write frozen version 1.
-Production `ZpReader` and `ZpValidator` deliberately remain fail-closed for
-version 2 with `ZP_V2_READ_NOT_IMPLEMENTED` and
-`ZP_V2_VALIDATION_NOT_IMPLEMENTED`. A v2 file therefore cannot yet be consumed
-by the production Reader or Validator; this stage is Writer support, not
-complete ZP v2 support. P1-B8.3 random-access Reader work has not started.
+P1-B8.3 adds production v2 reading without changing the default Writer or
+either Pipeline: `read_array`, `read_spectrum_arrays`, and
+`read_chromatogram_arrays` seek to only the requested binary64 payloads and
+verify their per-array SHA-256. `read_arrays` and `read_block("arrays")` are
+the explicit full-decode paths; they enforce a conservative decoded-memory
+budget and verify both the whole arrays-block checksum and every per-array
+checksum. Reader instances cache only the strict canonical top-level and
+internal directories, keyed by file identity; payloads and decoded values are
+never cached. Production `ZpValidator` remains fail-closed for version 2 with
+`ZP_V2_VALIDATION_NOT_IMPLEMENTED`. This is v2 Writer and Reader support, not
+complete ZP v2 support; no migration tool exists and P1-B8.4 has not started.
 
 ## Layout
 
@@ -126,11 +131,11 @@ Without installation, running from the repository root also works because the ex
 - P3: real RAW conversion adapters, multi-file/multi-run policies, recovery, and parallel conversion.
 - P4: Viewer, database, frontend, BU, TopDown, and DIA integration with production migration tooling.
 
-This prototype does not implement real RAW, general mzML conversion, BU, TopDown, DIA, Viewer integration, a database, a frontend, v2 reading or validation, compression, memory mapping, parallel conversion, or production recovery.
+This prototype does not implement real RAW, general mzML conversion, BU, TopDown, DIA, Viewer integration, a database, a frontend, v2 validation or migration, compression, memory mapping, parallel conversion, or production recovery.
 
 ## P1 status
 
-P1-A investigation and P1-B1 through P1-B8.2 are complete. P1-B8.3 has not started. P1-B1 adds deterministic accepted/rejected fixtures, pins Pyteomics to `>=4.7.5,<5`, freezes `mzml_metadata` v1 and `mzml_auxiliary_arrays` v1 schemas, and adds a parser-independent admission policy. P1-B5 completed the strict real MS1/MS2 plus TIC/BPC conversion subset. P1-B6 evaluated the v1 JSON scale limit; P1-B7 froze the design for a version-2 arrays region with a 64-byte internal Header, canonical array directory, zero alignment padding, and contiguous little-endian float64 payloads.
+P1-A investigation and P1-B1 through P1-B8.3 are complete. P1-B8.4 has not started. P1-B1 adds deterministic accepted/rejected fixtures, pins Pyteomics to `>=4.7.5,<5`, freezes `mzml_metadata` v1 and `mzml_auxiliary_arrays` v1 schemas, and adds a parser-independent admission policy. P1-B5 completed the strict real MS1/MS2 plus TIC/BPC conversion subset. P1-B6 evaluated the v1 JSON scale limit; P1-B7 froze the design for a version-2 arrays region with a 64-byte internal Header, canonical array directory, zero alignment padding, and contiguous little-endian float64 payloads.
 
 P1-B5 supports one local mzML file with one run, indexed or non-indexed, centroid MS1 and MS2, and zero or more TIC/BPC chromatograms. Every MS2 must have exactly one precursor and one selected ion with explicit m/z, nonzero charge, and intensity. Spectrum RT and chromatogram time accept explicit seconds or minutes and are normalized to seconds. Required arrays accept float32/float64 and zlib/no compression; they must be nonempty, finite, and aligned, with non-negative m/z and time values. Core `ArrayBlock` values are normalized to float64. Source dtype, compression, units, RT/time provenance, parent `spectrumRef`, isolation window, activation methods, and collision energy/unit are preserved in `mzml_metadata` v1. Whitelisted auxiliary arrays, currently chromatogram `MS:1000786` `ms level` int64, are preserved in `mzml_auxiliary_arrays` v1.
 
@@ -138,7 +143,9 @@ SRM, MRM, SIC, selected-ion-current, precursor/product chromatograms, unknown ch
 
 P1-B6 repeated the 31,408,514-byte real sample three times. Every output was 78,103,277 bytes (2.486691x input) for 2,379,436 peaks; the median traced Python peak was 471,928,798 bytes and median process RSS peak was 1,646,055,424 bytes. The `arrays` block was 74,610,555 bytes (95.5281% of `.zp`), and current single-Spectrum array access reparses the full block. The bounded v1 prototype gate warns at 32 MiB input, 2M peaks, 80 MiB predicted output, or 1.5 GiB predicted RSS; it rejects above 64 MiB input, 5M peaks, 200 MiB output, or 4 GiB predicted RSS, subject to aggregate free-resource checks.
 
-P1-B8.1 added Header-first version dispatch to the public Writer, Reader, and Validator facades. P1-B8.2 now implements explicit v2 writing with preflight resource limits, atomic replacement, byte-identical P1-B7 Golden arrays, and independent full-file tests. The production `ZP_VERSION`, default Writer, and Pipeline output remain version 1. The isolated standard-library Codec under `specs/zp_v2/` remains outside Registry, the conversion pipeline, and `binary_layer/`; tests use it only for cross-validation. Production Reader and Validator v2 bodies remain unimplemented and fail closed. P1-B8.3 is the next unstarted stage.
+P1-B8.1 added Header-first version dispatch to the public Writer, Reader, and Validator facades. P1-B8.2 implements explicit v2 writing with preflight resource limits, atomic replacement, byte-identical P1-B7 Golden arrays, and independent full-file tests. P1-B8.3 implements strict v2 directory parsing, bounded full decoding, and target-only Array/Spectrum/Chromatogram reads with per-instance identity-bound directory caches. The production `ZP_VERSION`, default Writer, and Pipeline output remain version 1. The isolated standard-library Codec under `specs/zp_v2/` remains outside Registry, the conversion pipeline, and `binary_layer/`; tests use it only for cross-validation. Production Validator v2 remains unimplemented and fail closed. P1-B8.4 is the next unstarted stage.
+
+The restored 31,408,514-byte real mzML B8.3 baseline produced a 42,559,842-byte explicit v2 file. Its cached target Spectrum read consumed exactly 37,264 bytes of selected array payload and zero unrelated payload bytes; timing results are recorded in the staged implementation plan and are not a production performance claim.
 
 - [P1 mzML investigation](docs/P1_MZML_INVESTIGATION.md)
 - [P1-B implementation plan](docs/P1_MZML_IMPLEMENTATION_PLAN.md)

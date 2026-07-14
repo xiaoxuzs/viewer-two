@@ -1,30 +1,25 @@
 from __future__ import annotations
 
-import io
 from pathlib import Path
 
 import pytest
 
 from binary_layer.constants import HEADER_SIZE, HEADER_STRUCT, ZP_ENDIANNESS_LITTLE, ZP_MAGIC
-from binary_layer.exceptions import UnsupportedVersionError, ZpReadError, ZpVersionNotImplementedError
+from binary_layer.exceptions import UnsupportedVersionError, ZpReadError
 from binary_layer.reader import ZpReader
+from zp_v2_reader_support import TrackingStream, build_complete_v2
 
 
 def _header(version: int, *, magic: bytes = ZP_MAGIC, endianness: int = ZP_ENDIANNESS_LITTLE) -> bytes:
     return HEADER_STRUCT.pack(magic, version, endianness, 0, 0, HEADER_SIZE)
 
 
-def test_v2_reader_fails_before_v1_directory_or_json_parsing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_v2_reader_dispatches_without_v1_directory_or_json_parsing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     path = tmp_path / "v2.zp"
-    path.write_bytes(_header(2) + b"not a v1 directory" * 100)
+    blocks = build_complete_v2(path)
     monkeypatch.setattr("binary_layer.reader.parse_json_bytes", lambda _raw: pytest.fail("v1 JSON parser called"))
 
-    with pytest.raises(ZpVersionNotImplementedError) as captured:
-        ZpReader(path).read_arrays()
-
-    assert (captured.value.code, captured.value.version, captured.value.operation) == (
-        "ZP_V2_READ_NOT_IMPLEMENTED", 2, "read"
-    )
+    assert ZpReader(path).read_array(blocks.arrays[0].array_id) == blocks.arrays[0]
 
 
 def test_unknown_reader_version_is_distinct(tmp_path: Path) -> None:
@@ -54,28 +49,26 @@ def test_header_errors_take_priority_over_v2_dispatch(tmp_path: Path, raw: bytes
     with pytest.raises(ZpReadError, match=message) as captured:
         ZpReader(path).read_header()
 
-    assert not isinstance(captured.value, ZpVersionNotImplementedError)
+    assert not isinstance(captured.value, UnsupportedVersionError)
 
 
 def test_v2_reader_reads_exactly_one_header_and_closes_the_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    path = tmp_path / "large-v2.zp"
-    path.write_bytes(_header(2) + b"x" * 1_000_000)
-    calls: list[int] = []
-
-    class TrackingStream(io.BytesIO):
-        def read(self, size: int = -1) -> bytes:
-            calls.append(size)
-            return super().read(size)
-
-    stream = TrackingStream(path.read_bytes())
+    path = tmp_path / "v2.zp"
+    build_complete_v2(path)
+    events: list[tuple[str, int, int]] = []
     original_open = Path.open
+    opened: list[TrackingStream] = []
 
     def tracked_open(self: Path, *args, **kwargs):
-        return stream if self == path else original_open(self, *args, **kwargs)
+        raw = original_open(self, *args, **kwargs)
+        if self != path:
+            return raw
+        tracked = TrackingStream(raw, events)
+        opened.append(tracked)
+        return tracked
 
     monkeypatch.setattr(Path, "open", tracked_open)
-    with pytest.raises(ZpVersionNotImplementedError):
-        ZpReader(path).read_header()
+    assert ZpReader(path).read_header().version == 2
 
-    assert calls == [HEADER_SIZE]
-    assert stream.closed is True
+    assert [(offset, length) for kind, offset, length in events if kind == "read"] == [(0, HEADER_SIZE)]
+    assert opened[0]._stream.closed is True

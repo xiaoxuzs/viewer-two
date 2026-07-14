@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from binary_layer.constants import HEADER_SIZE, HEADER_STRUCT, ZP_ENDIANNESS_LITTLE, ZP_MAGIC
-from binary_layer.exceptions import ZpVersionNotImplementedError
+from binary_layer.exceptions import ZpV2ArrayReadError
 from binary_layer.reader import ZpReader
 from binary_layer.validator import ZpValidator
 from binary_layer.writer import ZpWriter
@@ -25,7 +25,7 @@ def test_v2_reader_and_validator_do_not_enter_v1_body(tmp_path: Path, monkeypatc
     monkeypatch.setattr("binary_layer.reader.parse_json_bytes", lambda *_args: pytest.fail("reader v1 JSON called"))
     monkeypatch.setattr("binary_layer.validator.parse_json_bytes", lambda *_args: pytest.fail("validator v1 JSON called"))
 
-    with pytest.raises(ZpVersionNotImplementedError):
+    with pytest.raises(ZpV2ArrayReadError):
         ZpReader(path).read_directory()
     result = ZpValidator().validate(path)
     assert result.valid is False

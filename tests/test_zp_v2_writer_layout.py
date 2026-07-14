@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from binary_layer import ZpReader, ZpValidator, ZpWriter
-from binary_layer.exceptions import ZpVersionNotImplementedError, ZpWriteError
+from binary_layer.exceptions import ZpWriteError
 from specs.zp_v2.arrays_reference_codec import decode_arrays_block, validate_arrays_block
 from zp_v2_writer_support import parse_arrays_block, parse_v2_file
 
@@ -58,12 +58,13 @@ def test_complete_v2_layout_checksums_global_meta_and_input_immutability(
     assert blocks == before
 
 
-def test_production_reader_and_validator_remain_fail_closed_for_written_v2(pipeline_factory, tmp_path: Path) -> None:
+def test_production_reader_succeeds_while_validator_remains_fail_closed_for_written_v2(
+    pipeline_factory, tmp_path: Path
+) -> None:
     target = tmp_path / "boundary.zp"
     ZpWriter().write(target, pipeline_factory(".mzML").blocks, format_version=2)
-    with pytest.raises(ZpVersionNotImplementedError) as captured:
-        ZpReader(target).read_header()
-    assert captured.value.code == "ZP_V2_READ_NOT_IMPLEMENTED"
+    assert ZpReader(target).read_header().version == 2
+    assert ZpReader(target).read_arrays()
     result = ZpValidator().validate(target)
     assert result.valid is False
     assert [issue.code for issue in result.issues] == ["ZP_V2_VALIDATION_NOT_IMPLEMENTED"]

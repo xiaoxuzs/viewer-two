@@ -1,6 +1,6 @@
 # P1-B8 production implementation plan
 
-Status: **P1-B8.2 completed on 2026-07-14; P1-B8.3 has not started.**
+Status: **P1-B8.3 completed on 2026-07-14; P1-B8.4 has not started.**
 
 Date: 2026-07-14 (Asia/Shanghai)
 
@@ -114,6 +114,8 @@ selection returns the B8.1 fail-closed result; v1 stays default.
 
 ## P1-B8.3: v2 arrays Reader and random access
 
+Status: **completed on 2026-07-14.**
+
 **Goal.** Parse v2 top-level and internal directories and implement true
 target-only `read_array`, Spectrum arrays, and Chromatogram arrays.
 
@@ -133,10 +135,50 @@ and file identity changes.
 payload read, verifies that checksum/numeric semantics, and matches full
 logical decoding.
 
+**Completion record.** `ZpReader` now dispatches v1 unchanged and v2 through
+the independent `binary_layer/v2_arrays_reader.py`; production Reader code
+imports neither the Writer implementation nor the reference Codec. It strictly
+parses canonical top-level and internal JSON with duplicate-key rejection,
+checks the encoding matrix/ranges/EOF/Header/padding/contiguous offsets, and
+applies the frozen seven read limits before large reads or full decoding.
+Per-instance caches contain only the top and arrays directories and are keyed
+by `(resolved_path, st_dev, st_ino, st_size, st_mtime_ns, st_ctime_ns)`;
+same-path replacement and mid-read identity changes invalidate or fail, while
+payload bytes and decoded values are never cached.
+
+Single and batched target reads sort requested entries by payload offset, read
+only those bytes, verify only their per-array checksums, and preserve requested
+return order. Full `read_arrays` first applies its 1 GiB default conservative
+decode budget, verifies the top arrays checksum, then verifies every per-array
+checksum. Forty-five required top/arrays real-byte corruption classes plus
+resource-limit and mid-read-change cases pass. A deterministic 128-Spectrum,
+512-peaks/Spectrum baseline produced 1,372,870-byte v1 and 1,157,954-byte v2
+files; cached v2 Spectrum payload I/O was exactly 8,192 target bytes and zero
+unrelated payload bytes. On this one development run, v1/v2 single-Spectrum
+times were 46.25/2.22 ms and random100 times were 3.955/0.229 s; these are
+environment baselines, not production performance claims. A final rerun after
+I/O instrumentation recorded 43.37/1.32 ms and 3.675/0.150 s respectively;
+the variability is why time is informational while exact payload bytes are the
+gate. The 31,408,514-byte real source was restored for the final gate: its v2
+file was 42,559,842 bytes with a 39,067,064-byte arrays block and 4,098 entries.
+Explicit v2 writing took 10.434 s; first/cached `read_array` took 76.18/2.57 ms,
+single Spectrum 16.61 ms, sequential10 0.112 s, random100 1.357 s, repeat100
+1.231 s, Chromatogram 3.21 ms, and full arrays 2.905 s. The selected Spectrum
+read exactly 37,264 target payload bytes, zero unrelated payload bytes, 709,934
+total bytes, and four seeks. These remain one-environment baselines.
+
+**B8.4 entry condition.** The default Writer/Pipelines remain v1, Validator is
+unchanged and returns `ZP_V2_VALIDATION_NOT_IMPLEMENTED`, Golden fixtures are
+stable, and the full Reader/corruption/I/O suite is green. B8.4 may implement
+only the v2 Validator and must reuse or reconcile the already proven read-only
+parsing rules without weakening v1.
+
 **Failure rollback.** Remove v2 Reader wiring/module; retain v2 Writer fixtures
 for offline validation; v1 Reader remains unchanged.
 
 ## P1-B8.4: v2 Validator
+
+Status: **not started.**
 
 **Goal.** Implement complete top-level, arrays Header/directory/padding,
 per-array, numeric, and cross-block relationship validation.

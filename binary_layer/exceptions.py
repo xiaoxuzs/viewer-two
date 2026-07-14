@@ -69,6 +69,33 @@ class ZpReadError(ZpError):
     pass
 
 
+class ZpV2ArrayReadError(ZpReadError):
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        location: str,
+        *,
+        actual: object | None = None,
+        limit: int | None = None,
+        array_id: str | None = None,
+    ) -> None:
+        self.code = code
+        self.message = message
+        self.location = location
+        self.actual = actual
+        self.limit = limit
+        self.array_id = array_id
+        details = f"{code} at {location}: {message}"
+        if array_id is not None:
+            details += f"; array_id={array_id!r}"
+        if actual is not None:
+            details += f"; actual={actual}"
+        if limit is not None:
+            details += f"; limit={limit}"
+        super().__init__(details)
+
+
 class ZpValidationError(ZpError):
     pass
 

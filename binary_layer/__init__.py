@@ -22,6 +22,7 @@ from .constants import (
 )
 from .exceptions import (
     UnsupportedVersionError,
+    ZpV2ArrayReadError,
     ZpV2ArrayWriteError,
     ZpV2ResourceLimitError,
     ZpVersionNotImplementedError,
@@ -35,6 +36,7 @@ from .runner import PipelineRunner
 from .validator import ZpValidator
 from .writer import ZpWriter
 from .v2_arrays_writer import ZpV2ArrayWriteLimits
+from .v2_arrays_reader import ZpV2ArrayReadLimits
 from .tools.real_mzml import RealMzmlParseTool
 
 __all__ = [
@@ -47,5 +49,6 @@ __all__ = [
     "SUPPORTED_ZP_READ_VERSIONS", "SUPPORTED_ZP_VALIDATE_VERSIONS",
     "SUPPORTED_ZP_WRITE_VERSIONS", "UnsupportedVersionError", "ZP_VERSION",
     "ZP_VERSION_V1", "ZP_VERSION_V2", "ZpV2ArrayWriteError",
-    "ZpV2ArrayWriteLimits", "ZpV2ResourceLimitError", "ZpVersionNotImplementedError",
+    "ZpV2ArrayWriteLimits", "ZpV2ArrayReadError", "ZpV2ArrayReadLimits",
+    "ZpV2ResourceLimitError", "ZpVersionNotImplementedError",
 ]
