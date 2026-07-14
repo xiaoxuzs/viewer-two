@@ -2,7 +2,7 @@
 
 This repository is an independent Python 3.11+ prototype of a mass-spectrometry Viewer conversion layer. It proves the contracts among source inspection, conversion planning, pipeline orchestration, strongly typed blocks, one writer, one reader, and one validator. It is **not** the final production high-performance binary format.
 
-The two accepted inputs are `mock_mzML` (`.mzML`, case-insensitive) and `mock_RAW` (`.raw`, case-insensitive). Both paths generate deterministic mock spectra and arrays; neither parser reads real mzML or RAW content. Future Viewer imports are intended to enter `.zp` first, but this P0 does not integrate Viewer, a frontend, or a database.
+Source inspection classifies `.mzML` case-insensitively as `real_mzml`; `.raw` remains the P0 `mock_raw` path. P1-B5 registers `RealMzmlParseTool` for the strict single-run centroid MS1/MS2 plus TIC/BPC subset described below. Unsupported real files fail atomically and never fall back to the mock parser. The deterministic `mock_mzml` path remains available only through an explicitly constructed `SourceProfile(source_type="mock_mzml")` in P0 tests and examples. This prototype does not integrate Viewer, a frontend, or a database.
 
 ## Architecture
 
@@ -13,11 +13,13 @@ input file
   -> PipelineRunner -> named PipelineSteps from StepRegistry
        system: FileValidate -> HashInput
        pre_conversion (RAW only): MockRawToMzml
-       block_tool: MockMzmlParse -> StringPoolBuild -> IndexBuild
+       block_tool: RealMzmlParse or MockMzmlParse -> StringPoolBuild -> IndexBuild
        system: ZpWrite -> ZpValidate
   -> ZpWriter (the only production .zp write boundary)
   -> ZpReader / ZpValidator
 ```
+
+For `real_mzml`, the fixed plan is `FileValidate -> HashInput -> real_mzml_parse -> StringPoolBuild -> IndexBuild -> ZpWrite -> ZpValidate`. The default Registry binds `real_mzml_parse` to `RealMzmlParseTool`; Registry and Runner contain no source-type or mass-spectrometry business branching.
 
 `BaseBlockTool` only reads `PipelineContext`, creates typed blocks, and updates `context.blocks`. It cannot set `output_zp_path`, write `.zp`, invoke validation, or hide core data in metadata. `FileValidateStep`, `HashInputStep`, `ZpWriteStep`, and `ZpValidateStep` are system steps. `MockRawToMzmlTool` is a pre-conversion step, not a block tool. `PipelineRunner` only executes the plan in order and records started/completed/failed logs. `StepRegistry` only registers and retrieves names.
 
@@ -81,11 +83,12 @@ binary_layer/tools/ system, pre-conversion, and block-producing steps
 examples/           complete mock mzML build and read-back
 scripts/            .zp inspection CLI
 tests/              happy-path, boundary, corruption, and reference tests
+tests/fixtures/mzml deterministic P1-B1 mzML compatibility fixtures
 ```
 
 ## Install and verify
 
-The runtime has no third-party dependency. For development:
+P1-B1 constrains Pyteomics to `>=4.7.5,<5`; P1-B5 implements the strict real-MS1/MS2 plus TIC/BPC subset below. For development:
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -104,11 +107,16 @@ Without installation, running from the repository root also works because the ex
 - P3: real RAW conversion adapters, multi-file/multi-run policies, recovery, and parallel conversion.
 - P4: Viewer, database, frontend, BU, TopDown, and DIA integration with production migration tooling.
 
-P0 does not implement real RAW, real mzML, BU, TopDown, DIA, Viewer integration, a database, a frontend, high-performance binary numeric arrays, compression, memory mapping, parallel conversion, or production recovery.
+This prototype does not implement real RAW, general mzML conversion, BU, TopDown, DIA, Viewer integration, a database, a frontend, high-performance binary numeric arrays, compression, memory mapping, parallel conversion, or production recovery.
 
 ## P1 status
 
-P1-A investigation is complete; real mzML conversion is not implemented.
+P1-A investigation and P1-B1 through P1-B5 are complete. P1-B1 adds deterministic accepted/rejected fixtures, pins Pyteomics to `>=4.7.5,<5`, freezes `mzml_metadata` v1 and `mzml_auxiliary_arrays` v1 schemas, and adds a parser-independent admission policy.
+
+P1-B5 supports one local mzML file with one run, indexed or non-indexed, centroid MS1 and MS2, and zero or more TIC/BPC chromatograms. Every MS2 must have exactly one precursor and one selected ion with explicit m/z, nonzero charge, and intensity. Spectrum RT and chromatogram time accept explicit seconds or minutes and are normalized to seconds. Required arrays accept float32/float64 and zlib/no compression; they must be nonempty, finite, and aligned, with non-negative m/z and time values. Core `ArrayBlock` values are normalized to float64. Source dtype, compression, units, RT/time provenance, parent `spectrumRef`, isolation window, activation methods, and collision energy/unit are preserved in `mzml_metadata` v1. Whitelisted auxiliary arrays, currently chromatogram `MS:1000786` `ms level` int64, are preserved in `mzml_auxiliary_arrays` v1.
+
+SRM, MRM, SIC, selected-ion-current, precursor/product chromatograms, unknown chromatogram types, profile spectra, DIA, ion mobility, MS3+, missing/multiple precursor or selected-ion structures, missing required precursor scalars, unknown auxiliary arrays, unsupported native-ID formats, missing scan numbers, ambiguous time/RT units, Numpress, and multiple runs are rejected. This is not general mzML support. The `arrays` block remains one complete JSON list and conversion keeps the parsed model plus candidate Blocks in memory; the successful 31.4 MB sample conversion is not a production-scale performance claim. Real RAW conversion, compression, binary array payloads, memory mapping, and Viewer integration remain unsupported.
 
 - [P1 mzML investigation](docs/P1_MZML_INVESTIGATION.md)
 - [P1-B implementation plan](docs/P1_MZML_IMPLEMENTATION_PLAN.md)
+- [P1-B1 fixture manifest and regeneration](tests/fixtures/mzml/README.md)

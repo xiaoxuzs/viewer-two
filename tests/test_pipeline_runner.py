@@ -7,10 +7,11 @@ import pytest
 
 from binary_layer import PipelineContext, PipelineRunner, PlanBuilder, SourceInspector, build_default_registry
 from binary_layer.blocks import StringPoolBlock
-from binary_layer.exceptions import BlockBoundaryViolationError, StepExecutionError
+from binary_layer.exceptions import BlockBoundaryViolationError, MzmlParseError, StepExecutionError
 from binary_layer.models import ConversionPlan, PipelineLogEntry
 from binary_layer.registry import StepRegistry
 from binary_layer.tools.base import BaseBlockTool, BasePipelineStep
+from conftest import mock_mzml_profile
 
 
 @pytest.mark.parametrize("suffix", [".mzML", ".RAW"])
@@ -23,6 +24,8 @@ def test_complete_mock_pipelines(pipeline_factory, suffix: str) -> None:
     assert context.artifacts["validation_result"].valid is True
     if suffix.lower() == ".raw":
         assert context.metadata["raw_converted_to_mock_mzml"] is True
+    else:
+        assert context.source_profile.source_type == "mock_mzml"
     statuses = [entry.status for entry in context.logs]
     assert statuses == [status for _ in range(len(statuses) // 2) for status in ("started", "completed")]
 
@@ -30,7 +33,7 @@ def test_complete_mock_pipelines(pipeline_factory, suffix: str) -> None:
 def test_block_tools_do_not_create_zp(tmp_path: Path) -> None:
     source = tmp_path / "source.mzML"
     source.write_bytes(b"mock")
-    profile = SourceInspector().inspect([source])
+    profile = mock_mzml_profile(source)
     context = PipelineContext(profile, metadata={"output_dir": tmp_path})
     registry = build_default_registry()
     for name in ("file_validate", "hash_input", "mock_mzml_parse", "string_pool_build", "index_build"):
@@ -39,6 +42,38 @@ def test_block_tools_do_not_create_zp(tmp_path: Path) -> None:
         assert list(tmp_path.glob("*.zp")) == []
     registry.get("zp_write").run(context)
     assert Path(context.artifacts["output_zp_path"]).exists()
+
+
+def test_invalid_real_mzml_entry_fails_closed_without_mock_fallback(tmp_path: Path) -> None:
+    source = tmp_path / "real.mzML"
+    source.write_bytes(b"minimal bytes are not parsed during B2")
+    profile = SourceInspector().inspect([source])
+    plan = PlanBuilder().build(profile)
+    context = PipelineContext(profile, metadata={"output_dir": tmp_path})
+
+    with pytest.raises(StepExecutionError) as captured:
+        PipelineRunner().run(plan, build_default_registry(), context)
+
+    assert profile.source_type == "real_mzml"
+    assert "real_mzml_parse" in plan.required_steps
+    assert "mock_mzml_parse" not in plan.required_steps
+    assert isinstance(captured.value.__cause__, MzmlParseError)
+    assert captured.value.__cause__.code == "MZML_READ_FAILED"
+    assert context.metadata["file_validated"] is True
+    assert isinstance(context.metadata["input_sha256"], str)
+    log_pairs = [(item.step_name, item.status) for item in context.logs]
+    assert log_pairs == [
+        ("file_validate", "started"), ("file_validate", "completed"),
+        ("hash_input", "started"), ("hash_input", "completed"),
+        ("real_mzml_parse", "started"), ("real_mzml_parse", "failed"),
+    ]
+    assert all(item.step_name != "mock_mzml_parse" for item in context.logs)
+    assert all(item.step_name not in {"zp_write", "zp_validate"} for item in context.logs)
+    assert context.blocks.global_meta is None
+    assert context.blocks.spectra == []
+    assert context.blocks.arrays == []
+    assert "output_zp_path" not in context.artifacts
+    assert list(tmp_path.glob("*.zp")) == []
 
 
 class FailingStep(BasePipelineStep):

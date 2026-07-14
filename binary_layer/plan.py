@@ -4,7 +4,16 @@ from .constants import ZP_EXTENSION
 from .exceptions import UnsupportedSourceError
 from .models import ConversionPlan, SourceProfile
 
-MZML_STEPS = (
+REAL_MZML_STEPS = (
+    "file_validate",
+    "hash_input",
+    "real_mzml_parse",
+    "string_pool_build",
+    "index_build",
+    "zp_write",
+    "zp_validate",
+)
+MOCK_MZML_STEPS = (
     "file_validate",
     "hash_input",
     "mock_mzml_parse",
@@ -27,7 +36,11 @@ RAW_STEPS = (
 
 class PlanBuilder:
     def build(self, profile: SourceProfile) -> ConversionPlan:
-        plans = {"mock_mzml": MZML_STEPS, "mock_raw": RAW_STEPS}
+        plans = {
+            "real_mzml": REAL_MZML_STEPS,
+            "mock_mzml": MOCK_MZML_STEPS,
+            "mock_raw": RAW_STEPS,
+        }
         try:
             steps = plans[profile.source_type]
         except KeyError as exc:
@@ -37,6 +50,5 @@ class PlanBuilder:
             source_type=profile.source_type,
             required_steps=steps,
             output_extension=ZP_EXTENSION,
-            notes=("P0 mock conversion plan",),
+            notes=("P1-B2 fixed conversion plan",),
         )
-

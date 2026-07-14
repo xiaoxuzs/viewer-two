@@ -6,9 +6,23 @@ from typing import Any, Callable
 
 import pytest
 
-from binary_layer import PipelineContext, PipelineRunner, PlanBuilder, SourceInspector, build_default_registry
+from binary_layer import PipelineContext, PipelineRunner, PlanBuilder, SourceInspector, SourceProfile, build_default_registry
 from binary_layer.constants import BLOCK_NAMES, DIRECTORY_LENGTH_STRUCT, HEADER_SIZE, HEADER_STRUCT
 from binary_layer.serialization import canonical_json_bytes, parse_json_bytes
+
+
+def mock_mzml_profile(source: Path) -> SourceProfile:
+    return SourceProfile(
+        source_type="mock_mzml",
+        input_files=(source,),
+        file_count=1,
+        has_spectra=True,
+        has_chromatograms=False,
+        has_identification=False,
+        has_quantification=False,
+        requires_pre_conversion=False,
+        notes=("Explicit P0 mock mzML profile for tests.",),
+    )
 
 
 @pytest.fixture
@@ -16,7 +30,7 @@ def pipeline_factory(tmp_path: Path) -> Callable[[str], PipelineContext]:
     def build(suffix: str = ".mzML") -> PipelineContext:
         source = tmp_path / f"sample{suffix}"
         source.write_bytes(b"mock source bytes")
-        profile = SourceInspector().inspect([source])
+        profile = SourceInspector().inspect([source]) if suffix.lower() == ".raw" else mock_mzml_profile(source)
         plan = PlanBuilder().build(profile)
         output = tmp_path / f"result_{suffix[1:].lower()}.zp"
         context = PipelineContext(profile, metadata={"output_path": output})

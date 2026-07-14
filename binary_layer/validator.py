@@ -324,6 +324,16 @@ class ZpValidator:
                     add("INVALID_REFERENCE", f"Chromatogram references missing array {array_id}", "core_chromatograms")
                 elif array_map[array_id].get("array_type") != expected:
                     add("ARRAY_TYPE_MISMATCH", f"Chromatogram {field} has the wrong array type", "core_chromatograms")
+            time_array = array_map.get(chromatogram.get("time_array_id"))
+            intensity_array = array_map.get(chromatogram.get("intensity_array_id"))
+            if time_array is not None and intensity_array is not None:
+                time_values = time_array.get("values")
+                intensity_values = intensity_array.get("values")
+                if isinstance(time_values, list) and isinstance(intensity_values, list):
+                    if len(time_values) != len(intensity_values):
+                        add("ARRAY_LENGTH_MISMATCH", "Chromatogram arrays have different lengths", "core_chromatograms")
+                    if any(isinstance(value, (int, float)) and not isinstance(value, bool) and value < 0 for value in time_values):
+                        add("INVALID_TIME_ARRAY_VALUE", "Chromatogram time values must not be negative", "core_chromatograms")
 
         indexes = blocks.get("indexes")
         if isinstance(indexes, dict):

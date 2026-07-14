@@ -27,6 +27,7 @@ def build_default_registry() -> StepRegistry:
     from .tools.common import FileValidateStep, HashInputStep, IndexBuildTool, StringPoolBuildTool, ZpValidateStep, ZpWriteStep
     from .tools.mzml_mock import MockMzmlParseTool
     from .tools.raw_mock import MockRawToMzmlTool
+    from .tools.real_mzml import RealMzmlParseTool
 
     registry = StepRegistry()
     for step in (
@@ -34,6 +35,7 @@ def build_default_registry() -> StepRegistry:
         HashInputStep(),
         MockRawToMzmlTool(),
         MockMzmlParseTool(),
+        RealMzmlParseTool(),
         StringPoolBuildTool(),
         IndexBuildTool(),
         ZpWriteStep(),
@@ -41,4 +43,3 @@ def build_default_registry() -> StepRegistry:
     ):
         registry.register(step)
     return registry
-

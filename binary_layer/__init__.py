@@ -18,11 +18,13 @@ from .registry import StepRegistry, build_default_registry
 from .runner import PipelineRunner
 from .validator import ZpValidator
 from .writer import ZpWriter
+from .tools.real_mzml import RealMzmlParseTool
 
 __all__ = [
     "ArrayBlock", "BlockCollection", "ChromatogramBlock", "ConversionPlan",
     "ExtensionBlock", "GlobalMetaBlock", "IndexBlock", "PipelineContext",
     "PipelineRunner", "PlanBuilder", "PrecursorBlock", "RunBlock", "SourceInspector",
     "SourceProfile", "SpectrumBlock", "StepRegistry", "StringPoolBlock",
-    "ValidationResult", "ZpReader", "ZpValidator", "ZpWriter", "build_default_registry",
+    "ValidationResult", "ZpReader", "ZpValidator", "ZpWriter", "RealMzmlParseTool",
+    "build_default_registry",
 ]

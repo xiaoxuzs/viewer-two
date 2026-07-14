@@ -61,3 +61,24 @@ class MissingRequiredBlockError(ZpValidationError):
 class InvalidReferenceError(ZpValidationError):
     pass
 
+
+class MzmlSchemaError(ZpError):
+    """A versioned mzML extension payload violates its frozen schema."""
+
+
+class MzmlAdmissionError(ZpError):
+    """A malformed feature profile cannot be evaluated for admission."""
+
+
+class MzmlParseError(ZpError):
+    """A real mzML input cannot be converted into controlled internal facts."""
+
+    def __init__(self, code: str, message: str, location: str) -> None:
+        self.code = code
+        self.message = message
+        self.location = location
+        super().__init__(f"{code} at {location}: {message}")
+
+
+class MzmlCapabilityError(MzmlParseError):
+    """The input is admissible but outside the current parser stage."""

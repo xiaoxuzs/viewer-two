@@ -12,7 +12,7 @@ class SourceInspector:
             raise InvalidSourceError(f"P0 requires exactly one input file; got {len(paths)}")
 
         suffix = paths[0].suffix.lower()
-        source_type = {".mzml": "mock_mzml", ".raw": "mock_raw"}.get(suffix, "unknown")
+        source_type = {".mzml": "real_mzml", ".raw": "mock_raw"}.get(suffix, "unknown")
         known = source_type != "unknown"
         return SourceProfile(
             source_type=source_type,
@@ -23,6 +23,5 @@ class SourceInspector:
             has_identification=False,
             has_quantification=False,
             requires_pre_conversion=source_type == "mock_raw",
-            notes=("P0 extension-only inspection; file content is not parsed.",),
+            notes=("Extension-only inspection; file content is not parsed.",),
         )
-

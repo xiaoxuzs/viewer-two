@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
+from binary_layer import PipelineContext, PipelineRunner, PlanBuilder, SourceInspector, build_default_registry
 from binary_layer.constants import DIRECTORY_LENGTH_STRUCT, HEADER_SIZE
 from binary_layer.validator import ZpValidator
 from conftest import load_raw_zp, rewrite_directory, rewrite_zp
@@ -149,3 +152,59 @@ def test_declared_directory_length_beyond_eof_is_reported(valid_zp: Path) -> Non
     raw[directory_offset:directory_offset + 8] = DIRECTORY_LENGTH_STRUCT.pack(current_length + 10)
     valid_zp.write_bytes(raw)
     assert "INVALID_DIRECTORY_LENGTH" in codes(valid_zp)
+
+
+def _valid_chromatogram_zp(tmp_path: Path) -> Path:
+    source = Path(__file__).parent / "fixtures" / "mzml" / "accept_indexed_tic_minutes_float64_zlib.mzML"
+    profile = SourceInspector().inspect([source])
+    output = tmp_path / "valid-chromatogram.zp"
+    PipelineRunner().run(
+        PlanBuilder().build(profile),
+        build_default_registry(),
+        PipelineContext(profile, metadata={"output_path": output}),
+    )
+    assert ZpValidator().validate(output).valid is True
+    return output
+
+
+@pytest.mark.parametrize(
+    ("mutation", "expected_code"),
+    [
+        ("missing_time", "INVALID_REFERENCE"),
+        ("missing_intensity", "INVALID_REFERENCE"),
+        ("wrong_time_type", "ARRAY_TYPE_MISMATCH"),
+        ("wrong_intensity_type", "ARRAY_TYPE_MISMATCH"),
+        ("length_mismatch", "ARRAY_LENGTH_MISMATCH"),
+        ("missing_run", "INVALID_REFERENCE"),
+        ("negative_time", "INVALID_TIME_ARRAY_VALUE"),
+    ],
+)
+def test_chromatogram_relationship_corruption_is_semantic_not_checksum_failure(
+    mutation: str,
+    expected_code: str,
+    tmp_path: Path,
+) -> None:
+    output = _valid_chromatogram_zp(tmp_path)
+
+    def mutate(payloads):
+        chromatogram = payloads["core_chromatograms"][0]
+        arrays = {item["array_id"]: item for item in payloads["arrays"]}
+        if mutation == "missing_time":
+            chromatogram["time_array_id"] = "missing_time"
+        elif mutation == "missing_intensity":
+            chromatogram["intensity_array_id"] = "missing_intensity"
+        elif mutation == "wrong_time_type":
+            chromatogram["time_array_id"] = chromatogram["intensity_array_id"]
+        elif mutation == "wrong_intensity_type":
+            chromatogram["intensity_array_id"] = chromatogram["time_array_id"]
+        elif mutation == "length_mismatch":
+            arrays[chromatogram["intensity_array_id"]]["values"].pop()
+        elif mutation == "missing_run":
+            chromatogram["run_id"] = "missing_run"
+        elif mutation == "negative_time":
+            arrays[chromatogram["time_array_id"]]["values"][0] = -1.0
+
+    rewrite_zp(output, mutate)
+    result_codes = codes(output)
+    assert expected_code in result_codes
+    assert "CHECKSUM_MISMATCH" not in result_codes

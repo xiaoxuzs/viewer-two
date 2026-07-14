@@ -1,0 +1,762 @@
+{
+  "fixtures": [
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_indexed_float64_zlib.mzML",
+      "indexed": true,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "A01 indexed MS1/MS2 with one complete precursor",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "none"
+      ],
+      "array_dtypes": [
+        "float32"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_nonindexed_float32_uncompressed.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "A02 non-indexed float32 uncompressed",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64",
+        "int64"
+      ],
+      "chromatogram_count": 2,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_tic_bpc_chromatograms.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "A03 TIC and BPC; TIC carries whitelisted ms level auxiliary array",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_indexed_tic_minutes_float64_zlib.mzML",
+      "indexed": true,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "A07 indexed MS1/MS2 with TIC minute time array",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "none"
+      ],
+      "array_dtypes": [
+        "float32"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_nonindexed_bpc_seconds_float32_uncompressed.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "A08 non-indexed MS1/MS2 with BPC second time array",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_ms1_only_indexed_float64_zlib.mzML",
+      "indexed": true,
+      "ms_levels": [
+        1
+      ],
+      "notes": "A04 indexed MS1-only float64 zlib",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "none"
+      ],
+      "array_dtypes": [
+        "float32"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_ms1_only_nonindexed_float32_uncompressed.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "A05 non-indexed MS1-only float32 uncompressed",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "accept_ms2_precursor_metadata.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "A06 complete deterministic MS2 precursor and activation metadata",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_SCAN_NUMBER"
+      ],
+      "fixture_name": "reject_missing_scan_number.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R01 native ID has no proven scan number",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_PRECURSOR_CHARGE"
+      ],
+      "fixture_name": "reject_missing_charge.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R02 selected ion omits charge",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_SELECTED_ION_INTENSITY"
+      ],
+      "fixture_name": "reject_missing_selected_ion_intensity.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R03 selected ion omits intensity",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MULTIPLE_PRECURSORS_UNSUPPORTED"
+      ],
+      "fixture_name": "reject_multiple_precursors.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R04 two precursors",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MULTIPLE_SELECTED_IONS_UNSUPPORTED"
+      ],
+      "fixture_name": "reject_multiple_selected_ions.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R05 two selected ions",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_RT_UNIT"
+      ],
+      "fixture_name": "reject_unknown_rt_unit.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R06 RT has no declared unit",
+      "representation": "centroid",
+      "rt_units": [
+        "unknown"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64",
+        "int64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_AUXILIARY_ARRAY"
+      ],
+      "fixture_name": "reject_unknown_auxiliary_array.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R07 non-whitelisted auxiliary array",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_CHROMATOGRAM_TYPE"
+      ],
+      "fixture_name": "reject_srm_chromatogram.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R08 selected-reaction-monitoring chromatogram",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_PRECURSOR"
+      ],
+      "fixture_name": "reject_missing_precursor.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R09 MS2 omits precursor",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_SELECTED_ION"
+      ],
+      "fixture_name": "reject_missing_selected_ion.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R10 precursor omits selected ion",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_SELECTED_ION_MZ"
+      ],
+      "fixture_name": "reject_missing_selected_ion_mz.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R11 selected ion omits m/z",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_PRECURSOR_CHARGE"
+      ],
+      "fixture_name": "reject_zero_charge.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R12 selected ion declares zero charge; Pyteomics preserves key presence separately from its None value",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_CHROMATOGRAM_ARRAY",
+        "UNSUPPORTED_RT_UNIT",
+        "UNSUPPORTED_ARRAY_DTYPE",
+        "UNSUPPORTED_ARRAY_COMPRESSION"
+      ],
+      "fixture_name": "reject_missing_chromatogram_time_array.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R15 TIC omits time array",
+      "representation": "centroid",
+      "rt_units": [
+        "unknown"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "MISSING_CHROMATOGRAM_ARRAY",
+        "UNSUPPORTED_ARRAY_DTYPE",
+        "UNSUPPORTED_ARRAY_COMPRESSION"
+      ],
+      "fixture_name": "reject_missing_chromatogram_intensity_array.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R16 TIC omits intensity array",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "CHROMATOGRAM_ARRAY_LENGTH_MISMATCH"
+      ],
+      "fixture_name": "reject_chromatogram_array_length_mismatch.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R17 TIC arrays have different decoded lengths",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_RT_UNIT"
+      ],
+      "fixture_name": "reject_unknown_chromatogram_time_unit.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R18 TIC time array omits its unit",
+      "representation": "centroid",
+      "rt_units": [
+        "unknown"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_CHROMATOGRAM_SEMANTICS"
+      ],
+      "fixture_name": "reject_chromatogram_precursor_semantics.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R19 TIC carries precursor semantics",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_CHROMATOGRAM_SEMANTICS"
+      ],
+      "fixture_name": "reject_chromatogram_product_semantics.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R20 TIC carries product semantics",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64",
+        "int64"
+      ],
+      "chromatogram_count": 1,
+      "expected_adapter_error": null,
+      "expected_admission": false,
+      "expected_issue_codes": [
+        "UNSUPPORTED_AUXILIARY_ARRAY"
+      ],
+      "fixture_name": "reject_unknown_chromatogram_auxiliary_array.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1
+      ],
+      "notes": "R21 TIC carries a non-whitelisted auxiliary array",
+      "representation": "centroid",
+      "rt_units": [
+        "second"
+      ],
+      "run_count": 1,
+      "spectrum_count": 1
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": "NEGATIVE_ISOLATION_OFFSET",
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "reject_negative_isolation_offset.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R13 isolation lower offset is negative",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    },
+    {
+      "array_compression": [
+        "zlib"
+      ],
+      "array_dtypes": [
+        "float64"
+      ],
+      "chromatogram_count": 0,
+      "expected_adapter_error": "NONFINITE_PRECURSOR_VALUE",
+      "expected_admission": true,
+      "expected_issue_codes": [],
+      "fixture_name": "reject_nonfinite_precursor_value.mzML",
+      "indexed": false,
+      "ms_levels": [
+        1,
+        2
+      ],
+      "notes": "R14 selected ion m/z is NaN",
+      "representation": "centroid",
+      "rt_units": [
+        "minute"
+      ],
+      "run_count": 1,
+      "spectrum_count": 2
+    }
+  ],
+  "schema_version": 1
+}

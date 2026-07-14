@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from binary_layer import PipelineContext, PipelineRunner, PlanBuilder, SourceInspector, ZpReader, build_default_registry
+from binary_layer import PipelineContext, PipelineRunner, PlanBuilder, SourceProfile, ZpReader, build_default_registry
 
 
 def main() -> int:
@@ -20,7 +20,17 @@ def main() -> int:
     source = output_dir / "mock.mzML"
     source.write_text("mock mzML input\n", encoding="utf-8")
 
-    profile = SourceInspector().inspect([source])
+    profile = SourceProfile(
+        source_type="mock_mzml",
+        input_files=(source,),
+        file_count=1,
+        has_spectra=True,
+        has_chromatograms=False,
+        has_identification=False,
+        has_quantification=False,
+        requires_pre_conversion=False,
+        notes=("Explicit P0 mock mzML profile for the example.",),
+    )
     plan = PlanBuilder().build(profile)
     context = PipelineContext(profile, metadata={"output_path": output_dir / "mock_run.zp"})
     PipelineRunner().run(plan, build_default_registry(), context)
@@ -42,4 +52,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
