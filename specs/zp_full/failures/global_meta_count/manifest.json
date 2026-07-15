@@ -1,0 +1,26 @@
+{
+  "fixtures": [
+    {
+      "file": "global_meta_count_mismatch_v1.zp",
+      "file_size": 2774,
+      "format_version": 1,
+      "sha256": "91f18933482bd78daae281fe386c256fb5a31e4c19e34f197753b214019ea6e8",
+      "validator_checked_blocks": 9,
+      "validator_issue_codes": [],
+      "validator_valid": true
+    },
+    {
+      "file": "global_meta_count_mismatch_v2.zp",
+      "file_size": 3190,
+      "format_version": 2,
+      "sha256": "4e52767898b8bd12a0b74ca32e793c3185376f914f3c0c79f9951b0adfde263c",
+      "validator_checked_blocks": 9,
+      "validator_issue_codes": [
+        "COUNT_MISMATCH"
+      ],
+      "validator_valid": false
+    }
+  ],
+  "logical_corruption": "global_meta.run_count is 0 while one Run exists",
+  "purpose": "P1-B8.5 minimal cross-version GlobalMeta count semantic-drift evidence"
+}
