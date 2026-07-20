@@ -18,3 +18,14 @@ compatibility suite is rerun. Rebuild or check the evidence with:
 python specs/zp_full/build_extension_owner_failure.py
 python specs/zp_full/build_extension_owner_failure.py --check
 ```
+
+`candidate_parity/` records the three additional read-only probe failures
+found after P1-B8.5R2: Run-owned counts, StringPool required references, and
+bidirectional Precursor links. R3A corrected Run counts and R3B corrected
+StringPool references without changing Fixture bytes. Bidirectional Precursor
+parity remains unresolved and blocks the B8.5 rerun pending R3C. Check them
+with:
+
+```text
+python specs/zp_full/build_candidate_parity_failures.py --check
+```

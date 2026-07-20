@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://viewer-two.local/specs/zp_real_matrix/manifest.schema.json",
+  "title": "P1-B8.7 real mzML matrix summary",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "stage",
+    "status",
+    "release_gate",
+    "reason",
+    "counts",
+    "required_coverage",
+    "covered_coverage",
+    "missing_coverage",
+    "samples",
+    "production_freeze",
+    "existing_gates",
+    "version_state"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "stage": {"const": "P1-B8.7"},
+    "status": {"enum": ["passed", "failed"]},
+    "release_gate": {"type": "boolean"},
+    "reason": {"type": ["string", "null"]},
+    "counts": {
+      "type": "object",
+      "required": ["available", "missing", "accepted", "rejected", "failed"],
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "required_coverage": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "covered_coverage": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "missing_coverage": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sample_id",
+          "file_name",
+          "admission",
+          "admission_reasons",
+          "coverage_tags",
+          "passed"
+        ],
+        "properties": {
+          "sample_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"},
+          "file_name": {"type": "string", "minLength": 1},
+          "file_size": {"type": "integer", "minimum": 0},
+          "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "coverage_tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "admission": {"enum": ["accepted", "rejected", "inspection_failed"]},
+          "admission_reasons": {"type": "array"},
+          "statistics": {"type": ["object", "null"]},
+          "v1_size": {"type": ["integer", "null"], "minimum": 0},
+          "v2_size": {"type": ["integer", "null"], "minimum": 0},
+          "migration_result": {"type": "string"},
+          "logical_equal": {"type": ["boolean", "null"]},
+          "reader_equal": {"type": ["boolean", "null"]},
+          "timings": {"type": ["object", "null"]},
+          "peak_rss": {"type": "integer", "minimum": 0},
+          "temporary_disk_peak": {"type": "integer", "minimum": 0},
+          "passed": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "production_freeze": {"type": "object"},
+    "existing_gates": {"type": "object"},
+    "version_state": {"type": "object"}
+  },
+  "additionalProperties": true
+}

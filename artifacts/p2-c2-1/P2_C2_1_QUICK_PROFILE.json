@@ -1,0 +1,30 @@
+{
+  "bottom_up_issues": [],
+  "bottom_up_valid": true,
+  "certificate_valid": true,
+  "checked_blocks": 9,
+  "cpu_seconds": 6.0,
+  "deep_validation_reused": true,
+  "file_sha256": "c8426c567f9e9f76266c16a27184fa9c0e726c82bebc3d0c9028915a864bd2ac",
+  "issues": [],
+  "metrics": {
+    "array_values_visited": 0,
+    "bytes_read": 2521243036,
+    "bytes_written": 0,
+    "cpu_seconds": 6.0,
+    "extension_json_parsed": false,
+    "file_size": 2521241519,
+    "hash_chunk_size": 8388608,
+    "loop_count": 301,
+    "wall_seconds": 6.451116100011859
+  },
+  "mode": "quick",
+  "peak_rss": 110202880,
+  "read_bytes": 2521252565,
+  "top_down_issues": [],
+  "top_down_valid": null,
+  "valid": true,
+  "version": 2,
+  "wall_seconds": 6.4526644999859855,
+  "write_bytes": 0
+}

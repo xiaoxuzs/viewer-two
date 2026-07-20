@@ -3,9 +3,17 @@ from .common import FileValidateStep, HashInputStep, IndexBuildTool, StringPoolB
 from .mzml_mock import MockMzmlParseTool
 from .raw_mock import MockRawToMzmlTool
 from .real_mzml import RealMzmlParseTool
+from .real_thermo_raw import RealThermoRawParseTool
+from .real_top_down import RealTopDownTool
+from .real_top_down_intermediate import RealTopDownIntermediateTool
+from .real_dia_result import RealDiaResultTool
 
 __all__ = [
     "BaseBlockTool", "BasePipelineStep", "FileValidateStep", "HashInputStep",
     "IndexBuildTool", "StringPoolBuildTool", "ZpValidateStep", "ZpWriteStep",
     "MockMzmlParseTool", "MockRawToMzmlTool", "RealMzmlParseTool",
+    "RealThermoRawParseTool",
+    "RealTopDownTool",
+    "RealTopDownIntermediateTool",
+    "RealDiaResultTool",
 ]

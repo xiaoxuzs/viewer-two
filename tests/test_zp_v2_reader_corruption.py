@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import io
+import os
 import struct
 from pathlib import Path
 
@@ -137,8 +138,11 @@ def test_reader_rejects_file_replacement_during_payload_read(
         if not changed:
             changed = True
             current = path.stat()
-            path.touch()
-            assert path.stat().st_mtime_ns >= current.st_mtime_ns
+            os.utime(
+                path,
+                ns=(current.st_atime_ns, current.st_mtime_ns + 1_000_000_000),
+            )
+            assert path.stat().st_mtime_ns > current.st_mtime_ns
         return result
 
     monkeypatch.setattr(ZpV2ArraysReader, "read_array", replacing_read)

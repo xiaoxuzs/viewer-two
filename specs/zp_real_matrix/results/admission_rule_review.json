@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "stage": "P1-B8.7-D2",
+  "conclusion": "Admission规则复核完成",
+  "scope": {
+    "mode": "read_only_review",
+    "rejected_real_samples_inspected": 4,
+    "accepted_real_sample_charge_origin_checked": true,
+    "production_changes_allowed": false
+  },
+  "charge_cv": {
+    "accession": "MS:1000041",
+    "name": "charge state",
+    "source_location": "precursor.selectedIonList.selectedIon.cvParam",
+    "evidence": [
+      "binary_layer/mzml_adapter.py:531",
+      "tests/fixtures/mzml/build_fixtures.py:91"
+    ]
+  },
+  "charge_data_flow_matrix": [
+    {
+      "layer": "Adapter",
+      "current_requires_charge": false,
+      "missing_behavior": "Returns charge=null and preserves charge_present=false; an explicit zero is separately represented as charge=null, charge_present=true, charge_explicit_zero=true.",
+      "physical_format_requirement": "none",
+      "business_policy_requirement": false,
+      "evidence": [
+        "binary_layer/mzml_adapter.py:74",
+        "binary_layer/mzml_adapter.py:525",
+        "tests/test_real_mzml_ms2.py:45"
+      ]
+    },
+    {
+      "layer": "Admission",
+      "current_requires_charge": true,
+      "missing_behavior": "Rejects charge=null, charge=0, and charge=-1 as MISSING_PRECURSOR_CHARGE for every MS2.",
+      "physical_format_requirement": "none",
+      "business_policy_requirement": true,
+      "evidence": [
+        "binary_layer/mzml_admission.py:242",
+        "binary_layer/mzml_admission.py:254",
+        "tests/test_mzml_admission_policy.py:127"
+      ]
+    },
+    {
+      "layer": "Block Schema",
+      "current_requires_charge": true,
+      "missing_behavior": "PrecursorBlock.charge is declared as a required int and has no default or nullable alternative.",
+      "physical_format_requirement": "required logical field in core_precursors JSON; not part of the fixed Header or binary arrays layout",
+      "business_policy_requirement": false,
+      "evidence": [
+        "binary_layer/blocks.py:48",
+        "tests/test_mzml_schema.py:191"
+      ]
+    },
+    {
+      "layer": "Writer",
+      "current_requires_charge": "structurally_serialized",
+      "missing_behavior": "Has no charge-specific algorithm; canonical dataclass serialization emits the charge field and value into core_precursors. V2 preflight checks the PrecursorBlock object and links but not charge semantics.",
+      "physical_format_requirement": "changes core_precursors bytes and checksum, but not Header, directory shape, or arrays payload layout",
+      "business_policy_requirement": false,
+      "evidence": [
+        "binary_layer/writer.py:198",
+        "binary_layer/writer.py:217",
+        "binary_layer/writer.py:237",
+        "binary_layer/serialization.py:11"
+      ]
+    },
+    {
+      "layer": "Reader",
+      "current_requires_charge": "field_presence_only",
+      "missing_behavior": "PrecursorBlock(**item) requires the charge key to exist; the Reader does not use charge for lookup, relationships, or random array reads and does not itself enforce the runtime value type.",
+      "physical_format_requirement": "none beyond reading the core_precursors JSON record",
+      "business_policy_requirement": false,
+      "evidence": [
+        "binary_layer/reader.py:417",
+        "binary_layer/reader.py:544"
+      ]
+    },
+    {
+      "layer": "Validator",
+      "current_requires_charge": true,
+      "missing_behavior": "V1 requires an int field; V2 requires the exact field and a nonzero plain integer. Precursor relationship validation is independent of the charge value.",
+      "physical_format_requirement": "logical schema validation of core_precursors",
+      "business_policy_requirement": false,
+      "evidence": [
+        "binary_layer/validator.py:232",
+        "binary_layer/v2_validator.py:324",
+        "binary_layer/v2_validator.py:430",
+        "binary_layer/v2_validator.py:503"
+      ]
+    },
+    {
+      "layer": "Extension",
+      "current_requires_charge": false,
+      "missing_behavior": "mzml_metadata v1 preserves precursor source reference, isolation window, activation, and collision energy, but does not preserve charge, charge_present, or charge_explicit_zero.",
+      "physical_format_requirement": "none",
+      "business_policy_requirement": false,
+      "evidence": [
+        "binary_layer/mzml_schema.py:291",
+        "binary_layer/mzml_adapter.py:821"
+      ]
+    }
+  ],
+  "charge_review_answers": [
+    {
+      "question": 1,
+      "answer": "The selected-ion charge CV is MS:1000041 charge state."
+    },
+    {
+      "question": 2,
+      "answer": "When absent, the Adapter returns charge=null, charge_present=false, charge_explicit_zero=false."
+    },
+    {
+      "question": 3,
+      "answer": "Admission rejects at binary_layer/mzml_admission.py:254-255."
+    },
+    {
+      "question": 4,
+      "answer": "Yes. PrecursorBlock requires the charge field."
+    },
+    {
+      "question": 5,
+      "answer": "No. The declared type is int, not int|null."
+    },
+    {
+      "question": 6,
+      "answer": "Writer has no charge-based control flow, but canonical serialization includes the required field in core_precursors."
+    },
+    {
+      "question": 7,
+      "answer": "Reader requires the field structurally for PrecursorBlock construction but does not use the value operationally."
+    },
+    {
+      "question": 8,
+      "answer": "Yes. V1 requires int; V2 additionally requires a nonzero integer."
+    },
+    {
+      "question": 9,
+      "answer": "No. scan_index, rt_index, and spectrum_id_index do not use precursor charge."
+    },
+    {
+      "question": 10,
+      "answer": "No. The Adapter tracks original charge presence, but mzml_metadata v1 drops that distinction."
+    },
+    {
+      "question": 11,
+      "answer": "No current Viewer integration or random-read code requires charge; random array reads are keyed by spectrum and array IDs."
+    },
+    {
+      "question": 12,
+      "answer": "The accepted sample contains an explicit MS:1000041 charge state CV on all 1051 MS2 selected ions."
+    },
+    {
+      "question": 13,
+      "answer": "Charge participates in canonical core_precursors JSON bytes and checksums, but not the fixed Header, directory layout, or v2 binary arrays region."
+    },
+    {
+      "question": 14,
+      "answer": "The source facts can independently preserve precursor m/z, selected-ion intensity, isolation window, activation, and Spectrum-Precursor links. Current Blocks cannot emit that complete relationship without a charge value only because PrecursorBlock and Validators require the charge field."
+    },
+    {
+      "question": 15,
+      "answer": "The Adapter distinguishes absent charge from explicit zero, but SpectrumFeature/Admission collapses both to charge=null for rejection and the Extension does not retain the distinction."
+    }
+  ],
+  "accepted_charge_origin": {
+    "file_name": "20191118_rvg262_LT_110516-13_1000-1100_Techrep01.mzML",
+    "MS2_total": 1051,
+    "MS1000041_present": 1051,
+    "missing_charge": 0,
+    "charge_zero": 0,
+    "charge_negative": 0,
+    "origin": "explicit selected-ion MS:1000041 charge state CV"
+  },
+  "rejected_real_sample_statistics": [
+    {
+      "sample_id": "hela-mhrm-r01-t0",
+      "file_name": "Fig2HeLa-0-5h_MHRM_R01_T0.mzML",
+      "MS2_total": 26601,
+      "with_charge": 0,
+      "missing_charge": 26601,
+      "missing_ratio": 1.0,
+      "charge_zero": 0,
+      "charge_negative": 0,
+      "charge_field_completely_absent": 26601,
+      "selected_ion_intensity_present": 21887,
+      "precursor_mz_present": 26601,
+      "isolation_window_present": 26601,
+      "activation_present": 26601
+    },
+    {
+      "sample_id": "pxd075509-15hcd-1",
+      "project_accession": "PXD075509",
+      "file_name": "15HCD_1.mzML",
+      "MS2_total": 8084,
+      "with_charge": 6162,
+      "missing_charge": 1922,
+      "missing_ratio": 0.237753587,
+      "charge_zero": 0,
+      "charge_negative": 0,
+      "charge_field_completely_absent": 1922,
+      "selected_ion_intensity_present": 8084,
+      "precursor_mz_present": 8084,
+      "isolation_window_present": 8084,
+      "activation_present": 8084
+    },
+    {
+      "sample_id": "pxd075509-15hcd-3",
+      "project_accession": "PXD075509",
+      "file_name": "15HCD_3.mzML",
+      "MS2_total": 8064,
+      "with_charge": 6240,
+      "missing_charge": 1824,
+      "missing_ratio": 0.226190476,
+      "charge_zero": 0,
+      "charge_negative": 0,
+      "charge_field_completely_absent": 1824,
+      "selected_ion_intensity_present": 8064,
+      "precursor_mz_present": 8064,
+      "isolation_window_present": 8064,
+      "activation_present": 8064
+    },
+    {
+      "sample_id": "pxd075396-23hcd-2",
+      "project_accession": "PXD075396",
+      "file_name": "23HCD_2.mzML",
+      "MS2_total": 8626,
+      "with_charge": 6284,
+      "missing_charge": 2342,
+      "missing_ratio": 0.271504753,
+      "charge_zero": 0,
+      "charge_negative": 0,
+      "charge_field_completely_absent": 2342,
+      "selected_ion_intensity_present": 8626,
+      "precursor_mz_present": 8626,
+      "isolation_window_present": 8626,
+      "activation_present": 8626
+    }
+  ],
+  "new_sample_ms2_examples": [
+    {
+      "sample_id": "pxd075509-15hcd-1",
+      "charged": [
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2001", "precursor_mz": 1336.6689453125, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1336.6689453125, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2002", "precursor_mz": 1671.210693359375, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1671.210693359375, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2003", "precursor_mz": 1782.220825195313, "charge_exists": true, "charge": 3, "selected_ion_intensity_exists": true, "isolation_window": [1784.550170898438, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2004", "precursor_mz": 1560.5263671875, "charge_exists": true, "charge": 3, "selected_ion_intensity_exists": true, "isolation_window": [1561.524658203125, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2006", "precursor_mz": 1681.698120117188, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1682.200927734375, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"}
+      ],
+      "missing_charge": [
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2005", "precursor_mz": 1337.829467773438, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1337.829467773438, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2014", "precursor_mz": 1337.480346679688, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1337.480346679688, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2015", "precursor_mz": 1671.924926757813, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1671.924926757813, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2028", "precursor_mz": 1338.475219726563, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1338.475219726563, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2038", "precursor_mz": 1341.163940429688, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1341.163940429688, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"}
+      ]
+    },
+    {
+      "sample_id": "pxd075509-15hcd-3",
+      "charged": [
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2001", "precursor_mz": 1672.7021484375, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1672.7021484375, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2002", "precursor_mz": 1559.52001953125, "charge_exists": true, "charge": 3, "selected_ion_intensity_exists": true, "isolation_window": [1560.189453125, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2003", "precursor_mz": 1339.159545898438, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1339.159545898438, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2004", "precursor_mz": 1002.618957519531, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1002.618957519531, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2005", "precursor_mz": 1782.548461914063, "charge_exists": true, "charge": 3, "selected_ion_intensity_exists": true, "isolation_window": [1784.547241210938, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"}
+      ],
+      "missing_charge": [
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2010", "precursor_mz": 1341.163940429688, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1341.163940429688, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2015", "precursor_mz": 1337.820922851563, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1337.820922851563, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2016", "precursor_mz": 1568.181884765625, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1568.181884765625, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2032", "precursor_mz": 1671.509033203125, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1671.509033203125, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=2040", "precursor_mz": 1396.204223632813, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1396.204223632813, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"}
+      ]
+    },
+    {
+      "sample_id": "pxd075396-23hcd-2",
+      "charged": [
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1402", "precursor_mz": 830.214294433594, "charge_exists": true, "charge": 3, "selected_ion_intensity_exists": true, "isolation_window": [830.883850097656, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1412", "precursor_mz": 1029.741455078125, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1030.744995117188, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1414", "precursor_mz": 1083.775146484375, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1083.775146484375, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1415", "precursor_mz": 887.210632324219, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [888.714965820313, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1418", "precursor_mz": 1164.800903320313, "charge_exists": true, "charge": 2, "selected_ion_intensity_exists": true, "isolation_window": [1166.808837890625, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"}
+      ],
+      "missing_charge": [
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1400", "precursor_mz": 943.192504882813, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [943.192504882813, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1401", "precursor_mz": 1307.163330078125, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1307.163330078125, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1403", "precursor_mz": 941.742797851563, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [941.742797851563, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1404", "precursor_mz": 776.196166992188, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [776.196166992188, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"},
+        {"native_id": "controllerType=0 controllerNumber=1 scan=1405", "precursor_mz": 1033.997924804688, "charge_exists": false, "charge": null, "selected_ion_intensity_exists": true, "isolation_window": [1033.997924804688, 0.899999976158, 0.899999976158], "activation": "MS:1000422 beam-type collision-induced dissociation"}
+      ]
+    }
+  ],
+  "charge_systematic_assessment": [
+    {
+      "sample_id": "pxd075509-15hcd-1",
+      "charged_activation": "MS:1000422 beam-type collision-induced dissociation (6162)",
+      "missing_activation": "MS:1000422 beam-type collision-induced dissociation (1922)",
+      "shared_scan_filter_subtype": "FTMS - c ESI d Full ms# #@hcd# [##]",
+      "shared_precursor_shape": "one precursor; one selected ion; spectrumRef; isolation window; activation",
+      "charged_precursor_mz_range": [750.618225, 1999.789185],
+      "missing_precursor_mz_range": [751.09137, 1998.27832],
+      "missing_order_range": [5, 8078],
+      "finding": "Missing charge is interleaved through the run and is not an activation, scan-filter, precursor-shape, or m/z-range subtype."
+    },
+    {
+      "sample_id": "pxd075509-15hcd-3",
+      "charged_activation": "MS:1000422 beam-type collision-induced dissociation (6240)",
+      "missing_activation": "MS:1000422 beam-type collision-induced dissociation (1824)",
+      "shared_scan_filter_subtype": "FTMS - c ESI d Full ms# #@hcd# [##]",
+      "shared_precursor_shape": "one precursor; one selected ion; spectrumRef; isolation window; activation",
+      "charged_precursor_mz_range": [750.876221, 1999.790405],
+      "missing_precursor_mz_range": [751.352844, 1998.266968],
+      "missing_order_range": [10, 8063],
+      "finding": "Missing charge is interleaved through the run and is not an activation, scan-filter, precursor-shape, or m/z-range subtype."
+    },
+    {
+      "sample_id": "pxd075396-23hcd-2",
+      "charged_activation": "MS:1000422 beam-type collision-induced dissociation (6284)",
+      "missing_activation": "MS:1000422 beam-type collision-induced dissociation (2342)",
+      "shared_scan_filter_subtype": "FTMS - c ESI d Full ms# #@hcd# [##]",
+      "shared_precursor_shape": "one precursor; one selected ion; spectrumRef; isolation window; activation",
+      "charged_precursor_mz_range": [750.851562, 1999.790527],
+      "missing_precursor_mz_range": [750.619019, 1998.273315],
+      "missing_order_range": [1, 8618],
+      "finding": "Missing charge is interleaved through the run and is not an activation, scan-filter, precursor-shape, or m/z-range subtype."
+    },
+    {
+      "sample_id": "hela-mhrm-r01-t0",
+      "missing_activation": "MS:1000422 beam-type collision-induced dissociation (26601)",
+      "missing_scan_filter_subtype": "FTMS + c NSI Full ms# #@hcd# [##]",
+      "missing_precursor_shape": "one precursor; one selected ion; spectrumRef; isolation window; activation",
+      "missing_order_range": [1, 26601],
+      "finding": "Charge is systematically absent from every MS2 in this acquisition, while the other precursor facts remain present."
+    }
+  ],
+  "unknown_chromatogram_review": {
+    "adapter_supported_types": [
+      {"accession": "MS:1000235", "type": "tic"},
+      {"accession": "MS:1000628", "type": "bpc"}
+    ],
+    "rejected_type": {
+      "accession": "MS:1003019",
+      "name": "pressure chromatogram",
+      "adapter_result": "unknown",
+      "admission_code": "UNSUPPORTED_CHROMATOGRAM_TYPE",
+      "reject_location": "binary_layer/mzml_admission.py:261-262"
+    },
+    "samples": [
+      {
+        "sample_id": "pxd075509-15hcd-1",
+        "index": 1,
+        "id": "Pump Pressure 2",
+        "defaultArrayLength": 190278,
+        "all_cv_accession_name": [
+          ["MS:1003019", "pressure chromatogram"],
+          ["MS:1000523", "64-bit float"],
+          ["MS:1000574", "zlib compression"],
+          ["MS:1000595", "time array"],
+          ["MS:1000523", "64-bit float"],
+          ["MS:1000574", "zlib compression"],
+          ["MS:1000515", "intensity array"]
+        ],
+        "arrays": [
+          {"array_type": "time", "accession": "MS:1000595", "dtype": "MS:1000523 64-bit float", "compression": "MS:1000574 zlib compression", "unit_accession": "UO:0000031", "unit_name": "minute"},
+          {"array_type": "intensity", "accession": "MS:1000515", "dtype": "MS:1000523 64-bit float", "compression": "MS:1000574 zlib compression", "unit_accession": "UO:0000110", "unit_name": "pascal"}
+        ]
+      },
+      {
+        "sample_id": "pxd075509-15hcd-3",
+        "index": 1,
+        "id": "Pump Pressure 2",
+        "defaultArrayLength": 190595,
+        "all_cv_accession_name": [
+          ["MS:1003019", "pressure chromatogram"],
+          ["MS:1000523", "64-bit float"],
+          ["MS:1000574", "zlib compression"],
+          ["MS:1000595", "time array"],
+          ["MS:1000523", "64-bit float"],
+          ["MS:1000574", "zlib compression"],
+          ["MS:1000515", "intensity array"]
+        ],
+        "arrays": [
+          {"array_type": "time", "accession": "MS:1000595", "dtype": "MS:1000523 64-bit float", "compression": "MS:1000574 zlib compression", "unit_accession": "UO:0000031", "unit_name": "minute"},
+          {"array_type": "intensity", "accession": "MS:1000515", "dtype": "MS:1000523 64-bit float", "compression": "MS:1000574 zlib compression", "unit_accession": "UO:0000110", "unit_name": "pascal"}
+        ]
+      },
+      {
+        "sample_id": "pxd075396-23hcd-2",
+        "index": 1,
+        "id": "Pump Pressure 2",
+        "defaultArrayLength": 180925,
+        "all_cv_accession_name": [
+          ["MS:1003019", "pressure chromatogram"],
+          ["MS:1000523", "64-bit float"],
+          ["MS:1000574", "zlib compression"],
+          ["MS:1000595", "time array"],
+          ["MS:1000523", "64-bit float"],
+          ["MS:1000574", "zlib compression"],
+          ["MS:1000515", "intensity array"]
+        ],
+        "arrays": [
+          {"array_type": "time", "accession": "MS:1000595", "dtype": "MS:1000523 64-bit float", "compression": "MS:1000574 zlib compression", "unit_accession": "UO:0000031", "unit_name": "minute"},
+          {"array_type": "intensity", "accession": "MS:1000515", "dtype": "MS:1000523 64-bit float", "compression": "MS:1000574 zlib compression", "unit_accession": "UO:0000110", "unit_name": "pascal"}
+        ]
+      }
+    ],
+    "code_review_answers": [
+      {
+        "question": 1,
+        "answer": "Adapter, Admission, mzml_metadata v1, and RealMzmlParseTool currently support only TIC/BPC."
+      },
+      {
+        "question": 2,
+        "answer": "MS:1003019 is absent from _CHROMATOGRAM_ACCESSIONS, so the Adapter emits type=unknown and Admission rejects it."
+      },
+      {
+        "question": 3,
+        "answer": "Current flow inspects and admits every source chromatogram before conversion; it cannot selectively skip one pressure trace."
+      },
+      {
+        "question": 4,
+        "answer": "Not with the current mzml_metadata v1 schema. A separate design could convert TIC/BPC and preserve the pressure trace as explicit source metadata or a dedicated Extension."
+      },
+      {
+        "question": 5,
+        "answer": "Yes. Silently ignoring it would lose a 180925-190595 point pump-pressure trace and its Pascal unit."
+      },
+      {
+        "question": 6,
+        "answer": "Core ChromatogramBlock has a free string chromatogram_type and time/intensity array references, so it can carry an identity and values, but it cannot express the pressure CV or intensity unit by itself."
+      },
+      {
+        "question": 7,
+        "answer": "Yes. An Extension is the better place for the exact source CV, Pascal unit, and source trace semantics if the core remains TIC/BPC-focused."
+      },
+      {
+        "question": 8,
+        "answer": "No. Validators only check the generated ZP's internal schema, counts, arrays, and references; they do not compare all source mzML chromatograms. The all-source requirement is imposed by Adapter/Admission/Converter."
+      }
+    ],
+    "code_evidence": [
+      "binary_layer/mzml_adapter.py:55",
+      "binary_layer/mzml_adapter.py:710",
+      "binary_layer/mzml_adapter.py:783",
+      "binary_layer/mzml_admission.py:260",
+      "binary_layer/mzml_schema.py:25",
+      "binary_layer/mzml_schema.py:378",
+      "binary_layer/tools/real_mzml.py:141",
+      "binary_layer/tools/real_mzml.py:283",
+      "binary_layer/validator.py:236",
+      "binary_layer/v2_validator.py:325"
+    ]
+  },
+  "classification": {
+    "precursor_charge": {
+      "class": "D",
+      "label": "format-version change needed",
+      "reason": "Scientifically, missing charge does not prevent preserving the other precursor facts or bidirectional links. In the current frozen ZP contract, however, charge is a required core_precursors field and both validator generations reject null. Making it optional changes a core block field contract and therefore requires explicit version/schema design."
+    },
+    "unknown_chromatogram": {
+      "class": "C",
+      "label": "can degrade/preserve",
+      "reason": "The rejected record is an ancillary pump-pressure trace, not an unsupported mass-spectrometry acquisition mode. Core IDs and arrays can carry it, while an Extension can preserve the exact pressure CV and Pascal unit. Current code lacks this degradation/preservation path, so it requires a separate design stage but not necessarily a top-level ZP format change."
+    }
+  },
+  "design_issue_findings": {
+    "Admission_too_strict": "Yes relative to common real mzML: it rejects otherwise structurally complete MS2 records solely for absent charge and rejects an ancillary pressure trace. It is consistent with the current frozen subset, so it must not be relaxed ad hoc.",
+    "Block_Schema_too_strict": "Yes for optional precursor charge: PrecursorBlock cannot represent unknown charge. Core ChromatogramBlock is not type-restricted but lacks source CV and unit semantics.",
+    "Converter_limitation": "Yes: RealMzmlParseTool assumes every admitted MS2 can create a charged PrecursorBlock and every chromatogram is TIC/BPC.",
+    "Validator_limitation": "Yes for optional charge because v1/v2 enforce the current required field contract. Validators do not require source chromatogram completeness and do not restrict core chromatogram_type to TIC/BPC.",
+    "wire_format_limitation": "Charge is a frozen logical core schema limitation, not a Header or binary arrays layout limitation. Pressure preservation can be designed through Extensions without changing the fixed physical layout."
+  },
+  "decision": {
+    "charge_rule": "requires_separate_admission_design_stage",
+    "chromatogram_rule": "requires_separate_admission_design_stage",
+    "admission_rules_confirmed": false
+  },
+  "freeze": {
+    "binary_layer_changed": false,
+    "pytest_executed": false,
+    "full_B8_7_executed": false,
+    "new_downloads": 0,
+    "zp_artifacts_created": 0
+  },
+  "next_step": "单独规划Admission兼容性设计阶段",
+  "planned_stage": "P1-B8.7A：可选Precursor charge准入与Block兼容性设计"
+}

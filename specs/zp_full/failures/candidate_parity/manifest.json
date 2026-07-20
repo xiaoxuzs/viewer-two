@@ -1,0 +1,91 @@
+{
+  "probes": [
+    {
+      "fixtures": [
+        {
+          "file": "run_count_mismatch_v1.zp",
+          "file_size": 3438,
+          "format_version": 1,
+          "sha256": "eef0bd6cfdf3601bff3e8bb6d740f3cea7d2394f60184ec1bed76c2e36687a92",
+          "validator_checked_blocks": 9,
+          "validator_issue_codes": [
+            "COUNT_MISMATCH"
+          ],
+          "validator_valid": false
+        },
+        {
+          "file": "run_count_mismatch_v2.zp",
+          "file_size": 4128,
+          "format_version": 2,
+          "sha256": "40668d81689d0fe389e7739c6a04c6eec5cad3222849c30019436b05a32bb4e3",
+          "validator_checked_blocks": 9,
+          "validator_issue_codes": [
+            "COUNT_MISMATCH"
+          ],
+          "validator_valid": false
+        }
+      ],
+      "logical_corruption": "Run spectrum_count is 1 while two Spectra belong to the Run",
+      "probe": "run_count"
+    },
+    {
+      "fixtures": [
+        {
+          "file": "string_pool_mismatch_v1.zp",
+          "file_size": 3438,
+          "format_version": 1,
+          "sha256": "2d4b74af4dc24f7be53727ef16cfc514fb122c43c694ed3041ac5872e19a46bd",
+          "validator_checked_blocks": 9,
+          "validator_issue_codes": [
+            "INVALID_REFERENCE"
+          ],
+          "validator_valid": false
+        },
+        {
+          "file": "string_pool_mismatch_v2.zp",
+          "file_size": 4128,
+          "format_version": 2,
+          "sha256": "ef3cf3a0f0d396b69dc49d6c27e6b127287d042e0a759f2a0ac2b8a4135471e6",
+          "validator_checked_blocks": 9,
+          "validator_issue_codes": [
+            "INVALID_REFERENCE"
+          ],
+          "validator_valid": false
+        }
+      ],
+      "logical_corruption": "string_pool omits the referenced Run name 'run'",
+      "probe": "string_pool"
+    },
+    {
+      "fixtures": [
+        {
+          "file": "precursor_bidirectional_mismatch_v1.zp",
+          "file_size": 3438,
+          "format_version": 1,
+          "sha256": "7e92ab9a34c578a791ca6bbebe5546f8fcc228b778535e8d77bf9cd9795eb3ca",
+          "validator_checked_blocks": 9,
+          "validator_issue_codes": [
+            "INVALID_REFERENCE",
+            "INVALID_REFERENCE"
+          ],
+          "validator_valid": false
+        },
+        {
+          "file": "precursor_bidirectional_mismatch_v2.zp",
+          "file_size": 4128,
+          "format_version": 2,
+          "sha256": "11424420c9c32cd335a059474b24b54a874dc41aba403d3c0165065528d83d0d",
+          "validator_checked_blocks": 9,
+          "validator_issue_codes": [
+            "INVALID_REFERENCE",
+            "INVALID_REFERENCE"
+          ],
+          "validator_valid": false
+        }
+      ],
+      "logical_corruption": "Precursor points to an existing MS1 instead of its owning MS2",
+      "probe": "precursor_bidirectional"
+    }
+  ],
+  "purpose": "P1-B8.5R3B preserved candidate parity evidence"
+}

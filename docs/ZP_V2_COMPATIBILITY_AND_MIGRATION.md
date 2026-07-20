@@ -1,6 +1,6 @@
 # ZP v2 compatibility and migration design
 
-Status: **P1-B7 design only; no production v2 Reader, Writer, Validator, or migration tool exists.**
+Status: **P1-B8.6 complete: explicit v2 Writer, dual Reader/Validator, full compatibility Goldens, and safe offline v1-to-v2 migration are implemented. Default output remains v1.**
 
 Date: 2026-07-14 (Asia/Shanghai)
 
@@ -124,15 +124,17 @@ already available.
 
 ## 10. v1-to-v2 migration
 
-A future `zp-migrate-v1-to-v2` performs:
+The production `migrate_v1_to_v2` API and
+`python -m binary_layer.migration` CLI perform:
 
 ```text
-open source read-only -> require Header v1 -> full v1 validation
--> decode all nine logical blocks -> preserve all logical values/IDs
--> encode arrays as zp-arrays-v2 and eight blocks as v2 canonical JSON
--> write a new sibling temporary file -> flush + fsync
--> fully validate the temporary v2 file -> atomically replace target path
--> fully validate installed target -> logical roundtrip comparison -> report
+capture source identity/hash -> require full valid v1
+-> parse eight canonical JSON blocks and stream the v1 arrays list once
+-> spool exact little-endian float64 payload bytes and O(array_count) metadata
+-> encode arrays as zp-arrays-v2 and the other blocks as v2 canonical JSON
+-> flush/fsync a sibling temporary file -> fully validate temporary v2
+-> compare exact version-neutral logical fingerprints
+-> recheck source identity/hash -> atomically replace the absent target -> report
 ```
 
 It never invokes BlockTools or `RealMzmlParseTool`, reparses mzML, guesses
@@ -146,27 +148,27 @@ values compare exact decoded binary64 values in order. Scan, native ID, RT,
 precursor values, chromatogram fields, business IDs, and references may not
 change.
 
-Allowed physical differences are Header version/created_at, arrays encoding
+Allowed physical differences are Header version, arrays encoding
 and checksums, block offsets, `directory_offset`, file size, and generator
 information only when an existing explicit field legitimately carries it.
 
 ## 12. Atomic write and no in-place migration
 
-Source is opened read-only and is never a target. Default output is
-`source.v2.zp`; a user may provide another distinct path. Reject equal or
+Source is opened read-only and is never a target. The caller provides a
+distinct output path. Reject equal or
 filesystem-equivalent source/target paths. Write a sibling target temporary,
 flush, `fsync` its file, optionally sync the parent directory where supported,
-validate it, then `os.replace` it to the new target. An existing target may be
-replaced only under an explicit overwrite option; source is never replaced.
+validate and fingerprint it, then `os.replace` it to the new target. Existing
+targets are always rejected; there is no overwrite option. Source is never
+replaced.
 
 ## 13. Failure recovery
 
-Before replace, remove only the owned temporary file on failure. After replace,
-if installed validation or logical comparison fails, report failure and retain
-the untouched v1 source; quarantine/remove the invalid target according to an
-explicit option, never roll it over the source. Interrupted runs are detected
-by a tool-owned temp naming convention and require explicit cleanup. The
-structured report records the failed stage and validation codes.
+Before replace, all validation, checksum, fingerprint, and source-change gates
+have completed. Any failure or interruption removes only tool-owned spool,
+validation alias, and temporary target paths; the source remains byte-identical
+and the absent target remains absent. The structured CLI result records a
+stable stage/code and never prints a traceback for controlled errors.
 
 ## 14. Golden fixtures
 
@@ -174,8 +176,13 @@ structured report records the failed stage and validation codes.
 `valid_empty_arrays_v2.bin` freeze the arrays subformat. `manifest.json`
 records exact hashes, sizes, offsets, entries, checksums, and values. They are
 independently unpacked by tests; the Codec's own roundtrip is insufficient.
-Future full-file v1/v2 Golden fixtures belong to P1-B8.5 and never replace v1
-fixtures.
+P1-B8.5 freezes full/minimal v1/v2 complete-file Goldens. P1-B8.6 reuses each
+v1/v2 pair as a migration Golden: the migrated output must equal the v2 file
+byte for byte while the v1 SHA-256 remains unchanged. The dedicated Manifest
+and unified gate are under `specs/zp_migration/`. The 31 MB gate additionally
+runs one full Reader-to-Writer reference measurement outside the production
+path and requires streaming conversion RSS to remain at most 80% of that
+reference peak.
 
 ## 15. Viewer future integration
 
@@ -189,8 +196,9 @@ P1-B7 and P1-B8 do not make Viewer depend on v2.
 
 1. **Development:** default Writer v1; v2 explicit; Reader/Validator dual;
    Viewer independent.
-2. **Trial:** recommend v2 for measured large files; retain small v1
-   regression fixtures/gates; provide migration and compare logical results.
+2. **Trial-ready components:** retain small v1 regression fixtures/gates;
+   explicit v2 and offline one-file migration are available, but default-v2
+   release still requires later gates.
 3. **Default candidate:** changing Writer default requires separate acceptance;
    P1-B8 cannot do it automatically.
 4. **v1 maintenance:** Reader/Validator continue v1 indefinitely; v1 Writer
@@ -224,16 +232,23 @@ fixtures. Compression may not reuse `raw-le`; a new explicit encoding alone is
 insufficient until its limits and compatibility dispatch are reviewed. No
 Reader attempts best-effort repair.
 
-## 20. Open questions deferred beyond P1-B7
+## 20. Open questions deferred beyond P1-B8.6
 
-- production Writer streaming/bounded-memory handoff without letting a
-  BlockTool write bytes;
+- production Writer streaming/bounded-memory handoff for new conversions
+  without letting a BlockTool write bytes (migration already has its own
+  bounded v1 arrays path);
 - whether v2's first production limits need adjustment after larger samples;
 - whether internal lookup uses binary search, an instance map, or both;
 - exact file identity abstraction for cache invalidation on every platform;
 - whether later compression merits arrays schema 3 or top-level ZP v3;
 - when, if ever, the default Writer changes or v1 writing is retired.
 
-The migration report will contain `source_path`, `target_path`, source/target
-versions and SHA-256, sizes and ratio, array/value counts, source/target valid,
-logical equal, elapsed time, failed stage, and validation error codes.
+`MigrationResult` contains source/target paths, versions, SHA-256, sizes,
+logical fingerprints, block/array/value counts, validation and conversion
+timings, source/target/conversion RSS, temporary disk, disk preflight,
+single-scan/max-live-array instrumentation, and payload spool/copy bytes. The
+31,408,514-byte acceptance run migrated 4,098 arrays and 4,762,968 values to a
+42,559,842-byte target byte-identical to direct Writer v2, comparing all 4,098
+array hashes. Default Writer/Pipeline output and `ZP_VERSION` remain 1; batch
+migration, Viewer integration, and the B8.8 performance release gate remain
+future work.

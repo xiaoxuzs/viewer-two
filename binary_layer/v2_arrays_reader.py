@@ -158,7 +158,7 @@ def _object_without_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str,
     return result
 
 
-def _parse_canonical_directory(payload: bytes) -> object:
+def _parse_canonical_directory(payload: bytes, *, require_canonical: bool) -> object:
     try:
         text = payload.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -169,7 +169,11 @@ def _parse_canonical_directory(payload: bytes) -> object:
             actual=exc.start,
         ) from exc
     try:
-        parsed = json.loads(text, object_pairs_hook=_object_without_duplicate_keys)
+        parsed = (
+            json.loads(text, object_pairs_hook=_object_without_duplicate_keys)
+            if require_canonical
+            else json.loads(text)
+        )
     except ZpV2ArrayReadError:
         raise
     except (json.JSONDecodeError, ValueError) as exc:
@@ -179,21 +183,22 @@ def _parse_canonical_directory(payload: bytes) -> object:
             "arrays.directory",
             actual=str(exc),
         ) from exc
-    try:
-        canonical = _canonical_json_bytes(parsed)
-    except (TypeError, UnicodeError, ValueError) as exc:
-        raise ZpV2ArrayReadError(
-            "INVALID_ARRAY_DIRECTORY_SCHEMA",
-            "directory cannot be canonically serialized",
-            "arrays.directory",
-            actual=str(exc),
-        ) from exc
-    if canonical != payload:
-        _fail(
-            "NONCANONICAL_ARRAY_DIRECTORY",
-            "directory JSON is not canonical",
-            "arrays.directory",
-        )
+    if require_canonical:
+        try:
+            canonical = _canonical_json_bytes(parsed)
+        except (TypeError, UnicodeError, ValueError) as exc:
+            raise ZpV2ArrayReadError(
+                "INVALID_ARRAY_DIRECTORY_SCHEMA",
+                "directory cannot be canonically serialized",
+                "arrays.directory",
+                actual=str(exc),
+            ) from exc
+        if canonical != payload:
+            _fail(
+                "NONCANONICAL_ARRAY_DIRECTORY",
+                "directory JSON is not canonical",
+                "arrays.directory",
+            )
     return parsed
 
 
@@ -220,6 +225,7 @@ class ZpV2ArraysReader:
         *,
         block_offset: int,
         block_length: int,
+        require_canonical: bool = True,
     ) -> V2ArraysDirectory:
         limits = self.limits
         _check_limit(
@@ -377,7 +383,10 @@ class ZpV2ArraysReader:
         if any(padding):
             _fail("NONZERO_ARRAY_PADDING", "array padding must be zero", "arrays.padding")
 
-        parsed = _parse_canonical_directory(raw_directory)
+        parsed = _parse_canonical_directory(
+            raw_directory,
+            require_canonical=require_canonical,
+        )
         if not isinstance(parsed, dict) or set(parsed) != {"entries"} or not isinstance(parsed.get("entries"), list):
             _fail(
                 "INVALID_ARRAY_DIRECTORY_SCHEMA",

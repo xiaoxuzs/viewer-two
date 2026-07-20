@@ -6,8 +6,10 @@
       "format_version": 1,
       "sha256": "91f18933482bd78daae281fe386c256fb5a31e4c19e34f197753b214019ea6e8",
       "validator_checked_blocks": 9,
-      "validator_issue_codes": [],
-      "validator_valid": true
+      "validator_issue_codes": [
+        "COUNT_MISMATCH"
+      ],
+      "validator_valid": false
     },
     {
       "file": "global_meta_count_mismatch_v2.zp",

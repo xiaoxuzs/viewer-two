@@ -1,6 +1,6 @@
 # P1-B8 production implementation plan
 
-Status: **P1-B8.5R completed on 2026-07-14; P1-B8.5 requires a full rerun; P1-B8.6 has not started.**
+Status: **P1-B8.5R, P1-B8.5R2, P1-B8.5R3A, P1-B8.5R3B, P1-B8.5R3C, P1-B8.5, and P1-B8.6 completed; P1-B8.7 has not started.**
 
 Date: 2026-07-14 (Asia/Shanghai)
 
@@ -280,9 +280,117 @@ Completion record:
 - P1-B8.5 must now be rerun in full. P1-B8.6 has not started and may not start
   from this correction gate alone.
 
+## P1-B8.5R2: v1/v2 GlobalMeta count semantic correction
+
+**Status: completed on 2026-07-15. P1-B8.5 remains incomplete.**
+
+Completion record:
+
+- The second B8.5 audit found that v1 accepted a checksum-correct file whose
+  `global_meta.run_count` was zero while `core_runs` contained one Run; v2
+  returned `COUNT_MISMATCH`.
+- The actual GlobalMeta schema contains four count fields: `run_count`,
+  `spectrum_count`, `chromatogram_count`, and `array_count`. V1 now compares
+  them, in that frozen order, with the already parsed Run, Spectrum,
+  Chromatogram, and Array record counts. Negative counts retain Schema-first
+  rejection.
+- Count work is four `len()` results and four comparisons. It adds no file
+  reopen, JSON parse, checksum work, Reader call, arrays payload scan, or peak
+  traversal; an unparseable related record block does not produce a derived
+  count issue.
+- The committed v1/v2 failure Fixtures remain byte-identical and now both
+  return one `COUNT_MISMATCH` with nine checked blocks. Their SHA-256 values
+  remain `91f18933...6e8` and `4e527678...263c`.
+- The suite contains 597 passing tests. Only `binary_layer/validator.py`
+  changed in production; v2 Validator, Writer, Reader, Schema, wire format,
+  default v1 output, Pipeline, Registry, Runner, and Tools remain unchanged.
+- P1-B8.5R2 is complete. Its candidate probes found three additional v1/v2
+  differences: Run-owned record counts, required StringPool references, and
+  bidirectional Precursor links. Minimal deterministic evidence is preserved
+  under `specs/zp_full/failures/candidate_parity/`; none of those production
+  rules was changed in R2.
+- P1-B8.5 is blocked pending P1-B8.5R3 for those three evidenced domains. The
+  complete-file Golden gate may not be rerun yet. No migration tool or
+  performance release gate is complete, and P1-B8.6 has not started.
+
+## P1-B8.5R3A: v1/v2 Run statistics semantic correction
+
+**Status: completed on 2026-07-15. P1-B8.5 remains incomplete.**
+
+Completion record:
+
+- The actual Run schema contains two statistics: `spectrum_count` and
+  `chromatogram_count`. V1 now compares each declaration with records grouped
+  by `run_id`, in Run order and frozen field order.
+- Spectrum and Chromatogram records are each aggregated once into a count map;
+  every Run-field comparison is an O(1) lookup. Unsafe record blocks suppress
+  derived statistics. No file I/O, JSON parse, checksum pass, arrays scan, or
+  peak traversal was added.
+- The preserved Run failure Fixtures remain byte-identical and both versions
+  return `COUNT_MISMATCH` with nine checked blocks. Correct, too-small,
+  too-large, zero, Schema-error, missing-run, and multi-Run cases are covered.
+- Only `binary_layer/validator.py` changed in production. V2 Validator, Writer,
+  Reader, core Schema, format bytes, default v1 output, Pipeline, Registry,
+  Runner, and Tools remain unchanged.
+- P1-B8.5R3A is complete. StringPool required-reference and bidirectional
+  Precursor parity failures remain intentionally unresolved, so Full Golden is
+  not frozen and P1-B8.5 remains blocked. No migration tool or performance
+  release gate is complete; P1-B8.6 has not started.
+
+## P1-B8.5R3B: v1/v2 StringPool reference semantic correction
+
+**Status: completed on 2026-07-15. P1-B8.5 remains incomplete.**
+
+Completion record:
+
+- V1 now requires `Run.source_file`, `Run.run_name`, `Spectrum.native_id`,
+  `Chromatogram.chromatogram_type`, and `Chromatogram.native_id` to exist in
+  `string_pool.strings`, matching the existing v2 business rule and order.
+- The check builds one set while validating StringPool element types, then
+  traverses each already parsed Run, Spectrum, and Chromatogram record once.
+  Its work is O(pool strings + required references), with no file I/O, JSON
+  parse, checksum pass, arrays scan, required-reference list, or peak traversal.
+- The preserved StringPool failure Fixtures remain byte-identical and both
+  versions return one `INVALID_REFERENCE` with nine checked blocks. All five
+  required fields, legal pools, multiple errors, deterministic order, and the
+  set-membership boundary are covered by the 659-test suite.
+- Only `binary_layer/validator.py` changed in production. V2 Validator, Writer,
+  Reader, core Schema, format bytes, default v1 output, Pipeline, Registry,
+  Runner, and Tools remain unchanged.
+- P1-B8.5R3B is complete. Bidirectional Precursor parity remains intentionally
+  unresolved for P1-B8.5R3C, so Full Golden is not frozen and P1-B8.5 remains
+  blocked. No migration tool or performance release gate is complete; P1-B8.6
+  has not started.
+
+## P1-B8.5R3C: v1/v2 Precursor relationship semantic correction
+
+**Status: completed on 2026-07-15. P1-B8.5 requires a full rerun.**
+
+Completion record:
+
+- V1 now matches the existing v2 rules for Spectrum-to-Precursor and
+  Precursor-to-Spectrum existence, bidirectional ownership, MS1/MS2 precursor
+  state, and exactly-one-MS2 Precursor use. Schema-invalid or duplicate core
+  relationship records do not enter the new trusted relationship path.
+- Spectrum and Precursor maps plus MS2 use counts are built in one ordered pass
+  per record class. The existing ordered Spectrum and Precursor validation
+  loops perform O(1) lookups, so the relationship work is O(Spectrum +
+  Precursor) with no file I/O, JSON parse, checksum pass, arrays scan, or peak
+  traversal.
+- The preserved v1/v2 Precursor failure Fixtures remain byte-identical and
+  both return two ordered `INVALID_REFERENCE` issues with nine checked blocks:
+  Spectrum-to-Precursor first, then Precursor-to-Spectrum.
+- Only `binary_layer/validator.py` changed in production. V2 Validator,
+  Writer, Reader, Schema, Pipeline, Registry, Runner, Tools, `ZP_VERSION=1`,
+  and the default v1 Writer remain unchanged.
+- At the P1-B8.5R3C checkpoint, P1-B8.5 still required the complete
+  compatibility and Golden rerun. The completed rerun is recorded below;
+  migration tooling and the 8-core/32-GB B8.8 performance release gate remain
+  incomplete, and P1-B8.6 has not started.
+
 ## P1-B8.5: v1/v2 compatibility and full Golden fixtures
 
-**Status: previous audit did not pass; full rerun required after B8.5R.**
+**Status: completed on 2026-07-16. P1-B8.6 is also complete; P1-B8.7 has not started.**
 
 **Goal.** Freeze complete-file v1 and v2 Goldens and prove one public facade
 reads/validates both without semantic drift.
@@ -302,10 +410,28 @@ old v1 corruptions retain codes; unknown versions reject.
 bytes remain frozen, and committed fixtures are small, independently audited,
 and byte-deterministic.
 
+**Completion evidence.** Four deterministic complete-file Goldens (full and
+minimal, v1 and v2) plus a checksum/offset/logical-array Manifest are frozen.
+The standard-library full-file inspector independently verifies v1 JSON arrays
+and v2 binary arrays, canonical JSON, both checksum layers, physical layout,
+and the shared business references. Exact unified logical-model comparison,
+the default/explicit Writer matrix, all public Reader paths, four valid
+Validator cases, 22 domain-error parity cases, eight version/encoding cases,
+25 isolated corruption cases, all historical failure Fixtures, three small
+real mzML categories, and the 31,408,514-byte sample pass. The large
+Validators run serially, use fixed-seed 100-array sampling, record bounded RSS
+and temporary disk, and never enable tracemalloc. Production hashes and P1-B7
+Golden hashes match their entry baselines; `binary_layer/` has no B8.5
+incremental change. At that checkpoint `ZP_VERSION=1`, the default
+Writer/Pipeline remained v1, and migration had not started. The completed
+P1-B8.6 work is recorded next.
+
 **Failure rollback.** Remove only new full-file v2 fixtures/tests; retain
 arrays-subformat P1-B7 fixtures and previous accepted production stages.
 
 ## P1-B8.6: v1-to-v2 migration tool
+
+**Status: completed on 2026-07-16. P1-B8.7 has not started.**
 
 **Goal.** Add `zp-migrate-v1-to-v2` with read-only source, full before/after
 validation, exact logical comparison, atomic distinct target, and structured
@@ -327,10 +453,38 @@ case.
 logically equal, source untouched, and every failure is recoverable with a
 stage/error report.
 
+**Completion evidence.** `binary_layer.migration` exposes
+`migrate_v1_to_v2` plus the `python -m binary_layer.migration` CLI. It rejects
+in-place/equivalent paths, symlink/hardlink aliases, existing targets,
+non-v1/invalid/noncanonical sources, insufficient disk, and source changes.
+The production conversion path never calls `ZpReader.read_arrays()`: it parses
+the v1 canonical arrays list in bounded chunks, retains at most one values
+list, writes one little-endian float64 payload spool, sorts only array
+metadata by UTF-8 ID, then emits bytes identical to the existing v2 Writer.
+The sibling temporary target is flushed/fsynced, fully v2-validated, compared
+by an exact version-neutral logical fingerprint, and committed only after a
+final source identity/SHA-256 recheck. Full/Minimal migration Goldens are
+byte-identical to the frozen B8.5 v2 files. MS1-only, MS1/MS2, and TIC/BPC real
+Fixtures match direct v2 bytes. Twenty-eight injected failure conditions leave
+the source unchanged and no tool-owned target/temp. The 31,408,514-byte gate
+converts 4,098 arrays/4,762,968 values with one arrays scan; all 4,098 hashes
+and the complete 42,559,842-byte target match direct Writer v2. The formal
+gate records 50.745 s conversion, 57.163 s migration, a 163,610,624-byte
+streaming-conversion RSS peak, and an 80,663,586-byte temporary disk peak on
+this run, with serial Validators and no tracemalloc. A single comparison-only
+full Reader-to-Writer run took 10.262 s and peaked at 441,565,184 bytes; its
+v2 output was byte-identical, while the production streaming path used 37.1%
+of the reference RSS. The full Reader path is not used by production migration.
+`ZP_VERSION=1`; default Writer/Pipeline output remains v1. There is no batch
+migration, overwrite mode, Viewer integration, default-v2 switch, or B8.8
+performance release.
+
 **Failure rollback.** Remove CLI/entry/report/tests; dual-version Reader and
 Writer continue without migration claims.
 
 ## P1-B8.7: real mzML v1/v2 comparison
+
+**Status: not started.**
 
 **Goal.** Convert the accepted real mzML corpus explicitly to both versions
 and compare logical outputs, disk size, memory phases, validation, and target

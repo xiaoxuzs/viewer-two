@@ -389,7 +389,8 @@ def _decode_array(value: object) -> tuple[tuple[float, ...], str | None, str | N
     compression_text = str(getattr(value, "compression", ""))
     compression = "zlib" if compression_text == "zlib compression" else "none" if compression_text == "no compression" else compression_text
     decoded = value.decode()  # type: ignore[union-attr]
-    return tuple(float(item) for item in decoded), dtype, compression
+    normalized = np.asarray(decoded, dtype=np.float64)
+    return tuple(normalized.tolist()), dtype, compression
 
 
 def _decode_numeric_array(value: object) -> tuple[tuple[int | float, ...], str | None, str | None]:
@@ -400,8 +401,8 @@ def _decode_numeric_array(value: object) -> tuple[tuple[int | float, ...], str |
     compression = "zlib" if compression_text == "zlib compression" else "none" if compression_text == "no compression" else compression_text
     decoded = value.decode()  # type: ignore[union-attr]
     if dtype in {"int32", "int64"}:
-        return tuple(int(item) for item in decoded), dtype, compression
-    return tuple(float(item) for item in decoded), dtype, compression
+        return tuple(np.asarray(decoded, dtype=np.int64).tolist()), dtype, compression
+    return tuple(np.asarray(decoded, dtype=np.float64).tolist()), dtype, compression
 
 
 def _parse_chromatogram(record: dict[str, Any], structure: _ChromatogramStructure) -> ParsedMzmlChromatogram:

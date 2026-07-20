@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "stage": "P1-B8.7-D1",
+  "status": "not_satisfied",
+  "reason": "no_additional_accepted_real_mzml",
+  "candidate_research_seconds": 150.0,
+  "researched_candidates": [
+    {
+      "project_accession": "PXD079132",
+      "repository": "PRIDE Archive",
+      "file_name": "MHC1_Pep.mzML",
+      "declared_size": 2021465492,
+      "selection_reason": "excluded: declared size exceeds the 800 MB principle",
+      "expected_coverage": [
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD079132",
+      "repository": "PRIDE Archive",
+      "file_name": "MHC1_No_Pep.mzML",
+      "declared_size": 3150428671,
+      "selection_reason": "excluded: declared size exceeds the 800 MB principle",
+      "expected_coverage": [
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD075509",
+      "repository": "PRIDE Archive",
+      "file_name": "15HCD_1.mzML",
+      "declared_size": 79221306,
+      "selection_reason": "selected: public 20-300 MB experimental LC-MS/MS mzML",
+      "expected_coverage": [
+        "indexed_mzml",
+        "centroid",
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD075509",
+      "repository": "PRIDE Archive",
+      "file_name": "15HCD_3.mzML",
+      "declared_size": 79438229,
+      "selection_reason": "selected: distinct public experimental LC-MS/MS run",
+      "expected_coverage": [
+        "indexed_mzml",
+        "centroid",
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD077277",
+      "repository": "PRIDE Archive",
+      "file_name": "IgG_15.mzML",
+      "declared_size": 263710819,
+      "selection_reason": "replaced after sustained low transfer speed; partial data retained externally",
+      "expected_coverage": [
+        "nonindexed_mzml",
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD077277",
+      "repository": "PRIDE Archive",
+      "file_name": "IgG_13.mzML",
+      "declared_size": 265262356,
+      "selection_reason": "not selected: sibling run on the same persistently slow host path",
+      "expected_coverage": [
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD075396",
+      "repository": "PRIDE Archive",
+      "file_name": "23HCD_2.mzML",
+      "declared_size": 97007667,
+      "selection_reason": "selected as a public experimental replacement from a second project",
+      "expected_coverage": [
+        "indexed_mzml",
+        "centroid",
+        "ms1_ms2"
+      ]
+    },
+    {
+      "project_accession": "PXD075270",
+      "repository": "PRIDE Archive",
+      "file_name": "CA2_Sim_c_34plus_LTQ-FT_21T_ChargeReduction-no_adduct_N-term_MP2_pi200_NoP_IntGaus_high_range_NL0_768ms_BL201.mzml",
+      "declared_size": 29714259,
+      "selection_reason": "excluded: simulated reference data is outside the real-sample requirement",
+      "expected_coverage": [
+        "simulated_ms"
+      ]
+    }
+  ],
+  "aria2": {
+    "version": "1.37.0",
+    "concurrent_downloads": 3,
+    "connections_per_file": 8,
+    "resume_enabled": true,
+    "download_seconds": 995.11,
+    "retry_count": 24,
+    "fallback_count": 4,
+    "average_useful_speed_kib_s": 250.901,
+    "unfinished_control_files": [
+      "IgG_15.mzML.aria2"
+    ],
+    "final_file_control_files": 0,
+    "attempted_download_candidates": 4,
+    "successful_final_downloads": 3
+  },
+  "samples": [
+    {
+      "sample_id": "pxd075509-15hcd-1",
+      "project_accession": "PXD075509",
+      "repository": "PRIDE Archive",
+      "file_name": "15HCD_1.mzML",
+      "file_size": 79221306,
+      "sha256": "3afb8e1315fe1bafc29040ee781634c2fb1db52dd082894b5b8de0c0ebf47b52",
+      "unique": true,
+      "indexed": true,
+      "array_dtype": [
+        "float64"
+      ],
+      "compression": [
+        "zlib"
+      ],
+      "spectrum_count": 9001,
+      "MS1_count": 917,
+      "MS2_count": 8084,
+      "MS3_plus_count": 0,
+      "chromatogram_count": 2,
+      "TIC_count": 1,
+      "BPC_count": 0,
+      "representation_counts": {
+        "centroid": 9001
+      },
+      "precursor_count": 8084,
+      "missing_charge_count": 1922,
+      "missing_selected_ion_intensity_count": 0,
+      "multiple_precursor_detected": false,
+      "multiple_selected_ion_detected": false,
+      "DIA_detected": false,
+      "ion_mobility_detected": false,
+      "SRM_detected": false,
+      "RT_unit": [
+        "minute"
+      ],
+      "coverage_tags": [
+        "indexed_mzml",
+        "float64_arrays",
+        "zlib_compressed",
+        "ms1_ms2",
+        "precursor",
+        "tic_or_bpc_chromatogram",
+        "over_30mb"
+      ],
+      "admission": "rejected",
+      "admission_reasons": [
+        {
+          "code": "MISSING_PRECURSOR_CHARGE",
+          "count": 1922,
+          "first_location": "spectrum[5]"
+        },
+        {
+          "code": "UNSUPPORTED_CHROMATOGRAM_TYPE",
+          "count": 1,
+          "first_location": "chromatogram[1]"
+        }
+      ],
+      "timings": {
+        "inspection_seconds": 9.107456,
+        "admission_seconds": 0.02943
+      },
+      "conversion_attempted": false,
+      "artifacts_created": false,
+      "migration_temp_files_created": false
+    },
+    {
+      "sample_id": "pxd075509-15hcd-3",
+      "project_accession": "PXD075509",
+      "repository": "PRIDE Archive",
+      "file_name": "15HCD_3.mzML",
+      "file_size": 79438229,
+      "sha256": "758bfaafe6efb56cdfc23de696136abdb920f94b658bce16668d19916ceb0ee9",
+      "unique": true,
+      "indexed": true,
+      "array_dtype": [
+        "float64"
+      ],
+      "compression": [
+        "zlib"
+      ],
+      "spectrum_count": 9001,
+      "MS1_count": 937,
+      "MS2_count": 8064,
+      "MS3_plus_count": 0,
+      "chromatogram_count": 2,
+      "TIC_count": 1,
+      "BPC_count": 0,
+      "representation_counts": {
+        "centroid": 9001
+      },
+      "precursor_count": 8064,
+      "missing_charge_count": 1824,
+      "missing_selected_ion_intensity_count": 0,
+      "multiple_precursor_detected": false,
+      "multiple_selected_ion_detected": false,
+      "DIA_detected": false,
+      "ion_mobility_detected": false,
+      "SRM_detected": false,
+      "RT_unit": [
+        "minute"
+      ],
+      "coverage_tags": [
+        "indexed_mzml",
+        "float64_arrays",
+        "zlib_compressed",
+        "ms1_ms2",
+        "precursor",
+        "tic_or_bpc_chromatogram",
+        "over_30mb"
+      ],
+      "admission": "rejected",
+      "admission_reasons": [
+        {
+          "code": "MISSING_PRECURSOR_CHARGE",
+          "count": 1824,
+          "first_location": "spectrum[10]"
+        },
+        {
+          "code": "UNSUPPORTED_CHROMATOGRAM_TYPE",
+          "count": 1,
+          "first_location": "chromatogram[1]"
+        }
+      ],
+      "timings": {
+        "inspection_seconds": 9.611977,
+        "admission_seconds": 0.029216
+      },
+      "conversion_attempted": false,
+      "artifacts_created": false,
+      "migration_temp_files_created": false
+    },
+    {
+      "sample_id": "pxd075396-23hcd-2",
+      "project_accession": "PXD075396",
+      "repository": "PRIDE Archive",
+      "file_name": "23HCD_2.mzML",
+      "file_size": 97007667,
+      "sha256": "ad837ddfdf5b036dd21c9c69e9be3f39ac0502c156292de0633ba01ca8e0ae54",
+      "unique": true,
+      "indexed": true,
+      "array_dtype": [
+        "float64"
+      ],
+      "compression": [
+        "zlib"
+      ],
+      "spectrum_count": 9601,
+      "MS1_count": 975,
+      "MS2_count": 8626,
+      "MS3_plus_count": 0,
+      "chromatogram_count": 2,
+      "TIC_count": 1,
+      "BPC_count": 0,
+      "representation_counts": {
+        "centroid": 9601
+      },
+      "precursor_count": 8626,
+      "missing_charge_count": 2342,
+      "missing_selected_ion_intensity_count": 0,
+      "multiple_precursor_detected": false,
+      "multiple_selected_ion_detected": false,
+      "DIA_detected": false,
+      "ion_mobility_detected": false,
+      "SRM_detected": false,
+      "RT_unit": [
+        "minute"
+      ],
+      "coverage_tags": [
+        "indexed_mzml",
+        "float64_arrays",
+        "zlib_compressed",
+        "ms1_ms2",
+        "precursor",
+        "tic_or_bpc_chromatogram",
+        "over_30mb"
+      ],
+      "admission": "rejected",
+      "admission_reasons": [
+        {
+          "code": "MISSING_PRECURSOR_CHARGE",
+          "count": 2342,
+          "first_location": "spectrum[0]"
+        },
+        {
+          "code": "UNSUPPORTED_CHROMATOGRAM_TYPE",
+          "count": 1,
+          "first_location": "chromatogram[1]"
+        }
+      ],
+      "timings": {
+        "inspection_seconds": 10.564089,
+        "admission_seconds": 0.036371
+      },
+      "conversion_attempted": false,
+      "artifacts_created": false,
+      "migration_temp_files_created": false
+    }
+  ],
+  "timings": {
+    "candidate_research_seconds": 150.0,
+    "download_seconds": 995.11,
+    "inspection_seconds": 29.283523,
+    "admission_seconds": 0.095017,
+    "longest_command": "aria2c FTP fallback resume for 23HCD_2.mzML",
+    "longest_command_seconds": 521.307
+  },
+  "prerequisite": {
+    "existing_unique": 2,
+    "new_unique": 3,
+    "total_unique": 5,
+    "existing_accepted": 1,
+    "new_accepted": 0,
+    "prerequisite_satisfied": false
+  },
+  "production_freeze": {
+    "binary_layer_changed": false,
+    "production_code_changed": false,
+    "full_B8_7_executed": false,
+    "pytest_executed": false,
+    "zp_artifacts_created": 0,
+    "migration_temp_files_created": 0
+  }
+}

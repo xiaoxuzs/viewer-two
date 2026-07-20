@@ -7,7 +7,9 @@ import struct
 from dataclasses import dataclass, fields
 from typing import BinaryIO, Iterable, Iterator
 
-from .blocks import ArrayBlock
+import numpy as np
+
+from .blocks import ArrayBlock, NormalizedFloat64List
 from .exceptions import ZpV2ArrayWriteError, ZpV2ResourceLimitError
 
 
@@ -141,15 +143,61 @@ def _encode_value(array: ArrayBlock, value: object, position: int) -> bytes:
     return _FLOAT64.pack(number)
 
 
-def _encoded_chunks(array: ArrayBlock) -> Iterator[bytes]:
-    chunk = bytearray()
-    for position, value in enumerate(array.values):
-        chunk.extend(_encode_value(array, value, position))
-        if len(chunk) == _CHUNK_VALUE_COUNT * _FLOAT64.size:
-            yield bytes(chunk)
-            chunk.clear()
-    if chunk:
-        yield bytes(chunk)
+def _numeric_buffer(array: ArrayBlock, *, validate_types: bool) -> np.ndarray:
+    if validate_types and not isinstance(array.values, NormalizedFloat64List):
+        for position, value in enumerate(array.values):
+            _encode_value(array, value, position)
+    try:
+        values = np.asarray(array.values, dtype="<f8")
+    except (OverflowError, TypeError, ValueError) as exc:
+        _fail(
+            "INVALID_ARRAY_VALUE",
+            "array values cannot be represented as float64",
+            f"arrays[{array.array_id!r}].values",
+            actual=str(exc),
+        )
+    if values.ndim != 1:
+        _fail(
+            "INVALID_ARRAY_VALUE",
+            "array values must be one-dimensional",
+            f"arrays[{array.array_id!r}].values",
+            actual=values.ndim,
+        )
+    invalid = ~np.isfinite(values)
+    if array.array_type in {"mz", "time"}:
+        invalid |= values < 0
+    positions = np.flatnonzero(invalid)
+    if positions.size:
+        position = int(positions[0])
+        number = float(values[position])
+        if not math.isfinite(number):
+            code = "NONFINITE_ARRAY_VALUE"
+            message = "array values must be finite"
+        elif array.array_type == "mz":
+            code = "NEGATIVE_MZ_VALUE"
+            message = "m/z values must not be negative"
+        else:
+            code = "NEGATIVE_TIME_VALUE"
+            message = "time values must not be negative"
+        _fail(
+            code,
+            message,
+            f"arrays[{array.array_id!r}].values[{position}]",
+            actual=number,
+        )
+    return np.ascontiguousarray(values)
+
+
+def _encoded_chunks(
+    array: ArrayBlock,
+    *,
+    validate_types: bool = True,
+) -> Iterator[memoryview]:
+    values = _numeric_buffer(array, validate_types=validate_types)
+    raw = memoryview(values).cast("B")
+    chunk_size = _CHUNK_VALUE_COUNT * _FLOAT64.size
+    for offset in range(0, len(raw), chunk_size):
+        yield raw[offset : offset + chunk_size]
 
 
 def prepare_v2_arrays_layout(
@@ -222,7 +270,7 @@ def prepare_v2_arrays_layout(
     data_offset = 0
     for array in sorted_arrays:
         checksum = hashlib.sha256()
-        for chunk in _encoded_chunks(array):
+        for chunk in _encoded_chunks(array, validate_types=True):
             checksum.update(chunk)
         byte_length = len(array.values) * _FLOAT64.size
         entries.append(
@@ -264,7 +312,7 @@ def prepare_v2_arrays_layout(
     )
 
 
-def _write_exact(stream: BinaryIO, value: bytes, digest: object) -> None:
+def _write_exact(stream: BinaryIO, value: bytes | memoryview, digest: object) -> None:
     written = stream.write(value)
     if written != len(value):
         raise OSError(f"short write: expected {len(value)} bytes, wrote {written}")
@@ -293,7 +341,7 @@ def write_v2_arrays_block(stream: BinaryIO, layout: V2ArraysLayout) -> tuple[int
     for array, entry in zip(layout.arrays, layout.entries):
         array_digest = hashlib.sha256()
         array_written = 0
-        for chunk in _encoded_chunks(array):
+        for chunk in _encoded_chunks(array, validate_types=False):
             _write_exact(stream, chunk, digest)
             array_digest.update(chunk)
             array_written += len(chunk)

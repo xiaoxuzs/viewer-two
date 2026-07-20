@@ -1,0 +1,363 @@
+{
+  "accepted_samples_passed": true,
+  "counts": {
+    "accepted": 1,
+    "available": 2,
+    "failed": 0,
+    "missing": 1,
+    "provided": 2,
+    "rejected": 1
+  },
+  "covered_coverage": [
+    "float64_arrays",
+    "indexed_mzml",
+    "ms1_ms2",
+    "over_30mb",
+    "precursor",
+    "tic_or_bpc_chromatogram",
+    "zlib_compressed"
+  ],
+  "existing_gates": {
+    "b8_5": {
+      "failure_fixture_determinism": true,
+      "golden_determinism": true,
+      "release_gate": true,
+      "stderr_tail": "{\"stage\": \"golden_and_logical\"}\n{\"stage\": \"writer_reader_validator\"}\n{\"stage\": \"real_fixtures\"}\n{\"stage\": \"compatibility_pytest_matrices\"}\n{\"stage\": \"large_sample\"}\n{\"stage\": \"large_parse\"}\n{\"stage\": \"large_write_v1\"}\n{\"stage\": \"large_write_v2\"}\n{\"stage\": \"large_validate_v1\"}\n{\"stage\": \"large_validate_v2\"}\n{\"stage\": \"large_reader_sample\"}\n"
+    },
+    "b8_6": {
+      "b8_5_release_gate": true,
+      "migration_golden_determinism": true,
+      "release_gate": true,
+      "stderr_tail": "{\"stage\": \"migration_golden\"}\n{\"stage\": \"migration_cli\"}\n{\"stage\": \"migration_real_fixtures\"}\n{\"stage\": \"migration_pytest_matrices\"}\n{\"stage\": \"b8_5_release_gate\"}\n{\"stage\": \"golden_and_logical\"}\n{\"stage\": \"writer_reader_validator\"}\n{\"stage\": \"real_fixtures\"}\n{\"stage\": \"compatibility_pytest_matrices\"}\n{\"stage\": \"large_sample\"}\n{\"stage\": \"large_parse\"}\n{\"stage\": \"large_write_v1\"}\n{\"stage\": \"large_write_v2\"}\n{\"stage\": \"large_validate_v1\"}\n{\"stage\": \"large_validate_v2\"}\n{\"stage\": \"large_reader_sample\"}\n{\"stage\": \"migration_large_parse\"}\n{\"stage\": \"migration_large_convert\"}\n{\"stage\": \"migration_large_reference\"}\n"
+    },
+    "pytest": {
+      "passed": true,
+      "returncode": 0,
+      "summary": "861 passed in 24.90s"
+    }
+  },
+  "generated_at_utc": "2026-07-16T07:39:09.169495+00:00",
+  "minimum_real_file_count_met": false,
+  "missing_coverage": [
+    "nonindexed_mzml",
+    "float32_arrays",
+    "uncompressed",
+    "ms1_only"
+  ],
+  "production_freeze": {
+    "after": {
+      "binary_layer/__init__.py": "668f6e9fa3864b41a67ddc7636323d82fda43f81d81b2811e359fead9d1412ca",
+      "binary_layer/blocks.py": "985f0a88e934a1c0e0dc6d7c93c80534fa1342e8cd7211a833f34a51adfe40c9",
+      "binary_layer/constants.py": "edfce972d1aa05aa791cc597ad844534aaa2ab169fe502f446115bae77dd53be",
+      "binary_layer/exceptions.py": "43c7b1b2a70602724e016ea3ee858c8a3b44e76edd48cf5ccebd7ac91fef1894",
+      "binary_layer/inspector.py": "7de6c0fb175240020f9af23a30b76e414a72046774cddd6d5acb5c7fd989dea1",
+      "binary_layer/logical_fingerprint.py": "b81db479181664664d61382927d4ad5e319252293042ae3a9cd650adb082543b",
+      "binary_layer/migration.py": "e78d28e4607618e6dfc0780fb7e42699ae3c8c7ab53f68b1259259ae0b51d155",
+      "binary_layer/models.py": "7102853820619c89f99dc99e843b1686681d8b0d8847803e45e0308c633afec8",
+      "binary_layer/mzml_adapter.py": "1ff9bff016627fe5f2d2f93029449630fd0ad8c091a322ac708ba4b8005e82ac",
+      "binary_layer/mzml_admission.py": "776fe5d97d046718985bd8f52e0f58610a4c820ee0a3fef2ba24a97b2b20d88a",
+      "binary_layer/mzml_schema.py": "ae156599d5c31f7a06fec64fe79505602ac59db3a5dc5074f0c67cf33a0d22fa",
+      "binary_layer/plan.py": "e01fc73c9e69f0b9f9df6f0c3d80b376d6e6df6ac2bcc072de8db13eaf662b73",
+      "binary_layer/reader.py": "579172e7652d5c8b209d7459e46f6ae014b7c291372c06f4e926d920abb57aa7",
+      "binary_layer/registry.py": "4f4b91e7adc6b2a5ba267692f22cd232f9ce55f6efb854d39eea7f2acb811eb8",
+      "binary_layer/runner.py": "8e4f1175f0ddc4cc62f45d6aaaf1578b31c4713658741a3b7c56116624890b99",
+      "binary_layer/serialization.py": "fadda12fdf96e0fb0a059120cb1ffad3b4e04ee1b6d8f43dc1275829e48535c1",
+      "binary_layer/tools/__init__.py": "7863e77f5a19dffd835a38ae5df6bbba94910c553616c81d63b1a880db65be13",
+      "binary_layer/tools/base.py": "1f7f65ad42848c2f655880e3edfd35afba8ca801101d1a7ae0adb96f935805a6",
+      "binary_layer/tools/common.py": "d6cac268e9129d5cffe688d32546213bd5bdfbe4a40d8e6737dc85d4bc945d2f",
+      "binary_layer/tools/mzml_mock.py": "fdf7855d21936648c2f4d8e4fc1424b56c1a37b64b4f53dce3d4fbd3400e6a12",
+      "binary_layer/tools/raw_mock.py": "bab479295ef42a2c6eaa25d9228d7a3ad256c929cbf72f8b81f224190fe9e521",
+      "binary_layer/tools/real_mzml.py": "f805755afc0234e3f35b1472c68c793ba481f55db5c06a3719d3b4ab4d9f84eb",
+      "binary_layer/v1_arrays_stream_reader.py": "425fea73270625e1322c4d9f88e4ca7a0298dea0fd2d54fc34a7618a1c9c383b",
+      "binary_layer/v2_arrays_migration_writer.py": "94bee5c0a8dad5af7693c46827c9b307a850ec785529dde4529ad8eae76e8153",
+      "binary_layer/v2_arrays_reader.py": "fee81c92c972a8cb0ccdab9e3a39f9a91f728f24e2c416e9a9c1980eba0fed85",
+      "binary_layer/v2_arrays_writer.py": "704c24f4423f4709bf36fe2c01ebee3a8be9f6e4d0296fb7c618bf30df02dc44",
+      "binary_layer/v2_validator.py": "ef65b6d92e9a2b79edd34fcf2929c9dcdaf31283965795b74a989ba88f699a04",
+      "binary_layer/validator.py": "9a4334e713dc94b6cf3615caf388c956bb3bf864d35b1c82e9763f150c72ca57",
+      "binary_layer/writer.py": "63cbb703b6a61f3e15c5e15c1d28daa9dcac70832dc4d72d43182045e1e9804d"
+    },
+    "before": {
+      "binary_layer/__init__.py": "668f6e9fa3864b41a67ddc7636323d82fda43f81d81b2811e359fead9d1412ca",
+      "binary_layer/blocks.py": "985f0a88e934a1c0e0dc6d7c93c80534fa1342e8cd7211a833f34a51adfe40c9",
+      "binary_layer/constants.py": "edfce972d1aa05aa791cc597ad844534aaa2ab169fe502f446115bae77dd53be",
+      "binary_layer/exceptions.py": "43c7b1b2a70602724e016ea3ee858c8a3b44e76edd48cf5ccebd7ac91fef1894",
+      "binary_layer/inspector.py": "7de6c0fb175240020f9af23a30b76e414a72046774cddd6d5acb5c7fd989dea1",
+      "binary_layer/logical_fingerprint.py": "b81db479181664664d61382927d4ad5e319252293042ae3a9cd650adb082543b",
+      "binary_layer/migration.py": "e78d28e4607618e6dfc0780fb7e42699ae3c8c7ab53f68b1259259ae0b51d155",
+      "binary_layer/models.py": "7102853820619c89f99dc99e843b1686681d8b0d8847803e45e0308c633afec8",
+      "binary_layer/mzml_adapter.py": "1ff9bff016627fe5f2d2f93029449630fd0ad8c091a322ac708ba4b8005e82ac",
+      "binary_layer/mzml_admission.py": "776fe5d97d046718985bd8f52e0f58610a4c820ee0a3fef2ba24a97b2b20d88a",
+      "binary_layer/mzml_schema.py": "ae156599d5c31f7a06fec64fe79505602ac59db3a5dc5074f0c67cf33a0d22fa",
+      "binary_layer/plan.py": "e01fc73c9e69f0b9f9df6f0c3d80b376d6e6df6ac2bcc072de8db13eaf662b73",
+      "binary_layer/reader.py": "579172e7652d5c8b209d7459e46f6ae014b7c291372c06f4e926d920abb57aa7",
+      "binary_layer/registry.py": "4f4b91e7adc6b2a5ba267692f22cd232f9ce55f6efb854d39eea7f2acb811eb8",
+      "binary_layer/runner.py": "8e4f1175f0ddc4cc62f45d6aaaf1578b31c4713658741a3b7c56116624890b99",
+      "binary_layer/serialization.py": "fadda12fdf96e0fb0a059120cb1ffad3b4e04ee1b6d8f43dc1275829e48535c1",
+      "binary_layer/tools/__init__.py": "7863e77f5a19dffd835a38ae5df6bbba94910c553616c81d63b1a880db65be13",
+      "binary_layer/tools/base.py": "1f7f65ad42848c2f655880e3edfd35afba8ca801101d1a7ae0adb96f935805a6",
+      "binary_layer/tools/common.py": "d6cac268e9129d5cffe688d32546213bd5bdfbe4a40d8e6737dc85d4bc945d2f",
+      "binary_layer/tools/mzml_mock.py": "fdf7855d21936648c2f4d8e4fc1424b56c1a37b64b4f53dce3d4fbd3400e6a12",
+      "binary_layer/tools/raw_mock.py": "bab479295ef42a2c6eaa25d9228d7a3ad256c929cbf72f8b81f224190fe9e521",
+      "binary_layer/tools/real_mzml.py": "f805755afc0234e3f35b1472c68c793ba481f55db5c06a3719d3b4ab4d9f84eb",
+      "binary_layer/v1_arrays_stream_reader.py": "425fea73270625e1322c4d9f88e4ca7a0298dea0fd2d54fc34a7618a1c9c383b",
+      "binary_layer/v2_arrays_migration_writer.py": "94bee5c0a8dad5af7693c46827c9b307a850ec785529dde4529ad8eae76e8153",
+      "binary_layer/v2_arrays_reader.py": "fee81c92c972a8cb0ccdab9e3a39f9a91f728f24e2c416e9a9c1980eba0fed85",
+      "binary_layer/v2_arrays_writer.py": "704c24f4423f4709bf36fe2c01ebee3a8be9f6e4d0296fb7c618bf30df02dc44",
+      "binary_layer/v2_validator.py": "ef65b6d92e9a2b79edd34fcf2929c9dcdaf31283965795b74a989ba88f699a04",
+      "binary_layer/validator.py": "9a4334e713dc94b6cf3615caf388c956bb3bf864d35b1c82e9763f150c72ca57",
+      "binary_layer/writer.py": "63cbb703b6a61f3e15c5e15c1d28daa9dcac70832dc4d72d43182045e1e9804d"
+    },
+    "passed": true
+  },
+  "random_seed": 8707,
+  "reason": "insufficient_real_sample_matrix",
+  "rejected_samples_stable": true,
+  "release_gate": false,
+  "required_coverage": [
+    "indexed_mzml",
+    "nonindexed_mzml",
+    "float32_arrays",
+    "float64_arrays",
+    "zlib_compressed",
+    "uncompressed",
+    "ms1_only",
+    "ms1_ms2",
+    "precursor",
+    "tic_or_bpc_chromatogram",
+    "over_30mb"
+  ],
+  "samples": [
+    {
+      "BPC_count": 0,
+      "DIA_detected": false,
+      "RT_unit": [
+        "minute"
+      ],
+      "SRM_detected": false,
+      "TIC_count": 1,
+      "admission": "accepted",
+      "admission_issue_count": 0,
+      "admission_reasons": [],
+      "admission_result": true,
+      "admission_seconds": 0.008035,
+      "admission_stable": true,
+      "all_array_hashes_equal": true,
+      "array_dtype": [
+        "float64"
+      ],
+      "chromatogram_count": 1,
+      "compression": [
+        "zlib"
+      ],
+      "coverage_tags": [
+        "indexed_mzml",
+        "float64_arrays",
+        "zlib_compressed",
+        "ms1_ms2",
+        "precursor",
+        "tic_or_bpc_chromatogram",
+        "over_30mb"
+      ],
+      "direct_v2_sha256": "747914a12b680eef830f73d77016bf7311a7a89ecaae5052f2c0665c5a9dc388",
+      "file_name": "20191118_rvg262_LT_110516-13_1000-1100_Techrep01.mzML",
+      "file_size": 31408514,
+      "indexed": true,
+      "inspection_seconds": 3.521796,
+      "ion_mobility_detected": false,
+      "logical_equal": true,
+      "migrated_equals_direct_v2": true,
+      "migrated_logical_fingerprint": "612fe6406b90583967acba51b85702615e2f9eee7193de68512f67cf9fed144c",
+      "migrated_v2_sha256": "747914a12b680eef830f73d77016bf7311a7a89ecaae5052f2c0665c5a9dc388",
+      "migrated_v2_size": 42559842,
+      "migration_memory": {
+        "destination_validation_peak_rss": 156700672,
+        "source_validation_peak_rss": 373800960,
+        "stream_conversion_peak_rss": 150863872,
+        "whole_migration_peak_rss": 373800960
+      },
+      "migration_result": "passed",
+      "migration_temporary_disk_peak": 80663586,
+      "ms1_count": 997,
+      "ms2_count": 1051,
+      "ms3_plus_count": 0,
+      "multiple_precursor_detected": false,
+      "passed": true,
+      "peak_rss": 390520832,
+      "pipeline_steps": [
+        "file_validate",
+        "hash_input",
+        "real_mzml_parse",
+        "string_pool_build",
+        "index_build"
+      ],
+      "precursor_count": 1051,
+      "reader": {
+        "all_chromatograms_sampled": true,
+        "array_equal": true,
+        "array_sample_count": 100,
+        "chromatogram_equal": true,
+        "chromatogram_sample_count": 1,
+        "precursor_equal": true,
+        "precursor_sample_count": 100,
+        "reader_equal": true,
+        "reader_sample_seconds": 2.221741,
+        "seed": 8707,
+        "spectrum_equal": true,
+        "spectrum_sample_count": 100
+      },
+      "reader_equal": true,
+      "representation_counts": {
+        "centroid": 2048
+      },
+      "sample_id": "pxd045330-techrep01",
+      "selected_ion_count": 1051,
+      "size_ratio": 0.544917,
+      "source_logical_fingerprint": "612fe6406b90583967acba51b85702615e2f9eee7193de68512f67cf9fed144c",
+      "source_sha256": "4b0293098e072384bd20d296e7a6e26cf7736a88124361128dd418151dd521d8",
+      "source_unchanged": true,
+      "spectrum_count": 2048,
+      "statistics": {
+        "array_count": 4098,
+        "chromatogram_count": 1,
+        "extension_count": 2,
+        "ms1_count": 997,
+        "ms2_count": 1051,
+        "numeric_value_count": 4762968,
+        "precursor_count": 1051,
+        "run_count": 1,
+        "spectrum_count": 2048
+      },
+      "temporary_disk_peak": 201326705,
+      "timings": {
+        "admission_seconds": 0.008035,
+        "inspection_seconds": 3.521796,
+        "migration_seconds": 71.707221,
+        "parse_seconds": 4.236928,
+        "reader_sample_seconds": 2.221741,
+        "total_seconds": 107.918745,
+        "v1_validate_seconds": 3.26775,
+        "v1_write_seconds": 6.368236,
+        "v2_validate_seconds": 2.246854,
+        "v2_write_seconds": 8.677737
+      },
+      "v1_size": 78103277,
+      "v2_size": 42559842,
+      "validation": {
+        "migrated_v2_checked_blocks": 9,
+        "migrated_v2_issues": [],
+        "migrated_v2_valid": true,
+        "v1_checked_blocks": 9,
+        "v1_issues": [],
+        "v1_valid": true,
+        "v2_checked_blocks": 9,
+        "v2_issues": [],
+        "v2_valid": true
+      }
+    },
+    {
+      "BPC_count": 0,
+      "DIA_detected": false,
+      "RT_unit": [
+        "minute"
+      ],
+      "SRM_detected": false,
+      "TIC_count": 1,
+      "admission": "rejected",
+      "admission_issue_count": 31315,
+      "admission_reasons": [
+        {
+          "code": "MISSING_PRECURSOR_CHARGE",
+          "count": 26601,
+          "first_location": "spectrum[1]"
+        },
+        {
+          "code": "MISSING_SELECTED_ION_INTENSITY",
+          "count": 4714,
+          "first_location": "spectrum[10]"
+        }
+      ],
+      "admission_result": false,
+      "admission_seconds": 0.250376,
+      "admission_stable": true,
+      "all_array_hashes_equal": null,
+      "array_dtype": [
+        "float64"
+      ],
+      "artifacts_created": false,
+      "chromatogram_count": 1,
+      "compression": [
+        "zlib"
+      ],
+      "conversion_attempted": false,
+      "coverage_tags": [
+        "indexed_mzml",
+        "float64_arrays",
+        "zlib_compressed",
+        "ms1_ms2",
+        "precursor",
+        "tic_or_bpc_chromatogram",
+        "over_30mb"
+      ],
+      "file_name": "Fig2HeLa-0-5h_MHRM_R01_T0.mzML",
+      "file_size": 507698656,
+      "indexed": true,
+      "inspection_seconds": 42.137375,
+      "ion_mobility_detected": false,
+      "logical_equal": null,
+      "migrated_v2_size": null,
+      "migration_result": "not_run",
+      "migration_temp_files_created": false,
+      "ms1_count": 1478,
+      "ms2_count": 26601,
+      "ms3_plus_count": 0,
+      "multiple_precursor_detected": false,
+      "passed": true,
+      "peak_rss": 187777024,
+      "precursor_count": 26601,
+      "reader_equal": null,
+      "representation_counts": {
+        "centroid": 28079
+      },
+      "sample_id": "hela-mhrm-r01-t0",
+      "selected_ion_count": 26601,
+      "source_sha256": "5958db9eac15e0ffc44bc30e332d05f70885b8e62dee1719e59d9bbd80337949",
+      "spectrum_count": 28079,
+      "statistics": null,
+      "temporary_disk_peak": 0,
+      "timings": {
+        "admission_seconds": 0.250376,
+        "inspection_seconds": 42.137375,
+        "total_seconds": 42.137375
+      },
+      "v1_size": null,
+      "v2_size": null
+    }
+  ],
+  "schema_version": 1,
+  "stage": "P1-B8.7",
+  "status": "failed",
+  "total_seconds": 353.653704,
+  "version_state": {
+    "DEFAULT_ZP_WRITE_VERSION": 1,
+    "KNOWN_ZP_VERSIONS": [
+      1,
+      2
+    ],
+    "SUPPORTED_ZP_READ_VERSIONS": [
+      1,
+      2
+    ],
+    "SUPPORTED_ZP_VALIDATE_VERSIONS": [
+      1,
+      2
+    ],
+    "SUPPORTED_ZP_WRITE_VERSIONS": [
+      1,
+      2
+    ],
+    "ZP_VERSION": 1,
+    "default_format_remains_v1": true,
+    "performance_tuning_started": false,
+    "viewer_integration_started": false
+  }
+}

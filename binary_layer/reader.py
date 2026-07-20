@@ -99,7 +99,11 @@ class ZpReader:
         self.file_path = Path(file_path)
         self._v2_arrays_reader = ZpV2ArraysReader(v2_limits)
         self._v2_top_directory_cache: tuple[_FileFingerprint, tuple[BlockDirectoryEntry, ...]] | None = None
-        self._v2_arrays_directory_cache: tuple[_FileFingerprint, V2ArraysDirectory] | None = None
+        self._v2_arrays_directory_cache: tuple[
+            _FileFingerprint,
+            V2ArraysDirectory,
+            bool,
+        ] | None = None
 
     def _fingerprint(self, stream: BinaryIO) -> _FileFingerprint:
         handle_stat = os.fstat(stream.fileno())
@@ -421,18 +425,32 @@ class ZpReader:
         return [ChromatogramBlock(**item) for item in self.read_block("core_chromatograms")]
 
     def _v2_arrays_directory(
-        self, stream: BinaryIO, header: ZpHeader, fingerprint: _FileFingerprint
+        self,
+        stream: BinaryIO,
+        header: ZpHeader,
+        fingerprint: _FileFingerprint,
+        *,
+        require_canonical: bool,
     ) -> tuple[BlockDirectoryEntry, V2ArraysDirectory]:
         entries = self._read_v2_directory(stream, header, fingerprint)
         arrays_entry = self._entry(entries, "arrays")
-        if self._v2_arrays_directory_cache is not None and self._v2_arrays_directory_cache[0] == fingerprint:
+        if (
+            self._v2_arrays_directory_cache is not None
+            and self._v2_arrays_directory_cache[0] == fingerprint
+            and (not require_canonical or self._v2_arrays_directory_cache[2])
+        ):
             return arrays_entry, self._v2_arrays_directory_cache[1]
         directory = self._v2_arrays_reader.read_directory(
             stream,
             block_offset=arrays_entry.offset,
             block_length=arrays_entry.length,
+            require_canonical=require_canonical,
         )
-        self._v2_arrays_directory_cache = (fingerprint, directory)
+        self._v2_arrays_directory_cache = (
+            fingerprint,
+            directory,
+            require_canonical,
+        )
         return arrays_entry, directory
 
     def _read_v2_arrays_by_ids(
@@ -442,7 +460,12 @@ class ZpReader:
         fingerprint: _FileFingerprint,
         array_ids: list[str],
     ) -> list[ArrayBlock]:
-        arrays_entry, directory = self._v2_arrays_directory(stream, header, fingerprint)
+        arrays_entry, directory = self._v2_arrays_directory(
+            stream,
+            header,
+            fingerprint,
+            require_canonical=False,
+        )
         unique_ids = list(dict.fromkeys(array_ids))
         for array_id in unique_ids:
             if array_id not in directory.entries_by_id:
@@ -492,7 +515,12 @@ class ZpReader:
     def _read_all_v2_arrays(
         self, stream: BinaryIO, header: ZpHeader, fingerprint: _FileFingerprint
     ) -> list[ArrayBlock]:
-        arrays_entry, directory = self._v2_arrays_directory(stream, header, fingerprint)
+        arrays_entry, directory = self._v2_arrays_directory(
+            stream,
+            header,
+            fingerprint,
+            require_canonical=True,
+        )
         estimated_decoded_memory = (
             directory.payload_length
             + sum(entry.value_count for entry in directory.entries) * 40

@@ -133,6 +133,7 @@ def test_ms1_precursor_is_rejected() -> None:
     ({"charge": None}, "MISSING_PRECURSOR_CHARGE"),
     ({"charge": 0}, "MISSING_PRECURSOR_CHARGE"),
     ({"charge": -1}, "MISSING_PRECURSOR_CHARGE"),
+    ({"charge": -2}, "MISSING_PRECURSOR_CHARGE"),
     ({"selected_ion_intensity": None}, "MISSING_SELECTED_ION_INTENSITY"),
 ])
 def test_ms2_rejection_rules_are_stable(change: dict[str, object], code: str) -> None:
@@ -181,3 +182,68 @@ def test_whitelisted_chromatogram_auxiliary_array_is_accepted() -> None:
 
 def test_multiple_runs_are_rejected() -> None:
     assert "MULTIPLE_RUNS_UNSUPPORTED" in codes(profile(run_count=2))
+
+
+def dia_spectrum() -> SpectrumFeature:
+    return replace(
+        spectrum(2),
+        charge=None,
+        charge_present=False,
+        selected_ion_mz=500.0,
+        isolation_target_mz=500.0,
+        isolation_lower_offset=6.5,
+        isolation_upper_offset=6.5,
+        has_dia_semantics=True,
+    )
+
+
+def test_dia_mode_accepts_isolation_window_without_charge() -> None:
+    result = evaluate_mzml_admission(
+        profile(spectra=(spectrum(1), dia_spectrum())),
+        acquisition_mode="dia",
+    )
+    assert result.accepted is True
+    assert result.issues == ()
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"isolation_target_mz": None},
+        {"isolation_lower_offset": None},
+        {"isolation_upper_offset": None},
+        {"isolation_target_mz": float("nan")},
+        {"isolation_lower_offset": -1.0},
+        {"isolation_lower_offset": 0.0, "isolation_upper_offset": 0.0},
+        {"isolation_target_mz": 1.0, "isolation_lower_offset": 2.0},
+    ],
+)
+def test_dia_mode_rejects_malformed_window(change: dict[str, object]) -> None:
+    item = replace(dia_spectrum(), **change)
+    result = evaluate_mzml_admission(
+        profile(spectra=(spectrum(1), item)),
+        acquisition_mode="dia",
+    )
+    assert "DIA_WINDOW_MALFORMED" in {issue.code for issue in result.issues}
+
+
+def test_dia_mode_rejects_selected_precursor_charge_conflict() -> None:
+    item = replace(dia_spectrum(), charge=2, charge_present=True)
+    result = evaluate_mzml_admission(
+        profile(spectra=(spectrum(1), item)),
+        acquisition_mode="dia",
+    )
+    assert "DIA_SELECTED_PRECURSOR_CONFLICT" in {
+        issue.code for issue in result.issues
+    }
+
+
+def test_dia_mode_preserves_non_tic_bpc_chromatogram_as_warning() -> None:
+    result = evaluate_mzml_admission(
+        profile(spectra=(spectrum(1), dia_spectrum()), chromatograms=(chromatogram("srm"),)),
+        acquisition_mode="dia",
+    )
+    assert result.accepted is True
+    assert [warning.code for warning in result.warnings] == [
+        "DIA_CHROMATOGRAM_PRESERVED_ONLY"
+    ]

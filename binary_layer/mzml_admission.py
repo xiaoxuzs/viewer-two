@@ -55,6 +55,10 @@ class SpectrumFeature:
     auxiliary_arrays: tuple[AuxiliaryArrayFeature, ...] = ()
     has_dia_semantics: bool = False
     has_ion_mobility: bool = False
+    isolation_target_mz: float | None = None
+    isolation_lower_offset: float | None = None
+    isolation_upper_offset: float | None = None
+    charge_present: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,6 +151,9 @@ ADMISSION_ISSUE_CODES = frozenset({
     "MISSING_CHROMATOGRAM_ARRAY",
     "CHROMATOGRAM_ARRAY_LENGTH_MISMATCH",
     "UNSUPPORTED_CHROMATOGRAM_SEMANTICS",
+    "DIA_WINDOW_MALFORMED",
+    "DIA_SELECTED_PRECURSOR_CONFLICT",
+    "DIA_CHROMATOGRAM_PRESERVED_ONLY",
 })
 
 
@@ -167,9 +174,15 @@ def normalize_time_seconds(value: float, unit_accession: str | None, unit_name: 
     return float(value) * scale
 
 
-def evaluate_mzml_admission(profile: MzmlFeatureProfile) -> MzmlAdmissionResult:
+def evaluate_mzml_admission(
+    profile: MzmlFeatureProfile,
+    *,
+    acquisition_mode: str = "dda",
+) -> MzmlAdmissionResult:
     if not isinstance(profile, MzmlFeatureProfile):
         raise MzmlAdmissionError("admission input must be MzmlFeatureProfile")
+    if acquisition_mode not in {"dda", "dia"}:
+        raise MzmlAdmissionError("acquisition_mode must be 'dda' or 'dia'")
     issues: list[MzmlAdmissionIssue] = []
     warnings: list[MzmlAdmissionIssue] = []
 
@@ -185,21 +198,37 @@ def evaluate_mzml_admission(profile: MzmlFeatureProfile) -> MzmlAdmissionResult:
 
     for index, spectrum in enumerate(profile.spectra):
         location = f"spectrum[{index}]"
-        _evaluate_spectrum(spectrum, location, reject)
+        _evaluate_spectrum(spectrum, location, reject, acquisition_mode=acquisition_mode)
 
     for index, chromatogram in enumerate(profile.chromatograms):
         location = f"chromatogram[{index}]"
+        if acquisition_mode == "dia" and chromatogram.chromatogram_type not in {"tic", "bpc"}:
+            warnings.append(
+                MzmlAdmissionIssue(
+                    "DIA_CHROMATOGRAM_PRESERVED_ONLY",
+                    "Non-TIC/BPC chromatogram is recorded as preserved-only source metadata",
+                    location,
+                    AdmissionSeverity.WARNING,
+                )
+            )
+            continue
         _evaluate_chromatogram(chromatogram, location, reject)
 
     return MzmlAdmissionResult(not issues, tuple(issues), tuple(warnings))
 
 
-def _evaluate_spectrum(spectrum: SpectrumFeature, location: str, reject: object) -> None:
+def _evaluate_spectrum(
+    spectrum: SpectrumFeature,
+    location: str,
+    reject: object,
+    *,
+    acquisition_mode: str,
+) -> None:
     if spectrum.ms_level not in {1, 2}:
         reject("UNSUPPORTED_MS_LEVEL", f"only MS1 and MS2 are supported; got MS{spectrum.ms_level}", location)
     if spectrum.representation != "centroid":
         reject("PROFILE_SPECTRUM_UNSUPPORTED", f"only centroid spectra are supported; got {spectrum.representation!r}", location)
-    if spectrum.has_dia_semantics:
+    if spectrum.has_dia_semantics and acquisition_mode == "dda":
         reject("DIA_SPECTRUM_UNSUPPORTED", "DIA spectrum semantics are outside P1-B", location)
     if spectrum.has_ion_mobility:
         reject("ION_MOBILITY_UNSUPPORTED", "ion-mobility semantics are outside P1-B", location)
@@ -244,6 +273,8 @@ def _evaluate_spectrum(spectrum: SpectrumFeature, location: str, reject: object)
             reject("MISSING_PRECURSOR", "MS2 requires one precursor", location)
         elif spectrum.precursor_count != 1:
             reject("MULTIPLE_PRECURSORS_UNSUPPORTED", f"MS2 has {spectrum.precursor_count} precursors", location)
+        elif acquisition_mode == "dia":
+            _evaluate_dia_precursor(spectrum, location, reject)
         elif spectrum.selected_ion_count == 0:
             reject("MISSING_SELECTED_ION", "MS2 requires one selected ion", location)
         elif spectrum.selected_ion_count != 1:
@@ -251,10 +282,64 @@ def _evaluate_spectrum(spectrum: SpectrumFeature, location: str, reject: object)
         else:
             if spectrum.selected_ion_mz is None:
                 reject("MISSING_SELECTED_ION_MZ", "selected-ion m/z is absent", location)
-            if spectrum.charge is None or spectrum.charge in {0, -1}:
-                reject("MISSING_PRECURSOR_CHARGE", "an explicit nonzero precursor charge is required", location)
+            if spectrum.charge is None or spectrum.charge <= 0:
+                reject("MISSING_PRECURSOR_CHARGE", "an explicit positive precursor charge is required", location)
             if spectrum.selected_ion_intensity is None:
                 reject("MISSING_SELECTED_ION_INTENSITY", "selected-ion intensity is absent", location)
+
+
+def _evaluate_dia_precursor(spectrum: SpectrumFeature, location: str, reject: object) -> None:
+    if spectrum.selected_ion_count not in {0, 1}:
+        reject(
+            "DIA_WINDOW_MALFORMED",
+            "DIA MS2 may carry at most one source selected-ion descriptor",
+            location,
+        )
+    target = spectrum.isolation_target_mz
+    lower_offset = spectrum.isolation_lower_offset
+    upper_offset = spectrum.isolation_upper_offset
+    values = (target, lower_offset, upper_offset)
+    if any(
+        value is None
+        or isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not math.isfinite(value)
+        for value in values
+    ):
+        reject(
+            "DIA_WINDOW_MALFORMED",
+            "DIA MS2 requires finite isolation target, lower offset, and upper offset",
+            location,
+        )
+        return
+    assert target is not None and lower_offset is not None and upper_offset is not None
+    if target < 0 or lower_offset < 0 or upper_offset < 0 or lower_offset + upper_offset <= 0:
+        reject(
+            "DIA_WINDOW_MALFORMED",
+            "DIA isolation offsets must be non-negative with positive total width",
+            location,
+        )
+    if target - lower_offset < 0:
+        reject(
+            "DIA_WINDOW_MALFORMED",
+            "DIA isolation lower bound must be non-negative",
+            location,
+        )
+    if spectrum.charge_present or spectrum.charge is not None:
+        reject(
+            "DIA_SELECTED_PRECURSOR_CONFLICT",
+            "DIA isolation-window MS2 must not carry a selected precursor charge",
+            location,
+        )
+    if (
+        spectrum.selected_ion_mz is not None
+        and not math.isclose(spectrum.selected_ion_mz, target, rel_tol=0.0, abs_tol=1e-9)
+    ):
+        reject(
+            "DIA_SELECTED_PRECURSOR_CONFLICT",
+            "DIA source selected-ion m/z conflicts with the isolation-window target",
+            location,
+        )
 
 
 def _evaluate_chromatogram(chromatogram: ChromatogramFeature, location: str, reject: object) -> None:

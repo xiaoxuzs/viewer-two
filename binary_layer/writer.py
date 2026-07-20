@@ -34,7 +34,7 @@ from .constants import (
 )
 from .exceptions import UnsupportedVersionError, ZpVersionNotImplementedError, ZpWriteError
 from .models import BlockDirectoryEntry
-from .serialization import canonical_json_bytes, to_primitive
+from .serialization import canonical_json_bytes, iter_canonical_json_bytes, to_primitive
 from .v2_arrays_writer import (
     DEFAULT_V2_ARRAY_WRITE_LIMITS,
     ZpV2ArrayWriteLimits,
@@ -44,6 +44,9 @@ from .v2_arrays_writer import (
 
 
 class ZpWriter:
+    def __init__(self) -> None:
+        self.last_metrics: dict[str, int | float | str] = {}
+
     def write(
         self,
         target: str | Path,
@@ -51,18 +54,38 @@ class ZpWriter:
         *,
         format_version: int = DEFAULT_ZP_WRITE_VERSION,
         v2_limits: ZpV2ArrayWriteLimits | None = None,
+        created_at_millis: int | None = None,
     ) -> Path:
+        if created_at_millis is not None and (
+            type(created_at_millis) is not int or created_at_millis < 0
+        ):
+            raise ZpWriteError("created_at_millis must be a non-negative plain integer or None")
         if format_version not in SUPPORTED_ZP_WRITE_VERSIONS:
             if format_version in KNOWN_ZP_VERSIONS:
                 raise ZpVersionNotImplementedError(format_version, "write")
             raise UnsupportedVersionError(format_version, "write")
         if format_version == ZP_VERSION_V1:
-            return self._write_v1(target, blocks)
+            return self._write_v1(
+                target,
+                blocks,
+                created_at_millis=created_at_millis,
+            )
         if format_version == ZP_VERSION_V2:
-            return self._write_v2(target, blocks, v2_limits=v2_limits)
+            return self._write_v2(
+                target,
+                blocks,
+                v2_limits=v2_limits,
+                created_at_millis=created_at_millis,
+            )
         raise UnsupportedVersionError(format_version, "write")
 
-    def _write_v1(self, target: str | Path, blocks: BlockCollection) -> Path:
+    def _write_v1(
+        self,
+        target: str | Path,
+        blocks: BlockCollection,
+        *,
+        created_at_millis: int | None,
+    ) -> Path:
         path = Path(target)
         if path.suffix != ZP_EXTENSION:
             raise ZpWriteError(f"Output extension must be exactly {ZP_EXTENSION}: {path}")
@@ -98,7 +121,11 @@ class ZpWriter:
                 directory_payload = canonical_json_bytes(entries)
                 stream.write(DIRECTORY_LENGTH_STRUCT.pack(len(directory_payload)))
                 stream.write(directory_payload)
-                created_at = int(time.time() * 1000)
+                created_at = (
+                    int(time.time() * 1000)
+                    if created_at_millis is None
+                    else created_at_millis
+                )
                 stream.seek(0)
                 stream.write(
                     HEADER_STRUCT.pack(
@@ -129,18 +156,30 @@ class ZpWriter:
         blocks: BlockCollection,
         *,
         v2_limits: ZpV2ArrayWriteLimits | None,
+        created_at_millis: int | None,
     ) -> Path:
         path = Path(target)
         if path.suffix != ZP_EXTENSION:
             raise ZpWriteError(f"Output extension must be exactly {ZP_EXTENSION}: {path}")
         if not isinstance(blocks, BlockCollection):
             raise ZpWriteError("blocks must be a BlockCollection")
+        wall_started = time.perf_counter()
+        cpu_started = time.process_time()
         limits = DEFAULT_V2_ARRAY_WRITE_LIMITS if v2_limits is None else v2_limits
+        layout_started = time.perf_counter()
         arrays_layout = prepare_v2_arrays_layout(blocks.arrays, limits=limits)
+        layout_seconds = time.perf_counter() - layout_started
+        validation_started = time.perf_counter()
         self._validate_v2_blocks(blocks)
+        block_validation_seconds = time.perf_counter() - validation_started
+        json_started = time.perf_counter()
         payloads = self._serialize_v2_json_blocks(blocks)
+        json_block_seconds = time.perf_counter() - json_started
 
         temporary = path.with_name(path.name + ".tmp")
+        arrays_write_seconds = 0.0
+        extension_json_seconds = 0.0
+        extension_json_bytes = 0
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             with temporary.open("w+b") as stream:
@@ -149,8 +188,19 @@ class ZpWriter:
                 for block_name in BLOCK_NAMES:
                     offset = stream.tell()
                     if block_name == "arrays":
+                        arrays_started = time.perf_counter()
                         length, checksum = write_v2_arrays_block(stream, arrays_layout)
+                        arrays_write_seconds = time.perf_counter() - arrays_started
                         encoding = "zp-arrays-v2"
+                    elif block_name == "extensions":
+                        extension_started = time.perf_counter()
+                        length, checksum = self._write_streamed_json(
+                            stream,
+                            blocks.extensions,
+                        )
+                        extension_json_seconds = time.perf_counter() - extension_started
+                        extension_json_bytes = length
+                        encoding = "utf-8-json"
                     else:
                         payload = payloads[block_name]
                         stream.write(payload)
@@ -170,7 +220,11 @@ class ZpWriter:
                 directory_payload = canonical_json_bytes(entries)
                 stream.write(DIRECTORY_LENGTH_STRUCT.pack(len(directory_payload)))
                 stream.write(directory_payload)
-                created_at = int(time.time() * 1000)
+                created_at = (
+                    int(time.time() * 1000)
+                    if created_at_millis is None
+                    else created_at_millis
+                )
                 stream.seek(0)
                 stream.write(
                     HEADER_STRUCT.pack(
@@ -185,6 +239,24 @@ class ZpWriter:
                 stream.flush()
                 os.fsync(stream.fileno())
             os.replace(temporary, path)
+            self.last_metrics = {
+                "wall_seconds": time.perf_counter() - wall_started,
+                "cpu_seconds": time.process_time() - cpu_started,
+                "arrays_directory_checksum_seconds": layout_seconds,
+                "block_validation_seconds": block_validation_seconds,
+                "json_blocks_serialization_seconds": json_block_seconds,
+                "extension_json_serialization_write_seconds": extension_json_seconds,
+                "arrays_payload_write_seconds": arrays_write_seconds,
+                "array_count": len(arrays_layout.entries),
+                "array_value_count": sum(
+                    entry.value_count for entry in arrays_layout.entries
+                ),
+                "arrays_payload_bytes": arrays_layout.payload_length,
+                "extension_json_bytes": extension_json_bytes,
+                "array_pass_count": 2,
+                "array_record_loop_count": 2 * len(arrays_layout.entries),
+                "bytes_written": path.stat().st_size,
+            }
             return path
         except Exception as exc:
             try:
@@ -227,12 +299,30 @@ class ZpWriter:
             "core_precursors": blocks.precursors,
             "core_chromatograms": blocks.chromatograms,
             "indexes": blocks.indexes,
-            "extensions": blocks.extensions,
         }
         try:
             return {name: canonical_json_bytes(value) for name, value in logical_blocks.items()}
         except (TypeError, ValueError) as exc:
             raise ZpWriteError(f"A required logical block is not serializable: {exc}") from exc
+
+    @staticmethod
+    def _write_streamed_json(stream: object, value: object) -> tuple[int, str]:
+        digest = hashlib.sha256()
+        length = 0
+        try:
+            for chunk in iter_canonical_json_bytes(value):
+                written = stream.write(chunk)  # type: ignore[attr-defined]
+                if written != len(chunk):
+                    raise OSError(
+                        f"short write: expected {len(chunk)} bytes, wrote {written}"
+                    )
+                digest.update(chunk)
+                length += len(chunk)
+        except (TypeError, ValueError) as exc:
+            raise ZpWriteError(
+                f"A required logical block is not serializable: {exc}"
+            ) from exc
+        return length, digest.hexdigest()
 
     @classmethod
     def _validate_v2_blocks(cls, blocks: BlockCollection) -> None:

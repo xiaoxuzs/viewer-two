@@ -1,0 +1,28 @@
+{
+  "binary_layer/__init__.py": "1b2b27e9b3548cdd9d2ab7fd1b24f080e8c37fa73449b767d2be39d379c79cf6",
+  "binary_layer/blocks.py": "985f0a88e934a1c0e0dc6d7c93c80534fa1342e8cd7211a833f34a51adfe40c9",
+  "binary_layer/constants.py": "edfce972d1aa05aa791cc597ad844534aaa2ab169fe502f446115bae77dd53be",
+  "binary_layer/exceptions.py": "43c7b1b2a70602724e016ea3ee858c8a3b44e76edd48cf5ccebd7ac91fef1894",
+  "binary_layer/inspector.py": "7de6c0fb175240020f9af23a30b76e414a72046774cddd6d5acb5c7fd989dea1",
+  "binary_layer/models.py": "7102853820619c89f99dc99e843b1686681d8b0d8847803e45e0308c633afec8",
+  "binary_layer/mzml_adapter.py": "1ff9bff016627fe5f2d2f93029449630fd0ad8c091a322ac708ba4b8005e82ac",
+  "binary_layer/mzml_admission.py": "776fe5d97d046718985bd8f52e0f58610a4c820ee0a3fef2ba24a97b2b20d88a",
+  "binary_layer/mzml_schema.py": "ae156599d5c31f7a06fec64fe79505602ac59db3a5dc5074f0c67cf33a0d22fa",
+  "binary_layer/plan.py": "e01fc73c9e69f0b9f9df6f0c3d80b376d6e6df6ac2bcc072de8db13eaf662b73",
+  "binary_layer/reader.py": "579172e7652d5c8b209d7459e46f6ae014b7c291372c06f4e926d920abb57aa7",
+  "binary_layer/registry.py": "4f4b91e7adc6b2a5ba267692f22cd232f9ce55f6efb854d39eea7f2acb811eb8",
+  "binary_layer/runner.py": "8e4f1175f0ddc4cc62f45d6aaaf1578b31c4713658741a3b7c56116624890b99",
+  "binary_layer/serialization.py": "fadda12fdf96e0fb0a059120cb1ffad3b4e04ee1b6d8f43dc1275829e48535c1",
+  "binary_layer/tools/__init__.py": "7863e77f5a19dffd835a38ae5df6bbba94910c553616c81d63b1a880db65be13",
+  "binary_layer/tools/base.py": "1f7f65ad42848c2f655880e3edfd35afba8ca801101d1a7ae0adb96f935805a6",
+  "binary_layer/tools/common.py": "d6cac268e9129d5cffe688d32546213bd5bdfbe4a40d8e6737dc85d4bc945d2f",
+  "binary_layer/tools/mzml_mock.py": "fdf7855d21936648c2f4d8e4fc1424b56c1a37b64b4f53dce3d4fbd3400e6a12",
+  "binary_layer/tools/raw_mock.py": "bab479295ef42a2c6eaa25d9228d7a3ad256c929cbf72f8b81f224190fe9e521",
+  "binary_layer/tools/real_mzml.py": "f805755afc0234e3f35b1472c68c793ba481f55db5c06a3719d3b4ab4d9f84eb",
+  "binary_layer/v2_arrays_reader.py": "fee81c92c972a8cb0ccdab9e3a39f9a91f728f24e2c416e9a9c1980eba0fed85",
+  "binary_layer/v2_arrays_writer.py": "704c24f4423f4709bf36fe2c01ebee3a8be9f6e4d0296fb7c618bf30df02dc44",
+  "binary_layer/v2_validator.py": "ef65b6d92e9a2b79edd34fcf2929c9dcdaf31283965795b74a989ba88f699a04",
+  "binary_layer/validator.py": "9a4334e713dc94b6cf3615caf388c956bb3bf864d35b1c82e9763f150c72ca57",
+  "binary_layer/writer.py": "63cbb703b6a61f3e15c5e15c1d28daa9dcac70832dc4d72d43182045e1e9804d"
+}
+

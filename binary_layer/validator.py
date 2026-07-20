@@ -30,6 +30,7 @@ from .mzml_schema import (
     MzmlAuxiliaryArraysV1,
     OwnerKind,
 )
+from .precursor_contract import validate_precursor_record
 from .serialization import parse_json_bytes
 from .v2_validator import DEFAULT_V2_VALIDATION_LIMITS, ZpV2ValidationLimits, ZpV2Validator
 
@@ -81,6 +82,7 @@ class ZpValidator:
                         initial_issues=issues,
                     )
                     self._last_v2_metrics = validator.last_metrics
+                    self._last_v2_extensions = validator.last_extensions
                     return result
                 if version not in SUPPORTED_ZP_VALIDATE_VERSIONS:
                     if magic != ZP_MAGIC or endianness != ZP_ENDIANNESS_LITTLE:
@@ -229,10 +231,6 @@ class ZpValidator:
                 "native_id": str, "rt": (int, float), "precursor_id": (str, type(None)),
                 "mz_array_id": str, "intensity_array_id": str,
             },
-            "core_precursors": {
-                "precursor_id": str, "spectrum_id": str, "precursor_mz": (int, float),
-                "charge": int, "intensity": (int, float),
-            },
             "core_chromatograms": {
                 "chromatogram_id": str, "run_id": str, "chromatogram_type": str,
                 "time_array_id": str, "intensity_array_id": str, "native_id": str,
@@ -248,6 +246,10 @@ class ZpValidator:
                 add("INVALID_BLOCK_SCHEMA", "Top-level value must be an object", block_name)
                 continue
             cls._check_fields(value, fields, block_name, add)
+            if block_name == "global_meta":
+                for field in ("run_count", "spectrum_count", "chromatogram_count", "array_count"):
+                    if cls._is_int(value.get(field)) and value[field] < 0:
+                        add("INVALID_FIELD_TYPE", f"Field {field} must be a non-negative integer", block_name)
         for block_name, fields in list_fields.items():
             value = blocks.get(block_name)
             if value is None:
@@ -260,6 +262,34 @@ class ZpValidator:
                     add("INVALID_RECORD_SCHEMA", f"Record {position} must be an object", block_name)
                     continue
                 cls._check_fields(item, fields, block_name, add, position)
+                if block_name == "core_runs":
+                    for field in ("spectrum_count", "chromatogram_count"):
+                        if cls._is_int(item.get(field)) and item[field] < 0:
+                            add(
+                                "INVALID_FIELD_TYPE",
+                                f"Field {field} must be a non-negative integer",
+                                block_name,
+                            )
+
+        precursors = blocks.get("core_precursors")
+        if precursors is not None:
+            if not isinstance(precursors, list):
+                add("INVALID_BLOCK_SCHEMA", "Top-level value must be a list", "core_precursors")
+            else:
+                for position, item in enumerate(precursors):
+                    location = f"core_precursors[{position}]"
+                    if not isinstance(item, dict):
+                        add("INVALID_RECORD_SCHEMA", f"Record {position} must be an object", "core_precursors")
+                        continue
+                    cls._check_fields(
+                        item,
+                        {"precursor_id": str, "spectrum_id": str},
+                        "core_precursors",
+                        add,
+                        position,
+                    )
+                    for issue in validate_precursor_record(item):
+                        add(issue.code, f"{location}: {issue.message}", location)
 
         spectra = blocks.get("core_spectra")
         if isinstance(spectra, list):
@@ -330,8 +360,17 @@ class ZpValidator:
             if isinstance(item.get("chromatogram_id"), str)
         }
         array_map = {item.get("array_id"): item for item in arrays if isinstance(item.get("array_id"), str)}
+        precursor_relationship_state = None
+        if (
+            cls._count_if_safely_parsed(blocks.get("core_spectra"), spectra) is not None
+            and cls._count_if_safely_parsed(blocks.get("core_precursors"), precursors) is not None
+        ):
+            precursor_relationship_state = cls._build_precursor_relationship_state(
+                spectra,
+                precursors,
+            )
 
-        for spectrum in spectra:
+        for spectrum_position, spectrum in enumerate(spectra):
             spectrum_id = spectrum.get("spectrum_id")
             if spectrum.get("run_id") not in run_ids:
                 add("INVALID_REFERENCE", f"Spectrum {spectrum_id} references a missing run", "core_spectra")
@@ -349,12 +388,100 @@ class ZpValidator:
                 if isinstance(mz_values, list) and isinstance(intensity_values, list) and len(mz_values) != len(intensity_values):
                     add("ARRAY_LENGTH_MISMATCH", f"Spectrum {spectrum_id} arrays have different lengths", "core_spectra")
             precursor_id = spectrum.get("precursor_id")
-            if precursor_id is not None and precursor_id not in precursor_ids:
-                add("INVALID_REFERENCE", f"Spectrum {spectrum_id} references missing precursor {precursor_id}", "core_spectra")
+            if precursor_relationship_state is None:
+                if precursor_id is not None and precursor_id not in precursor_ids:
+                    add(
+                        "INVALID_REFERENCE",
+                        f"Spectrum {spectrum_id} references missing precursor {precursor_id}",
+                        "core_spectra",
+                    )
+            else:
+                _spectrum_by_id, precursor_by_id, _precursor_use, _precursor_first_user = (
+                    precursor_relationship_state
+                )
+                ms_level = spectrum.get("ms_level")
+                location = f"core_spectra[{spectrum_position}].precursor_id"
+                if ms_level == 1 and precursor_id is not None:
+                    add(
+                        "INVALID_REFERENCE",
+                        (
+                            f"MS1 Spectrum {spectrum_id} references Precursor {precursor_id}; "
+                            "direction=Spectrum->Precursor; expected=None; "
+                            f"actual={precursor_id!r}"
+                        ),
+                        location,
+                    )
+                elif ms_level == 2:
+                    precursor = precursor_by_id.get(precursor_id)
+                    if precursor is None:
+                        add(
+                            "INVALID_REFERENCE",
+                            (
+                                f"MS2 Spectrum {spectrum_id} references Precursor {precursor_id!r}; "
+                                "direction=Spectrum->Precursor; expected=existing Precursor; "
+                                "actual=missing Precursor"
+                            ),
+                            location,
+                        )
+                    elif precursor.get("spectrum_id") != spectrum_id:
+                        add(
+                            "INVALID_REFERENCE",
+                            (
+                                f"Spectrum {spectrum_id} references Precursor {precursor_id}; "
+                                "direction=Spectrum->Precursor; "
+                                f"expected=Precursor.spectrum_id {spectrum_id!r}; "
+                                f"actual={precursor.get('spectrum_id')!r}"
+                            ),
+                            location,
+                        )
 
-        for precursor in precursors:
-            if precursor.get("spectrum_id") not in spectrum_ids:
-                add("INVALID_REFERENCE", "Precursor references a missing spectrum", "core_precursors")
+        for precursor_position, precursor in enumerate(precursors):
+            precursor_id = precursor.get("precursor_id")
+            spectrum_id = precursor.get("spectrum_id")
+            if precursor_relationship_state is None:
+                if spectrum_id not in spectrum_ids:
+                    add("INVALID_REFERENCE", "Precursor references a missing spectrum", "core_precursors")
+                continue
+            spectrum_by_id, _precursor_by_id, precursor_use, precursor_first_user = (
+                precursor_relationship_state
+            )
+            spectrum = spectrum_by_id.get(spectrum_id)
+            location = f"core_precursors[{precursor_position}].spectrum_id"
+            if (
+                spectrum is None
+                or spectrum.get("ms_level") != 2
+                or spectrum.get("precursor_id") != precursor_id
+            ):
+                expected_spectrum_id = precursor_first_user.get(precursor_id)
+                actual = (
+                    "missing Spectrum"
+                    if spectrum is None
+                    else (
+                        f"Spectrum {spectrum_id!r} ms_level={spectrum.get('ms_level')!r} "
+                        f"precursor_id={spectrum.get('precursor_id')!r}"
+                    )
+                )
+                add(
+                    "INVALID_REFERENCE",
+                    (
+                        f"Precursor {precursor_id} references Spectrum {spectrum_id}; "
+                        "direction=Precursor->Spectrum; "
+                        f"expected=MS2 Spectrum {expected_spectrum_id!r} "
+                        f"with precursor_id {precursor_id!r}; actual={actual}"
+                    ),
+                    location,
+                )
+            use_count = precursor_use.get(precursor_id, 0)
+            if use_count != 1:
+                add(
+                    "INVALID_REFERENCE",
+                    (
+                        f"Precursor {precursor_id} targets Spectrum {spectrum_id}; "
+                        "direction=MS2 Spectrum->Precursor use; expected=1; "
+                        f"actual={use_count}"
+                    ),
+                    location,
+                )
         for chromatogram in chromatograms:
             if chromatogram.get("run_id") not in run_ids:
                 add("INVALID_REFERENCE", "Chromatogram references a missing run", "core_chromatograms")
@@ -374,6 +501,43 @@ class ZpValidator:
                         add("ARRAY_LENGTH_MISMATCH", "Chromatogram arrays have different lengths", "core_chromatograms")
                     if any(isinstance(value, (int, float)) and not isinstance(value, bool) and value < 0 for value in time_values):
                         add("INVALID_TIME_ARRAY_VALUE", "Chromatogram time values must not be negative", "core_chromatograms")
+
+        run_records_are_safe = (
+            cls._count_if_safely_parsed(blocks.get("core_runs"), runs) is not None
+            and len(run_ids) == len(runs)
+        )
+        spectrum_counts_by_run = None
+        chromatogram_counts_by_run = None
+        if run_records_are_safe:
+            if cls._count_if_safely_parsed(blocks.get("core_spectra"), spectra) is not None:
+                spectrum_counts_by_run = cls._build_counts_by_run(spectra)
+            if cls._count_if_safely_parsed(blocks.get("core_chromatograms"), chromatograms) is not None:
+                chromatogram_counts_by_run = cls._build_counts_by_run(chromatograms)
+        cls._validate_run_statistics(
+            runs,
+            spectrum_counts_by_run=spectrum_counts_by_run,
+            chromatogram_counts_by_run=chromatogram_counts_by_run,
+            add=add,
+        )
+
+        cls._validate_global_meta_counts(
+            blocks.get("global_meta"),
+            actual_run_count=cls._count_if_safely_parsed(blocks.get("core_runs"), runs),
+            actual_spectrum_count=cls._count_if_safely_parsed(blocks.get("core_spectra"), spectra),
+            actual_chromatogram_count=cls._count_if_safely_parsed(
+                blocks.get("core_chromatograms"), chromatograms
+            ),
+            actual_array_count=cls._count_if_safely_parsed(blocks.get("arrays"), arrays),
+            add=add,
+        )
+
+        cls._validate_string_pool_references(
+            blocks.get("string_pool"),
+            runs,
+            spectra,
+            chromatograms,
+            add,
+        )
 
         indexes = blocks.get("indexes")
         if isinstance(indexes, dict):
@@ -401,6 +565,172 @@ class ZpValidator:
             chromatogram_ids=chromatogram_ids,
             add=add,
         )
+
+    @staticmethod
+    def _validate_string_pool_references(
+        value: object,
+        runs: list[dict[str, Any]],
+        spectra: list[dict[str, Any]],
+        chromatograms: list[dict[str, Any]],
+        add: Any,
+    ) -> None:
+        if not isinstance(value, dict):
+            return
+        strings = value.get("strings")
+        if not isinstance(strings, list):
+            return
+        pooled_strings: set[str] = set()
+        for item in strings:
+            if not isinstance(item, str):
+                return
+            pooled_strings.add(item)
+        record_fields = (
+            (runs, ("source_file", "run_name")),
+            (spectra, ("native_id",)),
+            (chromatograms, ("chromatogram_type", "native_id")),
+        )
+        for records, fields in record_fields:
+            for record in records:
+                for field in fields:
+                    referenced = record.get(field)
+                    if isinstance(referenced, str) and referenced not in pooled_strings:
+                        add(
+                            "INVALID_REFERENCE",
+                            f"string_pool is missing referenced string {referenced!r}",
+                            "string_pool",
+                        )
+
+    @staticmethod
+    def _count_if_safely_parsed(value: object, records: list[dict[str, Any]]) -> int | None:
+        if not isinstance(value, list) or len(records) != len(value):
+            return None
+        return len(records)
+
+    @staticmethod
+    def _build_counts_by_run(records: list[dict[str, Any]]) -> dict[str, int] | None:
+        counts: dict[str, int] = {}
+        for record in records:
+            run_id = record.get("run_id")
+            if not isinstance(run_id, str):
+                return None
+            counts[run_id] = counts.get(run_id, 0) + 1
+        return counts
+
+    @classmethod
+    def _build_precursor_relationship_state(
+        cls,
+        spectra: list[dict[str, Any]],
+        precursors: list[dict[str, Any]],
+    ) -> tuple[
+        dict[str, dict[str, Any]],
+        dict[str, dict[str, Any]],
+        dict[str, int],
+        dict[str, str],
+    ] | None:
+        spectrum_by_id: dict[str, dict[str, Any]] = {}
+        precursor_use: dict[str, int] = {}
+        precursor_first_user: dict[str, str] = {}
+        records_are_safe = True
+        for spectrum in spectra:
+            spectrum_id = spectrum.get("spectrum_id")
+            ms_level = spectrum.get("ms_level")
+            precursor_id = spectrum.get("precursor_id")
+            if (
+                not isinstance(spectrum_id, str)
+                or not spectrum_id
+                or not cls._is_int(ms_level)
+                or ms_level not in (1, 2)
+                or (precursor_id is not None and not isinstance(precursor_id, str))
+                or spectrum_id in spectrum_by_id
+            ):
+                records_are_safe = False
+            elif spectrum_id not in spectrum_by_id:
+                spectrum_by_id[spectrum_id] = spectrum
+            if ms_level == 2 and isinstance(precursor_id, str):
+                precursor_use[precursor_id] = precursor_use.get(precursor_id, 0) + 1
+                if isinstance(spectrum_id, str):
+                    precursor_first_user.setdefault(precursor_id, spectrum_id)
+
+        precursor_by_id: dict[str, dict[str, Any]] = {}
+        for precursor in precursors:
+            precursor_id = precursor.get("precursor_id")
+            spectrum_id = precursor.get("spectrum_id")
+            if (
+                not isinstance(precursor_id, str)
+                or not precursor_id
+                or not isinstance(spectrum_id, str)
+                or not spectrum_id
+                or precursor_id in precursor_by_id
+            ):
+                records_are_safe = False
+            elif precursor_id not in precursor_by_id:
+                precursor_by_id[precursor_id] = precursor
+
+        if not records_are_safe:
+            return None
+        return spectrum_by_id, precursor_by_id, precursor_use, precursor_first_user
+
+    @staticmethod
+    def _validate_run_statistics(
+        runs: list[dict[str, Any]],
+        *,
+        spectrum_counts_by_run: dict[str, int] | None,
+        chromatogram_counts_by_run: dict[str, int] | None,
+        add: Any,
+    ) -> None:
+        fields = (
+            ("spectrum_count", "core_spectra", spectrum_counts_by_run),
+            ("chromatogram_count", "core_chromatograms", chromatogram_counts_by_run),
+        )
+        for position, run in enumerate(runs):
+            run_id = run.get("run_id")
+            if not isinstance(run_id, str):
+                continue
+            for field, source_block, counts_by_run in fields:
+                if counts_by_run is None:
+                    continue
+                declared = run.get(field)
+                actual = counts_by_run.get(run_id, 0)
+                if declared == actual:
+                    continue
+                add(
+                    "COUNT_MISMATCH",
+                    (
+                        f"Run {run_id} field {field} declares {declared!r}, "
+                        f"but {actual} {source_block} records reference this run"
+                    ),
+                    f"core_runs[{position}].{field}",
+                )
+
+    @staticmethod
+    def _validate_global_meta_counts(
+        value: object,
+        *,
+        actual_run_count: int | None,
+        actual_spectrum_count: int | None,
+        actual_chromatogram_count: int | None,
+        actual_array_count: int | None,
+        add: Any,
+    ) -> None:
+        if not isinstance(value, dict):
+            return
+        expected = (
+            ("run_count", "core_runs", actual_run_count),
+            ("spectrum_count", "core_spectra", actual_spectrum_count),
+            ("chromatogram_count", "core_chromatograms", actual_chromatogram_count),
+            ("array_count", "arrays", actual_array_count),
+        )
+        for field, block_name, actual in expected:
+            if actual is None or value.get(field) == actual:
+                continue
+            add(
+                "COUNT_MISMATCH",
+                (
+                    f"global_meta.{field} declares {value.get(field)!r} "
+                    f"but actual {block_name} count is {actual}"
+                ),
+                "global_meta",
+            )
 
     @staticmethod
     def _validate_extension_references(

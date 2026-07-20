@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "P0 prototype for a mass-spectrometry .zp binary intermediate layer"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["pyteomics>=4.7.5,<5"]
+dependencies = ["pyteomics>=4.7.5,<5", "pyarrow>=23,<24", "numpy>=2,<3"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]

@@ -28,6 +28,10 @@ def build_default_registry() -> StepRegistry:
     from .tools.mzml_mock import MockMzmlParseTool
     from .tools.raw_mock import MockRawToMzmlTool
     from .tools.real_mzml import RealMzmlParseTool
+    from .tools.real_thermo_raw import RealThermoRawParseTool
+    from .tools.real_top_down import RealTopDownTool
+    from .tools.real_top_down_intermediate import RealTopDownIntermediateTool
+    from .tools.real_dia_result import RealDiaResultTool
 
     registry = StepRegistry()
     for step in (
@@ -36,6 +40,10 @@ def build_default_registry() -> StepRegistry:
         MockRawToMzmlTool(),
         MockMzmlParseTool(),
         RealMzmlParseTool(),
+        RealThermoRawParseTool(),
+        RealTopDownTool(),
+        RealTopDownIntermediateTool(),
+        RealDiaResultTool(),
         StringPoolBuildTool(),
         IndexBuildTool(),
         ZpWriteStep(),

@@ -189,11 +189,12 @@ def test_raw_parser_dict_is_not_a_schema_object() -> None:
         )
 
 
-def test_extension_schemas_do_not_change_core_block_fields() -> None:
+def test_core_block_fields_match_current_contract() -> None:
     assert [item.name for item in fields(SpectrumBlock)] == [
         "spectrum_id", "run_id", "ms_level", "scan_number", "native_id", "rt",
         "precursor_id", "mz_array_id", "intensity_array_id",
     ]
     assert [item.name for item in fields(PrecursorBlock)] == [
         "precursor_id", "spectrum_id", "precursor_mz", "charge", "intensity",
+        "precursor_kind", "isolation_lower_mz", "isolation_upper_mz",
     ]

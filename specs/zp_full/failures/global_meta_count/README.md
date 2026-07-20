@@ -5,10 +5,10 @@ writing, only `global_meta.run_count` is changed from `1` to `0`; the canonical
 block bytes, block SHA-256, and canonical top-level directory are updated so
 no physical corruption masks the domain rule.
 
-The production v1 Validator accepts the v1 file with no issues. The production
-v2 Validator rejects the v2 file with `COUNT_MISMATCH`. This is a new semantic
-drift found during the P1-B8.5 rerun, so the release gate remains stopped until
-a separate production-correction stage aligns the validators.
+P1-B8.5R2 corrected the production v1 Validator omission. Both files now
+reject with `COUNT_MISMATCH` and nine checked blocks, while the committed
+Fixture bytes remain unchanged. This is permanent regression evidence, not a
+completed full-file Golden release gate; P1-B8.5 still requires a full rerun.
 
 Rebuild or check the evidence with:
 

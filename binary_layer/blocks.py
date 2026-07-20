@@ -2,7 +2,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
+
+
+SELECTED_PRECURSOR_KIND = "selected_precursor"
+ISOLATION_WINDOW_KIND = "isolation_window"
+PrecursorKind = Literal["selected_precursor", "isolation_window"]
+
+
+class NormalizedFloat64List(list[float]):
+    """Internal marker for already normalized mzML float64 values."""
 
 
 @dataclass(slots=True)
@@ -49,9 +58,25 @@ class SpectrumBlock:
 class PrecursorBlock:
     precursor_id: str
     spectrum_id: str
-    precursor_mz: float
-    charge: int
-    intensity: float
+    precursor_mz: float | None = None
+    charge: int | None = None
+    intensity: float | None = None
+    precursor_kind: PrecursorKind | None = field(
+        default=None,
+        metadata={"omit_if_none": True},
+    )
+    isolation_lower_mz: float | None = field(
+        default=None,
+        metadata={"omit_if_none": True},
+    )
+    isolation_upper_mz: float | None = field(
+        default=None,
+        metadata={"omit_if_none": True},
+    )
+
+    @property
+    def effective_precursor_kind(self) -> PrecursorKind:
+        return self.precursor_kind or SELECTED_PRECURSOR_KIND
 
 
 @dataclass(slots=True)
@@ -114,4 +139,3 @@ class BlockCollection:
 
     def get_precursor(self, precursor_id: str) -> PrecursorBlock | None:
         return next((item for item in self.precursors if item.precursor_id == precursor_id), None)
-

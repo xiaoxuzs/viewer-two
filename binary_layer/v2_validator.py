@@ -3,12 +3,16 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import mmap
 import os
 import re
 import struct
+import time
 from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Any, BinaryIO, Callable
+
+import numpy as np
 
 from .constants import (
     BLOCK_NAMES,
@@ -28,6 +32,7 @@ from .mzml_schema import (
     MzmlMetadataV1,
     OwnerKind,
 )
+from .precursor_contract import PRECURSOR_RECORD_FIELDS, validate_precursor_record
 from .serialization import canonical_json_bytes
 
 
@@ -149,7 +154,7 @@ class _ValidationState:
         self.issues = issues
         self.limits = limits
         self.checked_blocks = 0
-        self.metrics: dict[str, int | bool] = {
+        self.metrics: dict[str, int | bool | str] = {
             "arrays_size": 0,
             "arrays_payload_length": 0,
             "entry_count": 0,
@@ -160,6 +165,12 @@ class _ValidationState:
             "chunk_size": limits.chunk_size,
             "full_payload_materialized": False,
             "array_values_retained": False,
+            "numeric_chunk_count": 0,
+            "numeric_validation_backend": "numpy-frombuffer",
+            "payload_access_backend": "chunked-read",
+            "mmap_bytes_visited": 0,
+            "bytes_read": 0,
+            "read_call_count": 0,
         }
         self._path_start = _fingerprint(path.stat())
         self._handle_start = self._handle_fingerprint()
@@ -206,6 +217,8 @@ class _ValidationState:
             self.stop(code, "read failed", location, actual=str(exc))
         if len(payload) != length:
             self.stop(code, "data is truncated", location, actual=len(payload), limit=length)
+        self.metrics["bytes_read"] = int(self.metrics["bytes_read"]) + len(payload)
+        self.metrics["read_call_count"] = int(self.metrics["read_call_count"]) + 1
         return payload
 
     def finish(self) -> ValidationResult:
@@ -231,6 +244,7 @@ class _ValidationState:
             self.checked_blocks,
             self.path,
             self.version,
+            metrics=dict(self.metrics),
         )
 
 
@@ -254,12 +268,17 @@ def _parse_canonical_json(
     noncanonical_code: str,
     location: str,
     add: Callable[..., None],
+    timings: dict[str, float] | None = None,
 ) -> object | None:
+    phase_started = time.perf_counter()
     try:
         text = payload.decode("utf-8")
     except UnicodeDecodeError as exc:
         add(invalid_code, "JSON is not valid UTF-8", location, actual=exc.start)
         return None
+    if timings is not None:
+        timings["decode_seconds"] = time.perf_counter() - phase_started
+    phase_started = time.perf_counter()
     try:
         value = json.loads(
             text,
@@ -272,11 +291,16 @@ def _parse_canonical_json(
     except (json.JSONDecodeError, ValueError) as exc:
         add(invalid_code, "invalid strict JSON", location, actual=str(exc))
         return None
+    if timings is not None:
+        timings["parse_seconds"] = time.perf_counter() - phase_started
+    phase_started = time.perf_counter()
     try:
         canonical = canonical_json_bytes(value)
     except (TypeError, UnicodeError, ValueError) as exc:
         add(invalid_code, "JSON cannot be canonicalized", location, actual=str(exc))
         return None
+    if timings is not None:
+        timings["canonicalize_seconds"] = time.perf_counter() - phase_started
     if canonical != payload:
         add(noncanonical_code, "JSON is not canonical", location)
         return None
@@ -321,7 +345,6 @@ _SPECTRUM_FIELDS = frozenset(
         "precursor_id", "mz_array_id", "intensity_array_id",
     }
 )
-_PRECURSOR_FIELDS = frozenset({"precursor_id", "spectrum_id", "precursor_mz", "charge", "intensity"})
 _CHROMATOGRAM_FIELDS = frozenset(
     {"chromatogram_id", "run_id", "chromatogram_type", "time_array_id", "intensity_array_id", "native_id"}
 )
@@ -360,7 +383,7 @@ def _validate_json_schemas(blocks: dict[str, object], state: _ValidationState) -
 
     _validate_record_block(blocks.get("core_runs"), _RUN_FIELDS, "core_runs", state, _validate_run)
     _validate_record_block(blocks.get("core_spectra"), _SPECTRUM_FIELDS, "core_spectra", state, _validate_spectrum)
-    _validate_record_block(blocks.get("core_precursors"), _PRECURSOR_FIELDS, "core_precursors", state, _validate_precursor)
+    _validate_precursor_block(blocks.get("core_precursors"), state)
     _validate_record_block(
         blocks.get("core_chromatograms"),
         _CHROMATOGRAM_FIELDS,
@@ -427,14 +450,32 @@ def _validate_spectrum(record: dict[str, object], state: _ValidationState, locat
         state.add("INVALID_FIELD_TYPE", "precursor_id must be a string or null", location)
 
 
+def _validate_precursor_block(value: object, state: _ValidationState) -> None:
+    if not isinstance(value, list):
+        state.add("INVALID_BLOCK_SCHEMA", "top-level value must be a list", "core_precursors")
+        return
+    for position, record in enumerate(value):
+        location = f"core_precursors[{position}]"
+        if not isinstance(record, dict):
+            state.add("INVALID_RECORD_SCHEMA", "record must be an object", location)
+            continue
+        unknown = frozenset(record) - PRECURSOR_RECORD_FIELDS
+        if unknown:
+            state.add(
+                "INVALID_BLOCK_SCHEMA",
+                "precursor record contains unknown fields",
+                location,
+                actual=sorted(unknown),
+            )
+        _validate_precursor(record, state, location)
+
+
 def _validate_precursor(record: dict[str, object], state: _ValidationState, location: str) -> None:
-    _require_nonempty_strings(record, ("precursor_id", "spectrum_id"), state, location)
-    if not _finite_number(record["precursor_mz"]) or record["precursor_mz"] < 0:
-        state.add("INVALID_PRECURSOR_MZ", "precursor_mz must be finite and nonnegative", location)
-    if not _plain_int(record["charge"]) or record["charge"] == 0:
-        state.add("INVALID_CHARGE", "charge must be a nonzero integer", location)
-    if not _finite_number(record["intensity"]):
-        state.add("INVALID_PRECURSOR_INTENSITY", "intensity must be finite", location)
+    for name in ("precursor_id", "spectrum_id"):
+        if not isinstance(record.get(name), str) or not record[name]:
+            state.add("INVALID_FIELD_TYPE", f"{name} must be a nonempty string", location)
+    for issue in validate_precursor_record(record):
+        state.add(issue.code, issue.message, location)
 
 
 def _validate_chromatogram(record: dict[str, object], state: _ValidationState, location: str) -> None:
@@ -503,6 +544,8 @@ def _records(blocks: dict[str, object], name: str) -> list[dict[str, object]]:
 def _validate_relationships(
     blocks: dict[str, object], arrays: tuple[_ArrayMeta, ...], state: _ValidationState
 ) -> None:
+    wall_started = time.perf_counter()
+    cpu_started = time.process_time()
     runs = _records(blocks, "core_runs")
     spectra = _records(blocks, "core_spectra")
     precursors = _records(blocks, "core_precursors")
@@ -596,6 +639,10 @@ def _validate_relationships(
     _validate_string_pool(blocks, runs, spectra, chromatograms, state)
     _validate_index_references(blocks.get("indexes"), spectra, spectrum_map, state)
     _validate_extensions(blocks.get("extensions"), run_map, spectrum_map, chromatograms, array_map, state)
+    state.metrics["relationship_wall_seconds"] = time.perf_counter() - wall_started
+    state.metrics["relationship_cpu_seconds"] = time.process_time() - cpu_started
+    state.metrics["relationship_spectrum_count"] = len(spectra)
+    state.metrics["relationship_array_count"] = len(arrays)
 
 
 def _validate_string_pool(
@@ -613,6 +660,7 @@ def _validate_string_pool(
         return
     if len(strings) != len(set(strings)):
         state.add("DUPLICATE_ID", "string_pool contains duplicate strings", "string_pool")
+    string_set = set(strings)
     required: list[object] = []
     for run in runs:
         required.extend((run.get("source_file"), run.get("run_name")))
@@ -620,7 +668,7 @@ def _validate_string_pool(
     for chromatogram in chromatograms:
         required.extend((chromatogram.get("chromatogram_type"), chromatogram.get("native_id")))
     for value in required:
-        if isinstance(value, str) and value not in strings:
+        if isinstance(value, str) and value not in string_set:
             state.add("INVALID_REFERENCE", "string_pool is missing a referenced string", "string_pool", actual=value)
 
 
@@ -857,6 +905,8 @@ def _read_json_blocks(
 
     entry_map = {entry.block_name: entry for entry in entries}
     for block_name in _JSON_BLOCK_NAMES:
+        wall_started = time.perf_counter()
+        cpu_started = time.process_time()
         entry = entry_map[block_name]
         state.check_limit(
             "VALIDATION_WORK_MEMORY_EXCEEDED",
@@ -877,15 +927,26 @@ def _read_json_blocks(
                     actual=actual_checksum,
                 )
             )
+        timings: dict[str, float] = {}
         parsed = _parse_canonical_json(
             payload,
             invalid_code="INVALID_BLOCK_JSON",
             noncanonical_code="NONCANONICAL_BLOCK_JSON",
             location=block_name,
             add=add_block_issue,
+            timings=timings,
         )
         if parsed is not None:
             parsed_blocks[block_name] = parsed
+        state.metrics[f"{block_name}_wall_seconds"] = (
+            time.perf_counter() - wall_started
+        )
+        state.metrics[f"{block_name}_cpu_seconds"] = (
+            time.process_time() - cpu_started
+        )
+        state.metrics[f"{block_name}_bytes"] = entry.length
+        for phase, seconds in timings.items():
+            state.metrics[f"{block_name}_{phase}"] = seconds
     state.issues.extend(checksum_issues)
     state.issues.extend(block_issues)
     _validate_json_schemas(parsed_blocks, state)
@@ -1042,35 +1103,64 @@ def _validate_arrays_region(
     whole_hash.update(padding)
     per_array_issues: list[ValidationIssue] = []
     numeric_issues: list[ValidationIssue] = []
-    for meta in metas:
-        per_hash = hashlib.sha256()
-        remaining = meta.byte_length
-        value_index = 0
-        recorded_numeric_issue = False
-        while remaining:
-            requested = min(remaining, limits.chunk_size)
-            chunk = state.read_exact(requested, "ARRAY_PAYLOAD_OUT_OF_BOUNDS", f"arrays[{meta.array_id!r}].payload")
-            state.metrics["payload_bytes_read"] = int(state.metrics["payload_bytes_read"]) + len(chunk)
-            state.metrics["max_single_payload_read"] = max(int(state.metrics["max_single_payload_read"]), len(chunk))
-            whole_hash.update(chunk)
-            per_hash.update(chunk)
-            for (number,) in struct.iter_unpack("<d", chunk):
+    mapping: mmap.mmap | None = None
+    try:
+        mapping = mmap.mmap(state.stream.fileno(), 0, access=mmap.ACCESS_READ)
+    except (AttributeError, OSError, ValueError):
+        mapping = None
+    if mapping is not None:
+        state.metrics["payload_access_backend"] = "mmap"
+        payload_absolute = entry.offset + payload_offset
+        try:
+            for meta in metas:
+                start = payload_absolute + meta.data_offset
+                view = memoryview(mapping)[start : start + meta.byte_length]
+                whole_hash.update(view)
+                actual_checksum = hashlib.sha256(view).hexdigest()
+                _check_numeric_values(
+                    meta,
+                    view,
+                    0,
+                    numeric_issues,
+                    state,
+                )
+                state.metrics["payload_bytes_read"] = int(
+                    state.metrics["payload_bytes_read"]
+                ) + len(view)
+                state.metrics["mmap_bytes_visited"] = int(
+                    state.metrics["mmap_bytes_visited"]
+                ) + len(view)
+                view.release()
+                if actual_checksum != meta.checksum:
+                    per_array_issues.append(_issue("ARRAY_CHECKSUM_MISMATCH", "array payload checksum does not match its entry", f"arrays[{meta.array_id}].checksum", actual=actual_checksum))
+        finally:
+            mapping.close()
+    else:
+        for meta in metas:
+            per_hash = hashlib.sha256()
+            remaining = meta.byte_length
+            value_index = 0
+            recorded_numeric_issue = False
+            while remaining:
+                requested = min(remaining, limits.chunk_size)
+                chunk = state.read_exact(requested, "ARRAY_PAYLOAD_OUT_OF_BOUNDS", f"arrays[{meta.array_id!r}].payload")
+                state.metrics["payload_bytes_read"] = int(state.metrics["payload_bytes_read"]) + len(chunk)
+                state.metrics["max_single_payload_read"] = max(int(state.metrics["max_single_payload_read"]), len(chunk))
+                whole_hash.update(chunk)
+                per_hash.update(chunk)
                 if not recorded_numeric_issue:
-                    location = f"arrays[{meta.array_id}].values[{value_index}]"
-                    if not math.isfinite(number):
-                        numeric_issues.append(_issue("NONFINITE_ARRAY_VALUE", "array value must be finite", location, actual=number))
-                        recorded_numeric_issue = True
-                    elif meta.array_type == "mz" and number < 0:
-                        numeric_issues.append(_issue("NEGATIVE_MZ_VALUE", "m/z array value must not be negative", location, actual=number))
-                        recorded_numeric_issue = True
-                    elif meta.array_type == "time" and number < 0:
-                        numeric_issues.append(_issue("NEGATIVE_TIME_VALUE", "time array value must not be negative", location, actual=number))
-                        recorded_numeric_issue = True
-                value_index += 1
-            remaining -= len(chunk)
-        actual_checksum = per_hash.hexdigest()
-        if actual_checksum != meta.checksum:
-            per_array_issues.append(_issue("ARRAY_CHECKSUM_MISMATCH", "array payload checksum does not match its entry", f"arrays[{meta.array_id}].checksum", actual=actual_checksum))
+                    recorded_numeric_issue = _check_numeric_values(
+                        meta,
+                        chunk,
+                        value_index,
+                        numeric_issues,
+                        state,
+                    )
+                value_index += len(chunk) // 8
+                remaining -= len(chunk)
+            actual_checksum = per_hash.hexdigest()
+            if actual_checksum != meta.checksum:
+                per_array_issues.append(_issue("ARRAY_CHECKSUM_MISMATCH", "array payload checksum does not match its entry", f"arrays[{meta.array_id}].checksum", actual=actual_checksum))
     state.metrics["payload_scan_count"] = 1
     actual_whole_checksum = whole_hash.hexdigest()
     if actual_whole_checksum != entry.checksum:
@@ -1081,12 +1171,44 @@ def _validate_arrays_region(
     return tuple(metas)
 
 
+def _check_numeric_values(
+    meta: _ArrayMeta,
+    raw: bytes | memoryview,
+    value_index: int,
+    issues: list[ValidationIssue],
+    state: _ValidationState,
+) -> bool:
+    values = np.frombuffer(raw, dtype="<f8")
+    state.metrics["numeric_chunk_count"] = int(
+        state.metrics["numeric_chunk_count"]
+    ) + 1
+    invalid = ~np.isfinite(values)
+    if meta.array_type in {"mz", "time"}:
+        invalid |= values < 0
+    positions = np.flatnonzero(invalid)
+    if not positions.size:
+        del values
+        return False
+    position = int(positions[0])
+    number = float(values[position])
+    location = f"arrays[{meta.array_id}].values[{value_index + position}]"
+    if not math.isfinite(number):
+        issues.append(_issue("NONFINITE_ARRAY_VALUE", "array value must be finite", location, actual=number))
+    elif meta.array_type == "mz":
+        issues.append(_issue("NEGATIVE_MZ_VALUE", "m/z array value must not be negative", location, actual=number))
+    else:
+        issues.append(_issue("NEGATIVE_TIME_VALUE", "time array value must not be negative", location, actual=number))
+    del values
+    return True
+
+
 class ZpV2Validator:
     def __init__(self, limits: ZpV2ValidationLimits | None = None) -> None:
         self.limits = limits or DEFAULT_V2_VALIDATION_LIMITS
         if not isinstance(self.limits, ZpV2ValidationLimits):
             raise TypeError("limits must be a ZpV2ValidationLimits instance")
-        self.last_metrics: dict[str, int | bool] = {}
+        self.last_metrics: dict[str, int | bool | str] = {}
+        self.last_extensions: list[dict[str, object]] | None = None
 
     def validate_stream(
         self,
@@ -1097,6 +1219,8 @@ class ZpV2Validator:
         header: tuple[bytes, int, int, int, int, int],
         initial_issues: list[ValidationIssue],
     ) -> ValidationResult:
+        wall_started = time.perf_counter()
+        cpu_started = time.process_time()
         version = header[1]
         try:
             state = _ValidationState(path, stream, version, initial_issues, self.limits)
@@ -1116,6 +1240,13 @@ class ZpV2Validator:
                 state.stop("UNSUPPORTED_TOP_LEVEL_FLAGS", "v2 Header flags must be zero", "header.flags", actual=flags)
             entries = _read_top_directory(state, file_size=file_size, directory_offset=directory_offset)
             blocks = _read_json_blocks(state, entries)
+            raw_extensions = blocks.get("extensions")
+            self.last_extensions = (
+                raw_extensions
+                if isinstance(raw_extensions, list)
+                and all(isinstance(item, dict) for item in raw_extensions)
+                else None
+            )
             arrays_entry = next(item for item in entries if item.block_name == "arrays")
             arrays = _validate_arrays_region(state, arrays_entry)
             _validate_relationships(blocks, arrays, state)
@@ -1128,5 +1259,8 @@ class ZpV2Validator:
         except (KeyError, TypeError, ValueError, OverflowError, struct.error) as exc:
             state.add("INVALID_V2_STRUCTURE", "malformed v2 structure could not be interpreted", "validation", actual=str(exc))
         result = state.finish()
+        state.metrics["wall_seconds"] = time.perf_counter() - wall_started
+        state.metrics["cpu_seconds"] = time.process_time() - cpu_started
         self.last_metrics = dict(state.metrics)
+        result.metrics.update(self.last_metrics)
         return result
